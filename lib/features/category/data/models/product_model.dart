@@ -458,9 +458,27 @@ class ProductModel {
       name: 'ProductModel',
     );
 
+    final rawNumericId = json['_id'];
+    final parsedNumericId = rawNumericId is int
+      ? rawNumericId
+      : int.tryParse(rawNumericId?.toString() ?? '');
+
+    final cacheBaseImage = json['cacheBaseImage'];
+    String? resolvedBaseImageUrl;
+    if (cacheBaseImage is List && cacheBaseImage.isNotEmpty) {
+      final first = cacheBaseImage.first;
+      if (first is Map<String, dynamic>) {
+      resolvedBaseImageUrl =
+        first['mediumImageUrl'] as String? ??
+        first['originalImageUrl'] as String?;
+      }
+    }
+
+    final priceHtml = json['priceHtml'] as Map<String, dynamic>?;
+
     return ProductModel(
       id: json['id']?.toString() ?? '',
-      numericId: json['_id'] as int?,
+      numericId: parsedNumericId ?? _parseInt(json['id']),
       qty: _parseInt(json['qty']),
       sku: json['sku'] as String?,
       type: json['type'] as String?,
@@ -469,12 +487,20 @@ class ProductModel {
       description: json['description'] as String?,
       shortDescription: json['shortDescription'] as String?,
       price: _parseDouble(json['price']),
-      formattedPrice: json['formattedPrice'] as String?,
-      baseImageUrl: json['baseImageUrl'] as String?,
-      minimumPrice: _parseDouble(json['minimumPrice']),
-      formattedMinimumPrice: json['formattedMinimumPrice'] as String?,
+      formattedPrice:
+        json['formattedPrice'] as String? ??
+        priceHtml?['formattedRegularPrice'] as String?,
+      baseImageUrl:
+        json['baseImageUrl'] as String? ??
+        resolvedBaseImageUrl,
+      minimumPrice: _parseDouble(json['minimumPrice']) ?? _parseDouble(priceHtml?['minPrice']),
+      formattedMinimumPrice:
+        json['formattedMinimumPrice'] as String? ??
+        priceHtml?['formattedRegularPrice'] as String?,
       specialPrice: _parseSpecialPrice(json['specialPrice']),
-      formattedSpecialPrice: json['formattedSpecialPrice'] as String?,
+      formattedSpecialPrice:
+        json['formattedSpecialPrice'] as String? ??
+        priceHtml?['formattedFinalPrice'] as String?,
       isSaleable: _parseBool(json['isSaleable']),
       color: json['color'] as String?,
       size: json['size'] as String?,
@@ -550,121 +576,112 @@ class ProductModel {
     return null;
   }
 
+  static List<Map<String, dynamic>> _extractNodeList(dynamic json) {
+    if (json == null) return const [];
+
+    if (json is List) {
+      return json.whereType<Map<String, dynamic>>().toList();
+    }
+
+    if (json is Map<String, dynamic>) {
+      final edges = json['edges'];
+      if (edges is List) {
+        return edges
+            .map((e) => e is Map<String, dynamic> ? e['node'] : null)
+            .whereType<Map<String, dynamic>>()
+            .toList();
+      }
+
+      final data = json['data'];
+      if (data is List) {
+        return data.whereType<Map<String, dynamic>>().toList();
+      }
+    }
+
+    return const [];
+  }
+
   static List<ProductVariant> _parseVariants(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map((e) => ProductVariant.fromJson(e['node'] as Map<String, dynamic>))
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(ProductVariant.fromJson)
         .toList();
   }
 
   static List<ProductReview> _parseReviews(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map((e) => ProductReview.fromJson(e['node'] as Map<String, dynamic>))
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(ProductReview.fromJson)
         .toList();
   }
 
   static List<ProductImage> _parseImages(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map((e) => ProductImage.fromJson(e['node'] as Map<String, dynamic>))
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(ProductImage.fromJson)
         .toList();
   }
 
   static List<SuperAttribute> _parseSuperAttributes(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map((e) => SuperAttribute.fromJson(e['node'] as Map<String, dynamic>))
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(SuperAttribute.fromJson)
         .toList();
   }
 
   static List<AttributeValueItem> _parseAttributeValues(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map(
-          (e) => AttributeValueItem.fromJson(e['node'] as Map<String, dynamic>),
-        )
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(AttributeValueItem.fromJson)
         .toList();
   }
 
   static List<ProductCategory> _parseCategories(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map((e) => ProductCategory.fromJson(e['node'] as Map<String, dynamic>))
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(ProductCategory.fromJson)
         .toList();
   }
 
   static List<ProductModel> _parseRelatedProducts(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map((e) => ProductModel.fromJson(e['node'] as Map<String, dynamic>))
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(ProductModel.fromJson)
         .toList();
   }
 
   static List<DownloadableLink> _parseDownloadableLinks(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map(
-          (e) => DownloadableLink.fromJson(e['node'] as Map<String, dynamic>),
-        )
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(DownloadableLink.fromJson)
         .toList();
   }
 
   static List<DownloadableSample> _parseDownloadableSamples(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map(
-          (e) => DownloadableSample.fromJson(e['node'] as Map<String, dynamic>),
-        )
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(DownloadableSample.fromJson)
         .toList();
   }
 
   static List<GroupedProductItem> _parseGroupedProducts(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map(
-          (e) => GroupedProductItem.fromJson(e['node'] as Map<String, dynamic>),
-        )
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(GroupedProductItem.fromJson)
         .toList();
   }
 
   static List<BundleOption> _parseBundleOptions(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map((e) => BundleOption.fromJson(e['node'] as Map<String, dynamic>))
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(BundleOption.fromJson)
         .toList();
   }
 
   static List<BookingProductData> _parseBookingProducts(dynamic json) {
-    if (json == null) return [];
-    final edges = json['edges'] as List<dynamic>?;
-    if (edges == null) return [];
-    return edges
-        .map(
-          (e) => BookingProductData.fromJson(e['node'] as Map<String, dynamic>),
-        )
+    final nodes = _extractNodeList(json);
+    return nodes
+        .map(BookingProductData.fromJson)
         .toList();
   }
 
@@ -1644,6 +1661,38 @@ class PageInfo {
   });
 
   factory PageInfo.fromJson(Map<String, dynamic> json) {
+    final currentPage = ProductModel._parseInt(json['currentPage']) ?? 1;
+    final hasMorePages = json['hasMorePages'] as bool?;
+
+    if (hasMorePages != null) {
+      final start = currentPage.toString();
+      final end = (currentPage + 1).toString();
+      return PageInfo(
+        startCursor: start,
+        endCursor: end,
+        hasNextPage: hasMorePages,
+        hasPreviousPage: currentPage > 1,
+      );
+    }
+
+    final perPage =
+      ProductModel._parseInt(json['perPage']) ??
+      ProductModel._parseInt(json['count']) ??
+      0;
+    final total = ProductModel._parseInt(json['total']) ?? 0;
+    final hasNextFromTotals =
+        perPage > 0 && total > 0 ? (currentPage * perPage) < total : false;
+    final hasPrevFromPage = currentPage > 1;
+
+    if (json.containsKey('currentPage')) {
+      return PageInfo(
+        startCursor: currentPage.toString(),
+        endCursor: (currentPage + 1).toString(),
+        hasNextPage: hasNextFromTotals,
+        hasPreviousPage: hasPrevFromPage,
+      );
+    }
+
     return PageInfo(
       startCursor: json['startCursor'] as String?,
       endCursor: json['endCursor'] as String?,
@@ -1667,13 +1716,18 @@ class PaginatedProducts {
 
   factory PaginatedProducts.fromJson(Map<String, dynamic> json) {
     final data = json['products'] as Map<String, dynamic>;
-    final edges = data['edges'] as List<dynamic>? ?? [];
+    final nodes = ProductModel._extractNodeList(data['data']);
+    final paginatorInfo =
+        data['paginatorInfo'] as Map<String, dynamic>? ?? const {};
+    final total = ProductModel._parseInt(paginatorInfo['total']) ??
+        ProductModel._parseInt(paginatorInfo['count']) ??
+        nodes.length;
 
     return PaginatedProducts(
-      totalCount: data['totalCount'] as int? ?? 0,
-      pageInfo: PageInfo.fromJson(data['pageInfo'] as Map<String, dynamic>),
-      products: edges
-          .map((e) => ProductModel.fromJson(e['node'] as Map<String, dynamic>))
+      totalCount: total,
+      pageInfo: PageInfo.fromJson(paginatorInfo),
+      products: nodes
+          .map(ProductModel.fromJson)
           .toList(),
     );
   }

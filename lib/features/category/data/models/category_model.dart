@@ -32,10 +32,15 @@ class CategoryModel {
 
   /// Factory for treeCategories response
   factory CategoryModel.fromTreeJson(Map<String, dynamic> json) {
-    // Parse children from cursor connection format: { edges: [{ node: {...} }] }
+    // Parse children from both list and cursor connection formats.
     List<CategoryModel> childrenList = [];
     final childrenData = json['children'];
-    if (childrenData != null && childrenData is Map<String, dynamic>) {
+    if (childrenData is List) {
+      childrenList = childrenData
+          .whereType<Map<String, dynamic>>()
+          .map(CategoryModel.fromTreeJson)
+          .toList();
+    } else if (childrenData is Map<String, dynamic>) {
       final edges = childrenData['edges'] as List<dynamic>?;
       if (edges != null) {
         childrenList = edges
@@ -46,33 +51,58 @@ class CategoryModel {
       }
     }
 
+    final translationData =
+        json['translation'] as Map<String, dynamic>? ??
+        {
+          'id': json['id']?.toString(),
+          'name': json['name'],
+          'slug': json['slug'],
+          'description': json['description'],
+          'urlPath': json['urlPath'],
+          'metaTitle': json['metaTitle'],
+        };
+
+    final rawNumericId = json['_id'];
+    final parsedNumericId = rawNumericId is int
+        ? rawNumericId
+        : int.tryParse(rawNumericId?.toString() ?? '');
+    final idValue = json['id']?.toString() ?? '';
+
     return CategoryModel(
-      id: json['id']?.toString() ?? '',
-      numericId: json['_id'] as int?,
+      id: idValue,
+      numericId: parsedNumericId ?? int.tryParse(idValue),
       position: json['position'] as int?,
       logoPath: json['logoPath'] as String?,
       logoUrl: json['logoUrl'] as String?,
       bannerUrl: json['bannerUrl'] as String?,
       status: json['status']?.toString(),
-      translation: json['translation'] != null
-          ? CategoryTranslation.fromJson(
-              json['translation'] as Map<String, dynamic>)
-          : null,
+      translation: CategoryTranslation.fromJson(translationData),
       children: childrenList,
     );
   }
 
   /// Factory for categories (home) cursor connection response
   factory CategoryModel.fromHomeCategoryJson(Map<String, dynamic> json) {
+    final translationData =
+        json['translation'] as Map<String, dynamic>? ??
+        {
+          'id': json['id']?.toString(),
+          'name': json['name'],
+          'slug': json['slug'],
+        };
+
+    final rawNumericId = json['_id'];
+    final parsedNumericId = rawNumericId is int
+        ? rawNumericId
+        : int.tryParse(rawNumericId?.toString() ?? '');
+    final idValue = json['id']?.toString() ?? '';
+
     return CategoryModel(
-      id: json['id']?.toString() ?? '',
-      numericId: json['_id'] as int?,
+      id: idValue,
+      numericId: parsedNumericId ?? int.tryParse(idValue),
       logoUrl: json['logoUrl'] as String?,
       position: json['position'] as int?,
-      translation: json['translation'] != null
-          ? CategoryTranslation.fromJson(
-              json['translation'] as Map<String, dynamic>)
-          : null,
+      translation: CategoryTranslation.fromJson(translationData),
     );
   }
 }

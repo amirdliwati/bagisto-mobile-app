@@ -29,10 +29,24 @@ class ThemeCustomization extends Equatable {
     // Parse translations → find the preferred locale, fallback to 'en', then first available
     Map<String, dynamic> options = {};
     Map<String, dynamic>? enOptions;
-    final translations = json['translations']?['edges'] as List? ?? [];
-    for (final edge in translations) {
-      final node = edge['node'] as Map<String, dynamic>? ?? {};
-      final locale = node['locale'] as String? ?? '';
+    final rawTranslations = json['translations'];
+    final List<Map<String, dynamic>> translations;
+
+    if (rawTranslations is List) {
+      translations = rawTranslations.whereType<Map<String, dynamic>>().toList();
+    } else {
+      final edges = (rawTranslations as Map<String, dynamic>?)?['edges']
+              as List? ??
+          const [];
+      translations = edges
+          .map((edge) => edge['node'])
+          .whereType<Map<String, dynamic>>()
+          .toList();
+    }
+
+    for (final node in translations) {
+      final locale =
+          (node['localeCode'] ?? node['locale']) as String? ?? '';
 
       Map<String, dynamic>? parsed;
       final rawOptions = node['options'];
@@ -95,10 +109,22 @@ class HomeCategory extends Equatable {
   });
 
   factory HomeCategory.fromJson(Map<String, dynamic> json) {
-    final translation = json['translation'] as Map<String, dynamic>? ?? {};
+    final translation =
+        json['translation'] as Map<String, dynamic>? ??
+        {
+          'name': json['name'],
+          'slug': json['slug'],
+        };
+
+    final rawNumericId = json['_id'];
+    final parsedNumericId = rawNumericId is int
+        ? rawNumericId
+        : int.tryParse(rawNumericId?.toString() ?? '');
+    final idValue = json['id']?.toString() ?? '';
+
     return HomeCategory(
-      id: json['id']?.toString() ?? '',
-      numericId: json['_id'] as int?,
+      id: idValue,
+      numericId: parsedNumericId ?? int.tryParse(idValue),
       name: translation['name'] as String? ?? '',
       slug: translation['slug'] as String? ?? '',
       logoUrl: json['logoUrl'] as String?,
@@ -161,11 +187,24 @@ class HomeProduct extends Equatable {
       if (parts.isNotEmpty) numId = int.tryParse(parts.last);
     }
 
+    final cacheBaseImage = json['cacheBaseImage'];
+    String? resolvedBaseImageUrl;
+    if (cacheBaseImage is List && cacheBaseImage.isNotEmpty) {
+      final first = cacheBaseImage.first;
+      if (first is Map<String, dynamic>) {
+        resolvedBaseImageUrl =
+            first['mediumImageUrl'] as String? ??
+            first['originalImageUrl'] as String?;
+      }
+    }
+
+    final priceHtml = json['priceHtml'] as Map<String, dynamic>?;
+
     // Debug: log raw price fields from API
     developer.log(
       'HomeProduct[${json['name']}] price=${json['price']} '
       'specialPrice=${json['specialPrice']} (${json['specialPrice']?.runtimeType}) '
-      'minimumPrice=${json['minimumPrice']}',
+      'minimumPrice=${json['minimumPrice'] ?? priceHtml?['minPrice']}',
       name: 'HomeProduct',
     );
 
@@ -177,9 +216,23 @@ class HomeProduct extends Equatable {
     }
 
     // Parse reviews for rating/count
-    final reviewEdges = json['reviews']?['edges'] as List? ?? [];
-    final ratings = reviewEdges
-        .map((e) => _toDouble((e['node'] as Map<String, dynamic>?)?['rating']))
+    final rawReviews = json['reviews'];
+    final List<dynamic> reviewNodes;
+    if (rawReviews is List) {
+      reviewNodes = rawReviews;
+    } else {
+      final reviewEdges = (rawReviews as Map<String, dynamic>?)?['edges']
+          as List? ??
+        const [];
+      reviewNodes = reviewEdges
+        .map((e) => e['node'])
+        .whereType<Map<String, dynamic>>()
+        .toList();
+    }
+
+    final ratings = reviewNodes
+      .whereType<Map<String, dynamic>>()
+      .map((e) => _toDouble(e['rating']))
         .where((r) => r > 0)
         .toList();
     final fallbackRating = _toDouble(json['averageRating']);
@@ -195,13 +248,25 @@ class HomeProduct extends Equatable {
       type: json['type'] as String? ?? 'simple',
       name: json['name'] as String? ?? '',
       urlKey: json['urlKey'] as String? ?? '',
-      baseImageUrl: json['baseImageUrl'] as String?,
+        baseImageUrl:
+          json['baseImageUrl'] as String? ??
+          resolvedBaseImageUrl,
       price: _toDouble(json['price']),
-      minimumPrice: json['minimumPrice'] != null ? _toDouble(json['minimumPrice']) : null,
+        minimumPrice: json['minimumPrice'] != null
+          ? _toDouble(json['minimumPrice'])
+          : (priceHtml?['minPrice'] != null
+            ? _toDouble(priceHtml?['minPrice'])
+            : null),
       specialPrice: parsedSpecialPrice,
-      formattedPrice: json['formattedPrice'] as String?,
-      formattedMinimumPrice: json['formattedMinimumPrice'] as String?,
-      formattedSpecialPrice: json['formattedSpecialPrice'] as String?,
+        formattedPrice:
+          json['formattedPrice'] as String? ??
+          priceHtml?['formattedRegularPrice'] as String?,
+        formattedMinimumPrice:
+          json['formattedMinimumPrice'] as String? ??
+          priceHtml?['formattedRegularPrice'] as String?,
+        formattedSpecialPrice:
+          json['formattedSpecialPrice'] as String? ??
+          priceHtml?['formattedFinalPrice'] as String?,
       isSaleable: json['isSaleable'] == true,
       averageRating: avgRating,
       reviewCount: ratings.isNotEmpty ? ratings.length : fallbackReviewCount,

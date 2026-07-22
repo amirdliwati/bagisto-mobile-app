@@ -27,7 +27,6 @@ class ChannelBootstrapService {
     final result = await client.query(
       QueryOptions(
         document: gql(StoreConfigQueries.getChannelById),
-        variables: {'id': channelId.toString()},
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
@@ -95,21 +94,45 @@ class ChannelBootstrapService {
   }
 
   List<ShopLocale> _parseLocales(Map<String, dynamic> channel) {
-    final edges = channel['locales']?['edges'] as List<dynamic>? ?? const [];
-    return edges
-        .map((edge) => edge['node'])
+    final localesData = channel['locales'];
+
+    if (localesData is List) {
+      return localesData
         .whereType<Map<String, dynamic>>()
         .map(ShopLocale.fromJson)
         .toList();
+    }
+
+    final edges = localesData is Map<String, dynamic>
+      ? localesData['edges'] as List<dynamic>? ?? const []
+      : const [];
+
+    return edges
+      .map((edge) => edge['node'])
+      .whereType<Map<String, dynamic>>()
+      .map(ShopLocale.fromJson)
+      .toList();
   }
 
   List<ShopCurrency> _parseCurrencies(Map<String, dynamic> channel) {
-    final edges = channel['currencies']?['edges'] as List<dynamic>? ?? const [];
-    return edges
-        .map((edge) => edge['node'])
+    final currenciesData = channel['currencies'];
+
+    if (currenciesData is List) {
+      return currenciesData
         .whereType<Map<String, dynamic>>()
         .map(ShopCurrency.fromJson)
         .toList();
+    }
+
+    final edges = currenciesData is Map<String, dynamic>
+      ? currenciesData['edges'] as List<dynamic>? ?? const []
+      : const [];
+
+    return edges
+      .map((edge) => edge['node'])
+      .whereType<Map<String, dynamic>>()
+      .map(ShopCurrency.fromJson)
+      .toList();
   }
 
   String? _resolveDefaultLocaleCode(

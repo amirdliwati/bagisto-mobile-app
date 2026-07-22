@@ -6,49 +6,40 @@ class StoreConfigQueries {
   /// Fetches the configured Bagisto channel with its locales, currencies,
   /// and defaults used during app startup.
   static const String getChannelById = r'''
-    query getChannelByID($id: ID!) {
-      channel(id: $id) {
+    query getChannelByID {
+      channel: getDefaultChannel {
         id
-        _id
         code
         hostname
         theme
         timezone
-        homeSeo
+        homeSeo {
+          metaTitle
+          metaKeywords
+          metaDescription
+        }
         logoUrl
         faviconUrl
         locales {
-          edges {
-            node {
-              id
-              _id
-              code
-              name
-              direction
-            }
-          }
+          id
+          code
+          name
+          direction
         }
         currencies {
-          edges {
-            node {
-              id
-              _id
-              code
-              name
-              symbol
-            }
-          }
+          id
+          code
+          name
+          symbol
         }
         defaultLocale {
           id
-          _id
           code
           name
           direction
         }
         baseCurrency {
           id
-          _id
           code
           name
           symbol
@@ -62,41 +53,29 @@ class CategoryQueries {
   /// GET_TREE_CATEGORIES – fetches hierarchical category tree
   /// Source: nextjs-commerce/src/graphql/catelog/queries/Category.ts
   static const String getTreeCategories = r'''
-    query treeCategories($parentId: Int) {
-      treeCategories(parentId: $parentId) {
+    query treeCategories {
+      treeCategories: homeCategories(getCategoryTree: true) {
         id
-        _id
         position
         logoPath
         logoUrl
         bannerUrl
         status
-        translation {
+        name
+        slug
+        description
+        urlPath
+        metaTitle
+        children {
           id
+          position
+          logoPath
+          logoUrl
+          bannerUrl
+          status
           name
           slug
-          description
           urlPath
-          metaTitle
-        }
-        children {
-          edges {
-            node {
-              id
-              _id
-              position
-              logoPath
-              logoUrl
-              bannerUrl
-              status
-              translation {
-                id
-                name
-                slug
-                urlPath
-              }
-            }
-          }
         }
       }
     }
@@ -106,21 +85,12 @@ class CategoryQueries {
   /// Source: nextjs-commerce/src/graphql/catelog/queries/HomeCategories.ts
   static const String getHomeCategories = r'''
     query Categories {
-      categories {
-        edges {
-          node {
-            id
-            _id
-            logoUrl
-            position
-            translation {
-              name
-              slug
-              id
-              _id
-            }
-          }
-        }
+      categories: homeCategories {
+        id
+        logoUrl
+        position
+        name
+        slug
       }
     }
   ''';
@@ -131,31 +101,32 @@ class ProductQueries {
   static const String _productCoreFragment = r'''
     fragment ProductCore on Product {
       id
-      _id
       sku
       type
       name
       price
-      formattedPrice
       urlKey
-      baseImageUrl
-      minimumPrice
-      formattedMinimumPrice
       specialPrice
-      formattedSpecialPrice
       isSaleable
-       reviews {
-       totalCount
-        edges {
-          node {
-            rating
-            id
-            name
-            title
-            comment
-            createdAt
-          }
-        }
+      averageRating
+      priceHtml {
+        minPrice
+        regularPrice
+        formattedRegularPrice
+        finalPrice
+        formattedFinalPrice
+      }
+      cacheBaseImage {
+        mediumImageUrl
+        originalImageUrl
+      }
+      reviews {
+        rating
+        id
+        name
+        title
+        comment
+        createdAt
       }
     }
   ''';
@@ -164,31 +135,32 @@ class ProductQueries {
   static const String _productSectionFragment = r'''
     fragment ProductSection on Product {
       id
-      _id
       sku
       name
       urlKey
       type
-      baseImageUrl
       price
-      formattedPrice
-      minimumPrice
-      formattedMinimumPrice
       specialPrice
-      formattedSpecialPrice
       isSaleable
-       reviews {
-       totalCount
-        edges {
-          node {
-            rating
-            id
-            name
-            title
-            comment
-            createdAt
-          }
-        }
+      averageRating
+      priceHtml {
+        minPrice
+        regularPrice
+        formattedRegularPrice
+        finalPrice
+        formattedFinalPrice
+      }
+      cacheBaseImage {
+        mediumImageUrl
+        originalImageUrl
+      }
+      reviews {
+        rating
+        id
+        name
+        title
+        comment
+        createdAt
       }
     }
   ''';
@@ -1117,40 +1089,16 @@ $slotFields
     $_productCoreFragment
 
     query GetProducts(
-      \$query: String
-      \$sortKey: String
-      \$reverse: Boolean
-      \$first: Int
-      \$last: Int
-      \$after: String
-      \$before: String
-      \$channel: String
-      \$locale: String
-      \$filter: String
+      \$input: [FilterHomeCategoriesInput]
     ) {
-      products(
-        query: \$query
-        sortKey: \$sortKey
-        reverse: \$reverse
-        first: \$first
-        last: \$last
-        after: \$after
-        before: \$before
-        channel: \$channel
-        locale: \$locale
-        filter: \$filter
-      ) {
-        totalCount
-        pageInfo {
-          startCursor
-          endCursor
-          hasNextPage
-          hasPreviousPage
+      products: allProducts(input: \$input) {
+        paginatorInfo {
+          count
+          currentPage
+          total
         }
-        edges {
-          node {
-            ...ProductCore
-          }
+        data {
+          ...ProductCore
         }
       }
     }
@@ -1163,34 +1111,16 @@ $slotFields
     $_productSectionFragment
 
     query getProducts(
-      \$filter: String
-      \$sortKey: String
-      \$reverse: Boolean
-      \$first: Int
-      \$last: Int
-      \$after: String
-      \$before: String
+      \$input: [FilterHomeCategoriesInput]
     ) {
-      products(
-        filter: \$filter
-        sortKey: \$sortKey
-        reverse: \$reverse
-        first: \$first
-        last: \$last
-        after: \$after
-        before: \$before
-      ) {
-        totalCount
-        pageInfo {
-          endCursor
-          startCursor
-          hasNextPage
-          hasPreviousPage
+      products: allProducts(input: \$input) {
+        paginatorInfo {
+          count
+          currentPage
+          total
         }
-        edges {
-          node {
-            ...ProductSection
-          }
+        data {
+          ...ProductSection
         }
       }
     }
@@ -1247,24 +1177,64 @@ class ThemeQueries {
   /// GET_THEME_CUSTOMIZATION
   /// Source: nextjs-commerce/src/graphql/theme/queries/ThemeCustomization.ts
   static const String getThemeCustomization = r'''
-    query themeCustomization($first: Int) {
-      themeCustomizations(first: $first) {
-        edges {
-          node {
-            id
-            type
-            name
-            status
-            sortOrder
-            translations {
-              edges {
-                node {
-                  id
-                  themeCustomizationId
-                  locale
-                  options
-                }
-              }
+    query themeCustomization {
+      themeCustomizations: themeCustomization {
+        id
+        type
+        name
+        status
+        sortOrder
+        translations {
+          id
+          themeCustomizationId
+          localeCode
+          options {
+            title
+            css
+            html
+            links {
+              title
+              link
+              image
+              imageUrl
+              url
+              slug
+              type
+              id
+            }
+            images {
+              title
+              link
+              image
+              imageUrl
+              url
+              slug
+              type
+              id
+            }
+            filters {
+              key
+              value
+            }
+            column_1 {
+              url
+              title
+              sortOrder
+            }
+            column_2 {
+              url
+              title
+              sortOrder
+            }
+            column_3 {
+              url
+              title
+              sortOrder
+            }
+            services {
+              title
+              description
+              serviceIcon
             }
           }
         }
@@ -1289,6 +1259,35 @@ class CartMutations {
           message
           sessionToken
           isGuest
+        }
+      }
+    }
+  ''';
+
+  /// Fallback read cart query for newer schemas.
+  static const String getCartDetail = r'''
+    query GetCartDetail {
+      cartDetail {
+        id
+        itemsCount
+        itemsQty
+        taxTotal
+        shippingAmount
+        subTotal
+        grandTotal
+        discountAmount
+        couponCode
+        isGuest
+        items {
+          id
+          cartId
+          productId
+          name
+          price
+          total
+          sku
+          quantity
+          type
         }
       }
     }

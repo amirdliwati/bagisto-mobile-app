@@ -72,6 +72,28 @@ class CartRepository {
 
     if (result.hasException) {
       debugPrint('[CartRepo] createCartToken error: ${result.exception}');
+
+      // Some Bagisto schemas do not expose guest token creation.
+      // Fall back to a local guest marker so cart bootstrap can proceed.
+      final hasMissingFieldError = result.exception!.graphqlErrors.any(
+        (error) =>
+            error.message.contains('Cannot query field "createCartToken"'),
+      );
+
+      if (hasMissingFieldError) {
+        final fallbackToken =
+            'guest_${DateTime.now().millisecondsSinceEpoch}';
+        return CartTokenResponse(
+          id: 0,
+          cartToken: fallbackToken,
+          sessionToken: fallbackToken,
+          isGuest: true,
+          success: true,
+          message:
+              'Guest cart token mutation is unavailable. Using local guest session.',
+        );
+      }
+
       throw result.exception!;
     }
 
@@ -342,6 +364,40 @@ class CartRepository {
     );
 
     if (result.hasException) {
+      final hasMissingFieldError = result.exception!.graphqlErrors.any(
+        (error) =>
+            error.message.contains('Cannot query field "createReadCart"'),
+      );
+
+      if (hasMissingFieldError) {
+        debugPrint('[CartRepo] createReadCart unavailable, falling back to cartDetail query');
+
+        final fallbackResult = await _authedClient.query(
+          QueryOptions(
+            document: gql(CartMutations.getCartDetail),
+            fetchPolicy: FetchPolicy.noCache,
+          ),
+        );
+
+        if (fallbackResult.hasException) {
+          debugPrint('[CartRepo] cartDetail fallback error: ${fallbackResult.exception}');
+          throw fallbackResult.exception!;
+        }
+
+        final fallbackData = fallbackResult.data?['cartDetail'];
+        if (fallbackData == null) {
+          debugPrint('[CartRepo] cartDetail fallback: empty cart');
+          return CartModel.empty;
+        }
+
+        final cart = CartModel.fromJson(fallbackData as Map<String, dynamic>);
+        debugPrint(
+          '[CartRepo] getCart fallback: ${cart.itemsQty} items, total=${cart.grandTotal}',
+        );
+
+        return cart;
+      }
+
       if (ErrorMapper.isNetworkError(result.exception!) && attempt < 3) {
         debugPrint(
           '[CartRepo] getCart timeout — retrying (attempt ${attempt + 1})...',

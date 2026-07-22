@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
-        android:label="Mobikul Bagisto Laravel App"
+        android:label="Frontier Store"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

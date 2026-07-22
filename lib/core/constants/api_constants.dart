@@ -1,10 +1,10 @@
 /// Bagisto API endpoint
 const String bagistoEndpoint =
-    'https://your-bagisto-domain.com/graphql';
+    'https://store.frontier-ibs.com/graphql';
 
 /// Storefront key for Bagisto API
 const String storefrontKey =
-    'your_storefront_key_here';
+    'pk_storefront_zQEnkGcyxcKxpuMl0YSqN4NwfKizMB0K';
 
 /// Default channel code used by request headers.
 const String channelCode = 'default';
@@ -13,4 +13,4 @@ const String channelCode = 'default';
 const int channelId = 1;
 
 /// Company name
-const String companyName = 'Your Company Name';
+const String companyName = 'Frontier IBS';

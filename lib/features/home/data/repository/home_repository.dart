@@ -1,5 +1,6 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../../../../core/locale/locale_cubit.dart';
 import '../../../../core/graphql/queries.dart';
 import '../models/home_models.dart';
@@ -24,22 +25,35 @@ class HomeRepository {
     final result = await _client.query(
       QueryOptions(
         document: gql(ThemeQueries.getThemeCustomization),
-        variables: const {'first': 50},
         fetchPolicy: FetchPolicy.cacheAndNetwork,
       ),
     );
 
     if (result.hasException) {
-      throw Exception(
-        'Failed to load theme customizations: ${result.exception}',
-      );
+      // Some deployments can return internal errors for this resolver.
+      // Degrade gracefully so the rest of the home data can still load.
+      return [];
     }
 
-    final edges = result.data?['themeCustomizations']?['edges'] as List? ?? [];
-    return edges
+    final customizationsData = result.data?['themeCustomizations'];
+
+    final List<Map<String, dynamic>> nodes;
+    if (customizationsData is List) {
+      nodes = customizationsData.whereType<Map<String, dynamic>>().toList();
+    } else {
+      final edges = (customizationsData as Map<String, dynamic>?)?['edges']
+              as List? ??
+          const [];
+      nodes = edges
+          .map((e) => e['node'])
+          .whereType<Map<String, dynamic>>()
+          .toList();
+    }
+
+    return nodes
         .map(
-          (e) => ThemeCustomization.fromJson(
-            e['node'] as Map<String, dynamic>,
+          (node) => ThemeCustomization.fromJson(
+            node,
             preferredLocale: locale,
           ),
         )
@@ -58,12 +72,28 @@ class HomeRepository {
     );
 
     if (result.hasException) {
-      throw Exception('Failed to load categories: ${result.exception}');
+      // Some deployments return warnings/errors for this resolver.
+      // Keep homepage usable by returning an empty category strip.
+      return [];
     }
 
-    final edges = result.data?['categories']?['edges'] as List? ?? [];
-    return edges
-        .map((e) => HomeCategory.fromJson(e['node'] as Map<String, dynamic>))
+    final categoriesData = result.data?['categories'];
+
+    final List<Map<String, dynamic>> categoryNodes;
+    if (categoriesData is List) {
+      categoryNodes = categoriesData.whereType<Map<String, dynamic>>().toList();
+    } else {
+      final edges = (categoriesData as Map<String, dynamic>?)?['edges']
+              as List? ??
+          const [];
+      categoryNodes = edges
+          .map((e) => e['node'])
+          .whereType<Map<String, dynamic>>()
+          .toList();
+    }
+
+    return categoryNodes
+        .map(HomeCategory.fromJson)
         .where((c) => c.numericId != 1) // exclude root category
         .toList()
       ..sort((a, b) => a.position.compareTo(b.position));
@@ -80,15 +110,45 @@ class HomeRepository {
     String sortKey = 'NEWEST',
     bool reverse = true,
   }) async {
+    final input = <Map<String, String>>[];
+
+    void addInput(String key, dynamic value) {
+      if (value == null) return;
+      final text = value.toString().trim();
+      if (text.isEmpty) return;
+      input.add({'key': key, 'value': text});
+    }
+
+    addInput('limit', first);
+
+    String? sort;
+    final normalized = sortKey.toUpperCase().trim();
+    if (normalized == 'PRICE') {
+      sort = reverse ? 'price-desc' : 'price-asc';
+    } else if (normalized == 'TITLE') {
+      sort = reverse ? 'name-desc' : 'name-asc';
+    } else if (normalized == 'NEWEST') {
+      sort = reverse ? 'created_at-desc' : 'created_at-asc';
+    }
+    addInput('sort', sort);
+
+    if (filter != null && filter.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(filter);
+        if (decoded is Map) {
+          for (final entry in decoded.entries) {
+            addInput(entry.key.toString(), entry.value);
+          }
+        }
+      } catch (_) {
+        addInput('filter', filter);
+      }
+    }
+
     final result = await _client.query(
       QueryOptions(
         document: gql(ProductQueries.getProducts),
-        variables: {
-          'first': first,
-          'sortKey': sortKey,
-          'reverse': reverse,
-          'filter': ?filter,
-        },
+        variables: {'input': input},
         fetchPolicy: FetchPolicy.cacheAndNetwork,
       ),
     );
@@ -97,9 +157,10 @@ class HomeRepository {
       throw Exception('Failed to load products: ${result.exception}');
     }
 
-    final edges = result.data?['products']?['edges'] as List? ?? [];
-    return edges
-        .map((e) => HomeProduct.fromJson(e['node'] as Map<String, dynamic>))
+    final data = result.data?['products']?['data'] as List? ?? [];
+    return data
+      .whereType<Map<String, dynamic>>()
+      .map(HomeProduct.fromJson)
         .toList();
   }
 }

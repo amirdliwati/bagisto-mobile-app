@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'dart:convert';
 import '../../../../core/graphql/queries.dart';
 import '../models/category_model.dart';
 import '../models/filter_model.dart';
@@ -13,15 +14,9 @@ class CategoryRepository {
   /// Fetch tree categories (hierarchical)
   /// Maps to: GET_TREE_CATEGORIES from nextjs-commerce
   Future<List<CategoryModel>> getTreeCategories({int? parentId}) async {
-    final Map<String, dynamic> variables = {};
-    if (parentId != null) {
-      variables['parentId'] = parentId;
-    }
-
     final result = await client.query(
       QueryOptions(
         document: gql(CategoryQueries.getTreeCategories),
-        variables: variables,
         fetchPolicy: FetchPolicy.cacheAndNetwork,
       ),
     );
@@ -52,7 +47,18 @@ class CategoryRepository {
       throw result.exception!;
     }
 
-    final edges = result.data?['categories']?['edges'] as List<dynamic>? ?? [];
+    final categoriesData = result.data?['categories'];
+
+    if (categoriesData is List) {
+      return categoriesData
+          .whereType<Map<String, dynamic>>()
+          .map(CategoryModel.fromHomeCategoryJson)
+          .toList();
+    }
+
+    final edges =
+        (categoriesData as Map<String, dynamic>?)?['edges'] as List<dynamic>? ??
+        [];
 
     return edges
         .map(
@@ -77,17 +83,20 @@ class CategoryRepository {
     String? locale,
     String? filter,
   }) async {
-    final Map<String, dynamic> variables = {};
-    if (query != null) variables['query'] = query;
-    if (sortKey != null) variables['sortKey'] = sortKey;
-    if (reverse != null) variables['reverse'] = reverse;
-    if (first != null) variables['first'] = first;
-    if (last != null) variables['last'] = last;
-    if (after != null) variables['after'] = after;
-    if (before != null) variables['before'] = before;
-    if (channel != null) variables['channel'] = channel;
-    if (locale != null) variables['locale'] = locale;
-    if (filter != null) variables['filter'] = filter;
+    final variables = {
+      'input': _buildProductsInput(
+        query: query,
+        sortKey: sortKey,
+        reverse: reverse,
+        first: first,
+        last: last,
+        after: after,
+        before: before,
+        channel: channel,
+        locale: locale,
+        filter: filter,
+      ),
+    };
 
     final result = await client.query(
       QueryOptions(
@@ -118,13 +127,17 @@ class CategoryRepository {
     String? before,
     bool useCacheFirst = false,
   }) async {
-    final Map<String, dynamic> variables = {'filter': filter};
-    if (sortKey != null) variables['sortKey'] = sortKey;
-    if (reverse != null) variables['reverse'] = reverse;
-    if (first != null) variables['first'] = first;
-    if (last != null) variables['last'] = last;
-    if (after != null) variables['after'] = after;
-    if (before != null) variables['before'] = before;
+    final variables = {
+      'input': _buildProductsInput(
+        filter: filter,
+        sortKey: sortKey,
+        reverse: reverse,
+        first: first,
+        last: last,
+        after: after,
+        before: before,
+      ),
+    };
 
     debugPrint(
       '[CategoryRepo] getFilterProducts variables=$variables, useCacheFirst=$useCacheFirst',
@@ -146,9 +159,93 @@ class CategoryRepository {
     }
 
     debugPrint(
-      '[CategoryRepo] getFilterProducts totalCount=${result.data?['products']?['totalCount']}',
+      '[CategoryRepo] getFilterProducts totalCount=${result.data?['products']?['paginatorInfo']?['total']}',
     );
     return PaginatedProducts.fromJson(result.data!);
+  }
+
+  List<Map<String, String>> _buildProductsInput({
+    String? query,
+    String? sortKey,
+    bool? reverse,
+    int? first,
+    int? last,
+    String? after,
+    String? before,
+    String? channel,
+    String? locale,
+    String? filter,
+  }) {
+    final input = <Map<String, String>>[];
+
+    void addInput(String key, dynamic value) {
+      if (value == null) return;
+      final text = value.toString().trim();
+      if (text.isEmpty) return;
+      input.add({'key': key, 'value': text});
+    }
+
+    // Query term.
+    addInput('query', query);
+
+    // Pagination: API is page/limit based.
+    final limit = first ?? last;
+    addInput('limit', limit ?? 10);
+
+    int page = 1;
+    final rawCursor = after ?? before;
+    if (rawCursor != null && rawCursor.isNotEmpty) {
+      page = int.tryParse(rawCursor) ?? 1;
+    }
+    if (page < 1) page = 1;
+    addInput('page', page);
+
+    // Sorting.
+    final sort = _mapSort(sortKey, reverse);
+    if (sort != null) {
+      addInput('sort', sort);
+    }
+
+    // Optional channel/locale, if provided by callers.
+    addInput('channel', channel);
+    addInput('locale', locale);
+
+    // Merge JSON filter map to input key/value pairs.
+    if (filter != null && filter.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(filter);
+        if (decoded is Map) {
+          for (final entry in decoded.entries) {
+            addInput(entry.key.toString(), entry.value);
+          }
+        }
+      } catch (_) {
+        // If the filter is not JSON, pass it through for compatibility.
+        addInput('filter', filter);
+      }
+    }
+
+    return input;
+  }
+
+  String? _mapSort(String? sortKey, bool? reverse) {
+    if (sortKey == null || sortKey.isEmpty) return null;
+
+    final normalized = sortKey.toUpperCase().trim();
+    final desc = reverse == true;
+
+    switch (normalized) {
+      case 'PRICE':
+        return desc ? 'price-desc' : 'price-asc';
+      case 'TITLE':
+        return desc ? 'name-desc' : 'name-asc';
+      case 'NEWEST':
+        return desc ? 'created_at-desc' : 'created_at-asc';
+      case 'BEST_SELLING':
+        return desc ? 'best_selling-desc' : 'best_selling-asc';
+      default:
+        return null;
+    }
   }
 
   /// Fetch single product by URL key
