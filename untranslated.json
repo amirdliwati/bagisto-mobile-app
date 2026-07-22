@@ -1,0 +1,48 @@
+{
+  "ar": [
+    "cartViewMore",
+    "cartViewLess",
+    "accountDeleteAddress",
+    "accountDeleteAddressConfirm"
+  ],
+
+  "de": [
+    "accountDeleteAddress",
+    "accountDeleteAddressConfirm"
+  ],
+
+  "es": [
+    "accountDeleteAddress",
+    "accountDeleteAddressConfirm"
+  ],
+
+  "fr": [
+    "accountDeleteAddress",
+    "accountDeleteAddressConfirm"
+  ],
+
+  "it": [
+    "accountDeleteAddress",
+    "accountDeleteAddressConfirm"
+  ],
+
+  "nl": [
+    "accountDeleteAddress",
+    "accountDeleteAddressConfirm"
+  ],
+
+  "ru": [
+    "accountDeleteAddress",
+    "accountDeleteAddressConfirm"
+  ],
+
+  "tr": [
+    "accountDeleteAddress",
+    "accountDeleteAddressConfirm"
+  ],
+
+  "uk": [
+    "accountDeleteAddress",
+    "accountDeleteAddressConfirm"
+  ]
+}

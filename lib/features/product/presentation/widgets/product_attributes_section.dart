@@ -1172,8 +1172,8 @@ class _DashedBorderPainter extends CustomPainter {
   final Color color;
   final double radius;
   final double strokeWidth;
-  final double dashWidth;
-  final double dashGap;
+  final double dashWidth = 5.0;
+  final double dashGap = 3.0;
 
   _DashedBorderPainter({
     required this.color,
