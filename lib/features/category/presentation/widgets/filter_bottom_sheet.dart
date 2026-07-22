@@ -750,7 +750,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       width: 24,
                       height: 24,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) =>
+                      errorBuilder: (_, _, _) =>
                           const SizedBox.shrink(),
                     ),
                   ),

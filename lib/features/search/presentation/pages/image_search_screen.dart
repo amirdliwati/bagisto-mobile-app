@@ -302,7 +302,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                   // Labels as vertical list
                   ...state.labels.map((label) {
                     return _buildLabelListItem(context, label);
-                  }).toList(),
+                  }),
 
                   const SizedBox(height: 20),
 

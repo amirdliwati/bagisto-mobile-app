@@ -1,5 +1,6 @@
 /// Notification models for handling Firebase Cloud Messaging
 /// Includes models for notification payloads, states, and events
+library;
 
 /// Represents a push notification message from FCM
 class NotificationMessage {

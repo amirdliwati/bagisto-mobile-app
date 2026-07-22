@@ -39,7 +39,7 @@ class CategoryShimmer extends StatelessWidget {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: 5,
-                    separatorBuilder: (_, __) => const SizedBox(width: 20),
+                    separatorBuilder: (_, _) => const SizedBox(width: 20),
                     itemBuilder: (_, i) => Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
