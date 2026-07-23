@@ -16,7 +16,7 @@ import '../bloc/downloadable_products_bloc.dart';
 ///
 /// Displays a list of the customer's downloadable products:
 ///   - AppBar: back arrow + "Downloadable Products" title
-///   - Count header: "N Products" 
+///   - Count header: "N Products"
 ///   - Product cards with product name, file name, order number, remaining downloads, status
 ///   - Download button for products that are available
 ///
@@ -36,7 +36,7 @@ class DownloadableProductsPage extends StatelessWidget {
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: AppBackButton(),
+        leading: const AppBackButton(),
         leadingWidth: 60,
         titleSpacing: 0,
         title: Text(
@@ -63,9 +63,9 @@ class DownloadableProductsPage extends StatelessWidget {
                   duration: const Duration(seconds: 3),
                 ),
               );
-            context
-                .read<DownloadableProductsBloc>()
-                .add(const ClearDownloadableProductsMessage());
+            context.read<DownloadableProductsBloc>().add(
+              const ClearDownloadableProductsMessage(),
+            );
           }
         },
         builder: (context, state) {
@@ -103,7 +103,7 @@ class DownloadableProductsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.download_outlined,
               size: 64,
               color: AppColors.neutral400,
@@ -122,7 +122,7 @@ class DownloadableProductsPage extends StatelessWidget {
             Text(
               l10n.accountDownloadsEmptyDescription,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -144,7 +144,7 @@ class DownloadableProductsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline_rounded,
               size: 64,
               color: AppColors.neutral400,
@@ -162,12 +162,12 @@ class DownloadableProductsPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextButton(
-              onPressed: () => context
-                  .read<DownloadableProductsBloc>()
-                  .add(const LoadDownloadableProducts()),
+              onPressed: () => context.read<DownloadableProductsBloc>().add(
+                const LoadDownloadableProducts(),
+              ),
               child: Text(
                 l10n.commonRetry,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -224,8 +224,7 @@ class _DownloadableProductsListState extends State<_DownloadableProductsList> {
 
   void _onScroll() {
     // Update scroll arrow visibility
-    final hasScrollableContent =
-        _scrollController.position.maxScrollExtent > 0;
+    final hasScrollableContent = _scrollController.position.maxScrollExtent > 0;
     final atTop = _scrollController.position.pixels <= 0;
     final atBottom =
         _scrollController.position.pixels >=
@@ -241,9 +240,9 @@ class _DownloadableProductsListState extends State<_DownloadableProductsList> {
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
     if (currentScroll >= maxScroll - 200) {
-      context
-          .read<DownloadableProductsBloc>()
-          .add(const LoadMoreDownloadableProducts());
+      context.read<DownloadableProductsBloc>().add(
+        const LoadMoreDownloadableProducts(),
+      );
     }
   }
 
@@ -317,7 +316,10 @@ class _DownloadableProductsListState extends State<_DownloadableProductsList> {
               const SizedBox(width: 8),
               // Count text
               Text(
-                l10n.accountProductsProgress(widget.products.length, widget.totalCount),
+                l10n.accountProductsProgress(
+                  widget.products.length,
+                  widget.totalCount,
+                ),
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.w500,
@@ -380,17 +382,16 @@ class _DownloadableProductsListState extends State<_DownloadableProductsList> {
           child: ListView.builder(
             controller: _scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            itemCount: widget.products.length +
-                (widget.isLoadingMore ? 1 : 0),
+            itemCount: widget.products.length + (widget.isLoadingMore ? 1 : 0),
             itemBuilder: (context, index) {
               if (index >= widget.products.length) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
                   child: SizedBox(
                     height: 40,
                     child: Center(
                       child: CircularProgressIndicator(
-                        valueColor: const AlwaysStoppedAnimation<Color>(
+                        valueColor: AlwaysStoppedAnimation<Color>(
                           AppColors.primary500,
                         ),
                       ),
@@ -480,10 +481,15 @@ class _DownloadableProductCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 // Status badge
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(product.status, isDark).withOpacity(0.15),
+                    color: _getStatusColor(
+                      product.status,
+                      isDark,
+                    ).withOpacity(0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -568,7 +574,9 @@ class _DownloadableProductCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      l10n.accountRemainingDownloadsLeft(product.remainingDownloadsLabel),
+                      l10n.accountRemainingDownloadsLeft(
+                        product.remainingDownloadsLabel,
+                      ),
                       style: TextStyle(
                         fontFamily: 'Roboto',
                         fontWeight: FontWeight.w500,
@@ -590,13 +598,10 @@ class _DownloadableProductCard extends StatelessWidget {
                 onPressed: product.canDownload
                     ? () => _handleDownload(context, product)
                     : null,
-                icon: Icon(
-                  Icons.download_rounded,
-                  size: 18,
-                ),
+                icon: const Icon(Icons.download_rounded, size: 18),
                 label: Text(
                   l10n.accountDownload,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Roboto',
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -636,7 +641,9 @@ class _DownloadableProductCard extends StatelessWidget {
   }
 
   Future<void> _handleDownload(
-      BuildContext context, DownloadableProduct product) async {
+    BuildContext context,
+    DownloadableProduct product,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final resolvedDownloadUrl = _resolveDownloadUrl(
@@ -672,9 +679,7 @@ class _DownloadableProductCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: Text(l10n.accountDownloadWillStartShortly),
-              ),
+              Expanded(child: Text(l10n.accountDownloadWillStartShortly)),
             ],
           ),
           duration: const Duration(seconds: 30),
@@ -749,9 +754,7 @@ class _DownloadableProductCard extends StatelessWidget {
           ),
         );
     } catch (e) {
-      final message = e is DioException
-          ? _dioErrorMessage(e)
-          : e.toString();
+      final message = e is DioException ? _dioErrorMessage(e) : e.toString();
       scaffoldMessenger
         ..hideCurrentSnackBar()
         ..showSnackBar(
@@ -796,7 +799,9 @@ class _DownloadableProductCard extends StatelessWidget {
       if (urlFileName.isNotEmpty) {
         return urlFileName;
       }
-      return urlExtension.isNotEmpty ? 'download$urlExtension' : 'download_file';
+      return urlExtension.isNotEmpty
+          ? 'download$urlExtension'
+          : 'download_file';
     }
 
     final hasExtension = trimmedName.contains('.');

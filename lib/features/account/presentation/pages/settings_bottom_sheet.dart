@@ -243,9 +243,10 @@ class SettingsBottomSheet extends StatelessWidget {
                 BlocBuilder<LocaleCubit, Locale?>(
                   builder: (context, locale) {
                     final selectedCode = locale?.languageCode;
-                    final dropdownValue = availableLocales.any(
-                      (item) => item.code == selectedCode,
-                    )
+                    final dropdownValue =
+                        availableLocales.any(
+                          (item) => item.code == selectedCode,
+                        )
                         ? selectedCode
                         : availableLocales.first.code;
 
@@ -297,7 +298,7 @@ class SettingsBottomSheet extends StatelessWidget {
                     fontSize: 12,
                     color: isDark ? AppColors.neutral400 : AppColors.neutral600,
                   ),
-                )
+                ),
             ],
           ),
         );
@@ -335,9 +336,10 @@ class SettingsBottomSheet extends StatelessWidget {
               if (preferencesState.currencies.isNotEmpty)
                 BlocBuilder<CurrencyCubit, String?>(
                   builder: (context, selectedCurrency) {
-                    final dropdownValue = preferencesState.currencies.any(
-                      (item) => item.code == selectedCurrency,
-                    )
+                    final dropdownValue =
+                        preferencesState.currencies.any(
+                          (item) => item.code == selectedCurrency,
+                        )
                         ? selectedCurrency
                         : preferencesState.currencies.first.code;
 
@@ -364,11 +366,13 @@ class SettingsBottomSheet extends StatelessWidget {
                         }).toList(),
                         onChanged: (value) {
                           if (value == null) return;
-                          context.read<PreferencesCubit>().updateSelectedCurrency(
+                          context
+                              .read<PreferencesCubit>()
+                              .updateSelectedCurrency(value);
+                          Navigator.of(context).pop();
+                          parentContext.read<CurrencyCubit>().setCurrency(
                             value,
                           );
-                          Navigator.of(context).pop();
-                          parentContext.read<CurrencyCubit>().setCurrency(value);
                         },
                       ),
                     );
@@ -576,11 +580,11 @@ class SettingsBottomSheet extends StatelessWidget {
     required ValueChanged<bool> onChanged,
     required bool isDark,
   }) {
-    final activeTrackColor = AppColors.primary500;
+    const activeTrackColor = AppColors.primary500;
     final inactiveTrackColor = isDark
         ? AppColors.neutral700
         : AppColors.neutral300;
-    final thumbColor = AppColors.white;
+    const thumbColor = AppColors.white;
 
     return GestureDetector(
       onTap: () => onChanged(!value),

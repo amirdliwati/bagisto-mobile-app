@@ -532,7 +532,7 @@ class _AccountMenuBody extends StatelessWidget {
               },
               child: Text(
                 l10n.accountLogout,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.w600,
                   fontSize: 14,

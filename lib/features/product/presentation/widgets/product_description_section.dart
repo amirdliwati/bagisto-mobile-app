@@ -24,7 +24,7 @@ class ProductDescriptionSection extends StatelessWidget {
     return BlocBuilder<ProductDetailBloc, ProductDetailState>(
       builder: (context, state) {
         final isExpanded = state.isDescriptionExpanded;
-        final maxChars = 200;
+        const maxChars = 200;
         final needsTruncation = cleanText.length > maxChars;
         final displayText = (!isExpanded && needsTruncation)
             ? '${cleanText.substring(0, maxChars)}...'
@@ -35,26 +35,20 @@ class ProductDescriptionSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.productDetails,
-                style: AppTextStyles.text4(context),
-              ),
+              Text(l10n.productDetails, style: AppTextStyles.text4(context)),
               const SizedBox(height: 16),
-              Text(
-                displayText,
-                style: AppTextStyles.bodyText(context),
-              ),
+              Text(displayText, style: AppTextStyles.bodyText(context)),
               if (needsTruncation) ...[
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () {
-                    context
-                        .read<ProductDetailBloc>()
-                        .add(ToggleDescriptionExpanded());
+                    context.read<ProductDetailBloc>().add(
+                      ToggleDescriptionExpanded(),
+                    );
                   },
                   child: Text(
                     isExpanded ? l10n.productShowLess : l10n.productLoadMore,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Roboto',
                       fontSize: 14,
                       fontWeight: FontWeight.w400,

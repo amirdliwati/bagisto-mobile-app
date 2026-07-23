@@ -69,7 +69,7 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         elevation: 0,
-        leading: AppBackButton(size: 24),
+        leading: const AppBackButton(size: 24),
         leadingWidth: 60,
       ),
       body: BlocListener<AuthBloc, AuthState>(
@@ -78,7 +78,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(l10n.authAccountCreatedSuccess),
-                backgroundColor: Color(0xFF00A63E),
+                backgroundColor: const Color(0xFF00A63E),
               ),
             );
             Navigator.of(context).popUntil((route) => route.isFirst);
@@ -382,7 +382,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                         child: Text(
                           l10n.authLogin,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Roboto',
                             fontWeight: FontWeight.w700,
                             fontSize: 14,

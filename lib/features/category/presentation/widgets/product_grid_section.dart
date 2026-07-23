@@ -124,7 +124,7 @@ class ProductGridSection extends StatelessWidget {
         padding: const EdgeInsets.all(32),
         child: Column(
           children: [
-            Icon(
+            const Icon(
               Icons.shopping_bag_outlined,
               size: 48,
               color: AppColors.neutral400,
@@ -193,13 +193,13 @@ class _ProductCard extends StatelessWidget {
                                 ? AppColors.neutral700
                                 : AppColors.neutral200,
                           ),
-                          errorWidget: (ctx, url, err) => Icon(
+                          errorWidget: (ctx, url, err) => const Icon(
                             Icons.image_outlined,
                             size: 32,
                             color: AppColors.neutral400,
                           ),
                         )
-                      : Icon(
+                      : const Icon(
                           Icons.image_outlined,
                           size: 32,
                           color: AppColors.neutral400,

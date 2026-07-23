@@ -77,7 +77,7 @@ void _logCheckoutApiDetails(
 }) {
   if (!kDebugMode || !shouldLogCheckoutOperation(operation)) return;
 
-  final encoder = const JsonEncoder.withIndent('  ');
+  const encoder = JsonEncoder.withIndent('  ');
   debugPrint('━━━━━━━━━━━━━━━━ Checkout API ━━━━━━━━━━━━━━━━');
   debugPrint('[CheckoutRepo][$operation]');
   if (variables != null) {
@@ -391,7 +391,7 @@ class CheckoutRepository {
     final result = await _authedClient.query(
       QueryOptions(
         document: gql(AccountQueries.getCustomerAddresses),
-        variables: {'first': 100},
+        variables: const {'first': 100},
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
@@ -746,7 +746,7 @@ class CheckoutRepository {
     final result = await _authedClient.mutate(
       MutationOptions(
         document: gql(CheckoutMutations.createRemoveCoupon),
-        variables: {'input': {}},
+        variables: const {'input': const {}},
       ),
     );
 

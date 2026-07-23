@@ -64,7 +64,7 @@ class OrderDetailPage extends StatelessWidget {
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: AppBackButton(),
+        leading: const AppBackButton(),
         leadingWidth: 60,
         titleSpacing: 0,
         title: BlocBuilder<OrderDetailBloc, OrderDetailState>(
@@ -712,7 +712,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
                   )
                 : Text(
                     AppLocalizations.of(context)!.accountReorder,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Roboto',
                       fontWeight: FontWeight.w700,
                       fontSize: 16,

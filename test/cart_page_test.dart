@@ -47,10 +47,10 @@ void main() {
             BlocProvider<CartBloc>.value(value: cartBloc),
             BlocProvider<WishlistCubit>.value(value: wishlistCubit),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CartPage(),
+            home: CartPage(),
           ),
         ),
       );

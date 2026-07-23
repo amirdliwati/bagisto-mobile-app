@@ -135,7 +135,8 @@ class _ProductDetailView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return BlocListener<ProductDetailBloc, ProductDetailState>(
-      listenWhen: (previous, current) => previous.product?.id != current.product?.id,
+      listenWhen: (previous, current) =>
+          previous.product?.id != current.product?.id,
       listener: (context, state) {
         final product = state.product;
         if (product != null) {
@@ -146,53 +147,53 @@ class _ProductDetailView extends StatelessWidget {
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         body: Column(
           children: [
-          // ── AppBar ──
-          _buildAppBar(context, isDark, l10n),
+            // ── AppBar ──
+            _buildAppBar(context, isDark, l10n),
 
-          // ── Scrollable Content ──
-          Expanded(
-            child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
-              builder: (context, state) {
-                if (state.status == ProductDetailStatus.loading ||
-                    state.status == ProductDetailStatus.initial) {
-                  return const ProductDetailShimmer();
-                }
+            // ── Scrollable Content ──
+            Expanded(
+              child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
+                builder: (context, state) {
+                  if (state.status == ProductDetailStatus.loading ||
+                      state.status == ProductDetailStatus.initial) {
+                    return const ProductDetailShimmer();
+                  }
 
-                if (state.status == ProductDetailStatus.error) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            size: 48,
-                            color: AppColors.neutral400,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            l10n.productFailedToLoad,
-                            style: AppTextStyles.text4(context),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            state.errorMessage ?? '',
-                            style: AppTextStyles.text6(context),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                  if (state.status == ProductDetailStatus.error) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              size: 48,
+                              color: AppColors.neutral400,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              l10n.productFailedToLoad,
+                              style: AppTextStyles.text4(context),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              state.errorMessage ?? '',
+                              style: AppTextStyles.text6(context),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }
+                    );
+                  }
 
-                final product = state.product;
-                if (product == null) {
-                  return Center(child: Text(l10n.productNotFound));
-                }
+                  final product = state.product;
+                  if (product == null) {
+                    return Center(child: Text(l10n.productNotFound));
+                  }
 
-                return RefreshIndicator(
+                  return RefreshIndicator(
                     onRefresh: () async {
                       context.read<ProductDetailBloc>().add(
                         RefreshProductDetail(
@@ -276,19 +277,19 @@ class _ProductDetailView extends StatelessWidget {
                       ),
                     ),
                   );
+                },
+              ),
+            ),
+
+            // ── Sticky Bottom Action Bar ──
+            BlocBuilder<ProductDetailBloc, ProductDetailState>(
+              builder: (context, state) {
+                if (state.status != ProductDetailStatus.loaded) {
+                  return const SizedBox.shrink();
+                }
+                return const ProductActionBar();
               },
             ),
-          ),
-
-          // ── Sticky Bottom Action Bar ──
-          BlocBuilder<ProductDetailBloc, ProductDetailState>(
-            builder: (context, state) {
-              if (state.status != ProductDetailStatus.loaded) {
-                return const SizedBox.shrink();
-              }
-              return const ProductActionBar();
-            },
-          ),
           ],
         ),
       ),

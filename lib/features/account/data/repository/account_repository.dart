@@ -158,7 +158,7 @@ class AccountRepository {
 
     final data = result.data?['readCustomerProfile'];
     if (data == null) {
-      throw AccountException('No profile data returned');
+      throw const AccountException('No profile data returned');
     }
 
     debugPrint('👤 AccountRepo.getCustomerProfile — success');
@@ -172,10 +172,7 @@ class AccountRepository {
     final result = await client.query(
       QueryOptions(
         document: gql(AccountQueries.getCustomerAddresses),
-        variables: {
-          'first': first,
-          'page': 1,
-        },
+        variables: {'first': first, 'page': 1},
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
@@ -203,10 +200,7 @@ class AccountRepository {
     final result = await client.query(
       QueryOptions(
         document: gql(AccountQueries.getCustomerOrders),
-        variables: {
-          'first': first,
-          'page': 1,
-        },
+        variables: {'first': first, 'page': 1},
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
@@ -240,10 +234,7 @@ class AccountRepository {
     debugPrint('❤️ AccountRepo.getWishlist (first=$first, after=$after)');
 
     final page = after != null ? (int.tryParse(after) ?? 1) + 1 : 1;
-    final variables = <String, dynamic>{
-      'first': first,
-      'page': page,
-    };
+    final variables = <String, dynamic>{'first': first, 'page': page};
 
     final result = await client.query(
       QueryOptions(
@@ -273,7 +264,7 @@ class AccountRepository {
     final items = dataList
         .map((e) => WishlistItem.fromJson(e as Map<String, dynamic>))
         .toList();
-    
+
     final paginatorInfo = data['paginatorInfo'] as Map<String, dynamic>?;
     final totalCount = paginatorInfo?['total'] as int? ?? items.length;
     final hasNextPage = paginatorInfo?['hasMorePages'] as bool? ?? false;
@@ -292,12 +283,12 @@ class AccountRepository {
 
   /// Delete a wishlist item by IRI id or product ID.
   Future<void> deleteWishlistItem({required String id, int? productId}) async {
-    debugPrint('🗑️ AccountRepo.deleteWishlistItem (id=$id, productId=$productId)');
+    debugPrint(
+      '🗑️ AccountRepo.deleteWishlistItem (id=$id, productId=$productId)',
+    );
 
     int? resolvedProductId = productId;
-    if (resolvedProductId == null) {
-      resolvedProductId = int.tryParse(id);
-    }
+    resolvedProductId ??= int.tryParse(id);
     if (resolvedProductId == null) {
       final match = RegExp(r'/(\d+)$').firstMatch(id);
       if (match != null) {
@@ -306,15 +297,15 @@ class AccountRepository {
     }
 
     if (resolvedProductId == null) {
-      throw AccountException('Product ID is required to remove from wishlist');
+      throw const AccountException(
+        'Product ID is required to remove from wishlist',
+      );
     }
 
     final result = await client.mutate(
       MutationOptions(
         document: gql(AccountQueries.deleteWishlist),
-        variables: {
-          'productId': resolvedProductId,
-        },
+        variables: {'productId': resolvedProductId},
       ),
     );
 
@@ -420,10 +411,7 @@ class AccountRepository {
     debugPrint('⭐ AccountRepo.getCustomerReviews (first=$first, after=$after)');
 
     final page = after != null ? (int.tryParse(after) ?? 1) + 1 : 1;
-    final variables = <String, dynamic>{
-      'first': first,
-      'page': page,
-    };
+    final variables = <String, dynamic>{'first': first, 'page': page};
 
     final result = await client.query(
       QueryOptions(
@@ -453,7 +441,7 @@ class AccountRepository {
     final reviews = dataList
         .map((e) => ProductReview.fromJson(e as Map<String, dynamic>))
         .toList();
-    
+
     final paginatorInfo = data['paginatorInfo'] as Map<String, dynamic>?;
     final totalCount = paginatorInfo?['total'] as int? ?? reviews.length;
     final hasNextPage = paginatorInfo?['hasMorePages'] as bool? ?? false;
@@ -517,7 +505,7 @@ class AccountRepository {
     final data = result
         .data?['createAddUpdateCustomerAddress']?['addUpdateCustomerAddress'];
     if (data == null) {
-      throw AccountException('Failed to set default address');
+      throw const AccountException('Failed to set default address');
     }
 
     debugPrint('📍 AccountRepo.setDefaultAddress — success');
@@ -598,7 +586,7 @@ class AccountRepository {
     final data = result
         .data?['createAddUpdateCustomerAddress']?['addUpdateCustomerAddress'];
     if (data == null) {
-      throw AccountException('Failed to create address');
+      throw const AccountException('Failed to create address');
     }
 
     debugPrint('📍 AccountRepo.createAddress — success');
@@ -655,7 +643,7 @@ class AccountRepository {
     final data = result
         .data?['createAddUpdateCustomerAddress']?['addUpdateCustomerAddress'];
     if (data == null) {
-      throw AccountException('Failed to update address');
+      throw const AccountException('Failed to update address');
     }
 
     debugPrint('📍 AccountRepo.updateAddress — success');
@@ -701,7 +689,7 @@ class AccountRepository {
     final payload =
         result.data?['createCustomerProfileUpdate']?['customerProfileUpdate'];
     if (payload == null) {
-      throw AccountException('Failed to update profile');
+      throw const AccountException('Failed to update profile');
     }
 
     // Re-fetch the full profile since the mutation only returns id
@@ -736,7 +724,7 @@ class AccountRepository {
     final payload =
         result.data?['createCustomerProfileUpdate']?['customerProfileUpdate'];
     if (payload == null) {
-      throw AccountException('Failed to change email');
+      throw const AccountException('Failed to change email');
     }
 
     // Re-fetch the full profile since the mutation only returns id
@@ -873,10 +861,7 @@ class AccountRepository {
     debugPrint('🔀 AccountRepo.getCompareItems (first=$first, after=$after)');
 
     final page = after != null ? (int.tryParse(after) ?? 1) + 1 : 1;
-    final variables = <String, dynamic>{
-      'first': first,
-      'page': page,
-    };
+    final variables = <String, dynamic>{'first': first, 'page': page};
 
     final result = await client.query(
       QueryOptions(
@@ -913,12 +898,12 @@ class AccountRepository {
 
   /// Delete a single compare item by IRI id or product ID.
   Future<void> deleteCompareItem(String id, {int? productId}) async {
-    debugPrint('🔀 AccountRepo.deleteCompareItem(id=$id, productId=$productId)');
+    debugPrint(
+      '🔀 AccountRepo.deleteCompareItem(id=$id, productId=$productId)',
+    );
 
     int? resolvedProductId = productId;
-    if (resolvedProductId == null) {
-      resolvedProductId = int.tryParse(id);
-    }
+    resolvedProductId ??= int.tryParse(id);
     if (resolvedProductId == null) {
       final match = RegExp(r'/(\d+)$').firstMatch(id);
       if (match != null) {
@@ -927,7 +912,9 @@ class AccountRepository {
     }
 
     if (resolvedProductId == null) {
-      throw AccountException('Product ID is required to remove from compare');
+      throw const AccountException(
+        'Product ID is required to remove from compare',
+      );
     }
 
     final result = await client.mutate(
@@ -972,9 +959,7 @@ class AccountRepository {
     final result = await client.mutate(
       MutationOptions(
         document: gql(AccountQueries.createWishlist),
-        variables: {
-          'productId': productId,
-        },
+        variables: {'productId': productId},
       ),
     );
 
@@ -998,9 +983,7 @@ class AccountRepository {
     final result = await client.mutate(
       MutationOptions(
         document: gql(AccountQueries.createCompareItem),
-        variables: {
-          'productId': productId,
-        },
+        variables: {'productId': productId},
       ),
     );
 
@@ -1052,7 +1035,7 @@ class AccountRepository {
 
     final data = result.data?['createProductReview']?['productReview'];
     if (data == null) {
-      throw AccountException('Failed to create review');
+      throw const AccountException('Failed to create review');
     }
 
     debugPrint('📝 AccountRepo.createProductReview — success');
@@ -1075,10 +1058,7 @@ class AccountRepository {
     );
 
     final page = after != null ? (int.tryParse(after) ?? 1) + 1 : 1;
-    final variables = <String, dynamic>{
-      'first': first,
-      'page': page,
-    };
+    final variables = <String, dynamic>{'first': first, 'page': page};
     if (status != null) {
       variables['input'] = {'status': status};
     }
@@ -1351,7 +1331,7 @@ class AccountRepository {
 
     final data = result.data?['createReorderOrder']?['reorderOrder'];
     if (data == null) {
-      throw AccountException('Failed to reorder');
+      throw const AccountException('Failed to reorder');
     }
 
     final success = data['success'] as bool? ?? false;

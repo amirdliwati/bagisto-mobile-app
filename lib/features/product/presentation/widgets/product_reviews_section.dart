@@ -132,7 +132,7 @@ class ProductReviewsSection extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         avgRating.toStringAsFixed(1),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Roboto',
                           fontWeight: FontWeight.w700,
                           fontSize: 24,
@@ -399,7 +399,7 @@ class ProductReviewsSection extends StatelessWidget {
                 Flexible(
                   child: Text(
                     dateStr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Roboto',
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -507,7 +507,7 @@ class ProductReviewsSection extends StatelessWidget {
             ),
             child: Text(
               AppLocalizations.of(context)!.productWriteReview,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Roboto',
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -575,7 +575,7 @@ class ProductReviewsSection extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           AppLocalizations.of(context)!.productLoadMoreReviews,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
             fontWeight: FontWeight.w400,

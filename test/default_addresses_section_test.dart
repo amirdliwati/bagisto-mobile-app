@@ -31,12 +31,10 @@ void main() {
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(
-            body: DefaultAddressesSection(addresses: addresses),
-          ),
+          home: Scaffold(body: DefaultAddressesSection(addresses: addresses)),
         ),
       );
 

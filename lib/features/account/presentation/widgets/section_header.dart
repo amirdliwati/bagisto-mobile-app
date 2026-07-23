@@ -7,11 +7,7 @@ class SectionHeader extends StatelessWidget {
   final String title;
   final VoidCallback? onViewAll;
 
-  const SectionHeader({
-    super.key,
-    required this.title,
-    this.onViewAll,
-  });
+  const SectionHeader({super.key, required this.title, this.onViewAll});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +41,7 @@ class SectionHeader extends StatelessWidget {
                   highlightShape: BoxShape.circle,
                   splashColor: AppColors.primary500.withValues(alpha: 0.16),
                   highlightColor: AppColors.primary500.withValues(alpha: 0.08),
-                  child: SizedBox(
+                  child: const SizedBox(
                     width: tapTargetSize,
                     height: tapTargetSize,
                     child: Center(

@@ -86,7 +86,7 @@ class _BundleOptionCard extends StatelessWidget {
                 ),
               ),
               if (option.isRequired)
-                Text(
+                const Text(
                   'Required',
                   style: TextStyle(
                     fontFamily: 'Roboto',
@@ -196,7 +196,7 @@ class _BundleDropdown extends StatelessWidget {
                 .map(
                   (item) => Align(
                     alignment: Alignment.centerLeft,
-                  child: Text(
+                    child: Text(
                       '${item.product?.name ?? ''} - ${item.product?.formattedDisplayPrice ?? ''}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -386,7 +386,7 @@ class _BundleOptionProductTile extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         priceLabel,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Roboto',
                           fontSize: 13,
                           fontWeight: FontWeight.w600,

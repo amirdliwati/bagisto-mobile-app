@@ -23,8 +23,9 @@ class ReviewsPage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final mode = context.read<ReviewBloc>().state.mode;
-    final pageTitle =
-        mode == ReviewMode.product ? l10n.accountProductReviews : l10n.accountMyReviews;
+    final pageTitle = mode == ReviewMode.product
+        ? l10n.accountProductReviews
+        : l10n.accountMyReviews;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
@@ -32,7 +33,7 @@ class ReviewsPage extends StatelessWidget {
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: AppBackButton(),
+        leading: const AppBackButton(),
         leadingWidth: 60,
         titleSpacing: 0,
         title: Text(
@@ -63,13 +64,11 @@ class ReviewsPage extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          if (state.status == ReviewStatus.loading &&
-              state.reviews.isEmpty) {
+          if (state.status == ReviewStatus.loading && state.reviews.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state.status == ReviewStatus.error &&
-              state.reviews.isEmpty) {
+          if (state.status == ReviewStatus.error && state.reviews.isEmpty) {
             return _buildErrorState(context, state.errorMessage);
           }
 
@@ -97,7 +96,7 @@ class ReviewsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.rate_review_outlined,
               size: 64,
               color: AppColors.neutral400,
@@ -116,7 +115,7 @@ class ReviewsPage extends StatelessWidget {
             Text(
               l10n.accountReviewsEmptyDescription,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -138,7 +137,7 @@ class ReviewsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline_rounded,
               size: 64,
               color: AppColors.neutral400,
@@ -156,12 +155,11 @@ class ReviewsPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextButton(
-              onPressed: () => context
-                  .read<ReviewBloc>()
-                  .add(const LoadReviews()),
+              onPressed: () =>
+                  context.read<ReviewBloc>().add(const LoadReviews()),
               child: Text(
                 l10n.commonRetry,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -217,8 +215,7 @@ class _ReviewListState extends State<_ReviewList> {
 
   void _onScroll() {
     // Update scroll arrow visibility
-    final hasScrollableContent =
-        _scrollController.position.maxScrollExtent > 0;
+    final hasScrollableContent = _scrollController.position.maxScrollExtent > 0;
     final atTop = _scrollController.position.pixels <= 0;
     final atBottom =
         _scrollController.position.pixels >=
@@ -369,7 +366,8 @@ class _ReviewListState extends State<_ReviewList> {
                 return const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Center(
-                      child: CircularProgressIndicator(strokeWidth: 2)),
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 );
               }
 
@@ -511,12 +509,13 @@ class _ReviewCard extends StatelessWidget {
             color: isDark ? AppColors.neutral700 : const Color(0x1A0E1019),
           ),
           clipBehavior: Clip.antiAlias,
-          child: review.productImageUrl != null &&
+          child:
+              review.productImageUrl != null &&
                   review.productImageUrl!.isNotEmpty
               ? Image.network(
                   review.productImageUrl!,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Center(
+                  errorBuilder: (_, _, _) => const Center(
                     child: Icon(
                       Icons.image_not_supported_outlined,
                       size: 28,
@@ -524,7 +523,7 @@ class _ReviewCard extends StatelessWidget {
                     ),
                   ),
                 )
-              : Center(
+              : const Center(
                   child: Icon(
                     Icons.image_outlined,
                     size: 28,

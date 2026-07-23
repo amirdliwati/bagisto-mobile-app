@@ -91,7 +91,7 @@ class ProductActionBar extends StatelessWidget {
                               )
                             : Text(
                                 l10n.productAddToCart,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Roboto',
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -117,7 +117,7 @@ class ProductActionBar extends StatelessWidget {
                         alignment: Alignment.center,
                         child: Text(
                           l10n.productBuyNow,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Roboto',
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

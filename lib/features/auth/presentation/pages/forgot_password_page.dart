@@ -43,7 +43,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       appBar: AppBar(
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         elevation: 0,
-        leading: AppBackButton(size: 24),
+        leading: const AppBackButton(size: 24),
         leadingWidth: 60,
       ),
       body: BlocListener<AuthBloc, AuthState>(
@@ -242,7 +242,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       onTap: () => Navigator.of(context).pop(),
                       child: Text(
                         l10n.authBackToLogin,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Roboto',
                           fontWeight: FontWeight.w600,
                           fontSize: 14,

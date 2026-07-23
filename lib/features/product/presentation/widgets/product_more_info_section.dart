@@ -21,8 +21,9 @@ class ProductMoreInfoSection extends StatelessWidget {
     return BlocBuilder<ProductDetailBloc, ProductDetailState>(
       builder: (context, state) {
         final isExpanded = state.isMoreInfoExpanded;
-        final displayItems =
-            isExpanded ? infoItems : infoItems.take(4).toList();
+        final displayItems = isExpanded
+            ? infoItems
+            : infoItems.take(4).toList();
         final needsExpand = infoItems.length > 4;
 
         return Padding(
@@ -113,8 +114,11 @@ class ProductMoreInfoSection extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadMoreButton(BuildContext context, AppLocalizations l10n,
-      {bool isCollapse = false}) {
+  Widget _buildLoadMoreButton(
+    BuildContext context,
+    AppLocalizations l10n, {
+    bool isCollapse = false,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
@@ -133,7 +137,7 @@ class ProductMoreInfoSection extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           isCollapse ? l10n.productShowLess : l10n.productLoadMore,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
             fontWeight: FontWeight.w400,

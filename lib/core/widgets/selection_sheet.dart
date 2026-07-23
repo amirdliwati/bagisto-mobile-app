@@ -94,170 +94,170 @@ class _SelectionSheetState<T> extends State<SelectionSheet<T>> {
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: maxHeight),
         child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // ── Header ──
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.title,
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                      color: widget.isDark
-                          ? AppColors.neutral200
-                          : AppColors.neutral900,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: widget.isDark
-                        ? AppColors.neutral400
-                        : AppColors.neutral600,
-                  ),
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // ── Search bar ──
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: TextField(
-              controller: _searchCtrl,
-              onChanged: _onSearch,
-              style: TextStyle(
-                fontFamily: 'Roboto',
-                fontSize: 14,
-                color: widget.isDark
-                    ? AppColors.neutral200
-                    : AppColors.neutral800,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Search...',
-                hintStyle: const TextStyle(
-                  color: AppColors.neutral500,
-                  fontFamily: 'Roboto',
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: AppColors.neutral500,
-                  size: 20,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: widget.isDark
-                        ? AppColors.neutral700
-                        : AppColors.neutral200,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: widget.isDark
-                        ? AppColors.neutral700
-                        : AppColors.neutral200,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.primary500),
-                ),
-                filled: false,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // ── List ──
-          Flexible(
-            child: _filteredItems.isEmpty
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        'No results found',
-                        style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontSize: 14,
-                          color: AppColors.neutral500,
-                        ),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ── Header ──
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: TextStyle(
+                        fontFamily: 'Roboto',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        color: widget.isDark
+                            ? AppColors.neutral200
+                            : AppColors.neutral900,
                       ),
                     ),
-                  )
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: _filteredItems.length,
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).padding.bottom + 8,
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: widget.isDark
+                          ? AppColors.neutral400
+                          : AppColors.neutral600,
                     ),
-                    itemBuilder: (ctx, index) {
-                      final item = _filteredItems[index];
-                      final label = widget.itemLabel(item);
-                      final isSelected = item == widget.selectedItem;
-
-                      return Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            FocusScope.of(context).unfocus();
-                            Navigator.pop(context, item);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    label,
-                                    style: TextStyle(
-                                      fontFamily: 'Roboto',
-                                      fontWeight: isSelected
-                                          ? FontWeight.w600
-                                          : FontWeight.w400,
-                                      fontSize: 14,
-                                      color: isSelected
-                                          ? AppColors.primary500
-                                          : (widget.isDark
-                                                ? AppColors.neutral200
-                                                : AppColors.neutral800),
-                                    ),
-                                  ),
-                                ),
-                                if (isSelected)
-                                  const Icon(
-                                    Icons.check,
-                                    size: 20,
-                                    color: AppColors.primary500,
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      Navigator.pop(context);
                     },
                   ),
-          ),
-        ],
+                ],
+              ),
+            ),
+
+            // ── Search bar ──
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                controller: _searchCtrl,
+                onChanged: _onSearch,
+                style: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 14,
+                  color: widget.isDark
+                      ? AppColors.neutral200
+                      : AppColors.neutral800,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  hintStyle: const TextStyle(
+                    color: AppColors.neutral500,
+                    fontFamily: 'Roboto',
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.neutral500,
+                    size: 20,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: widget.isDark
+                          ? AppColors.neutral700
+                          : AppColors.neutral200,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: widget.isDark
+                          ? AppColors.neutral700
+                          : AppColors.neutral200,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.primary500),
+                  ),
+                  filled: false,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // ── List ──
+            Flexible(
+              child: _filteredItems.isEmpty
+                  ? const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Text(
+                          'No results found',
+                          style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontSize: 14,
+                            color: AppColors.neutral500,
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _filteredItems.length,
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).padding.bottom + 8,
+                      ),
+                      itemBuilder: (ctx, index) {
+                        final item = _filteredItems[index];
+                        final label = widget.itemLabel(item);
+                        final isSelected = item == widget.selectedItem;
+
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              FocusScope.of(context).unfocus();
+                              Navigator.pop(context, item);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      label,
+                                      style: TextStyle(
+                                        fontFamily: 'Roboto',
+                                        fontWeight: isSelected
+                                            ? FontWeight.w600
+                                            : FontWeight.w400,
+                                        fontSize: 14,
+                                        color: isSelected
+                                            ? AppColors.primary500
+                                            : (widget.isDark
+                                                  ? AppColors.neutral200
+                                                  : AppColors.neutral800),
+                                      ),
+                                    ),
+                                  ),
+                                  if (isSelected)
+                                    const Icon(
+                                      Icons.check,
+                                      size: 20,
+                                      color: AppColors.primary500,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
         ),
       ),
     );

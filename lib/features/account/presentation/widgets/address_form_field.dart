@@ -52,7 +52,7 @@ class AddressFormField extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final borderColor = isDark ? AppColors.neutral700 : AppColors.neutral200;
-    final focusBorderColor = AppColors.primary500;
+    const focusBorderColor = AppColors.primary500;
     final errorBorderColor = Colors.red.shade400;
     final labelColor = isDark ? AppColors.neutral300 : AppColors.neutral800;
     final textColor = isDark ? AppColors.neutral200 : AppColors.neutral800;

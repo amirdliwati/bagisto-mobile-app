@@ -321,7 +321,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                 ? Image.network(
                     widget.productImageUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Center(
+                    errorBuilder: (context, error, stackTrace) => const Center(
                       child: Icon(
                         Icons.image_not_supported_outlined,
                         size: 28,
@@ -329,7 +329,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                       ),
                     ),
                   )
-                : Center(
+                : const Center(
                     child: Icon(
                       Icons.image_outlined,
                       size: 28,
@@ -443,7 +443,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
           ),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: TextStyle(
+            hintStyle: const TextStyle(
               fontFamily: 'Roboto',
               fontWeight: FontWeight.w400,
               fontSize: 14,
@@ -463,7 +463,10 @@ class _AddReviewPageState extends State<AddReviewPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: AppColors.primary500, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.primary500,
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -547,7 +550,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                 )
               : Text(
                   l10n.accountSubmitReview,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Roboto',
                     fontWeight: FontWeight.w700,
                     fontSize: 16,

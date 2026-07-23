@@ -89,7 +89,9 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
     final bgColor = isDark ? AppColors.neutral800 : AppColors.white;
     final listItemBg = isDark ? AppColors.neutral700 : AppColors.neutral100;
     final textColor = isDark ? AppColors.neutral200 : AppColors.neutral900;
-    final secondaryTextColor = isDark ? AppColors.neutral400 : AppColors.neutral500;
+    final secondaryTextColor = isDark
+        ? AppColors.neutral400
+        : AppColors.neutral500;
 
     return Container(
       decoration: BoxDecoration(
@@ -109,7 +111,7 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 8),
-                
+
                 // ── Header: "Preferences" + Close icon ──
                 // Figma node: 215:5075
                 _buildHeader(context, textColor),
@@ -118,7 +120,6 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
 
                 // ── Menu Items ──
                 // Figma node: 215:5399
-                
                 if (widget.showSettingsSection) ...[
                   _buildNavigationMenuItem(
                     label: l10n.accountSettings,
@@ -202,11 +203,7 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
                     color: textColor,
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: textColor,
-                  size: 20,
-                ),
+                Icon(Icons.chevron_right, color: textColor, size: 20),
               ],
             ),
           ),
@@ -238,11 +235,7 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
             color: Colors.transparent,
             child: InkWell(
               onTap: () => Navigator.of(context).pop(),
-              child: Icon(
-                Icons.close,
-                size: 20,
-                color: textColor,
-              ),
+              child: Icon(Icons.close, size: 20, color: textColor),
             ),
           ),
         ],
@@ -279,7 +272,10 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
               },
               borderRadius: BorderRadius.circular(10),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 16,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -375,9 +371,8 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
               BlocBuilder<LocaleCubit, Locale?>(
                 builder: (context, locale) {
                   final selectedCode = locale?.languageCode;
-                  final dropdownValue = availableLocales.any(
-                    (item) => item.code == selectedCode,
-                  )
+                  final dropdownValue =
+                      availableLocales.any((item) => item.code == selectedCode)
                       ? selectedCode
                       : availableLocales.first.code;
 
@@ -403,14 +398,16 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
                     }).toList(),
                     onChanged: (value) {
                       if (value == null) return;
-                      context.read<PreferencesCubit>().updateSelectedLocale(value);
+                      context.read<PreferencesCubit>().updateSelectedLocale(
+                        value,
+                      );
                       context.read<LocaleCubit>().setLocale(value);
                     },
                   );
                 },
               )
             else if (state.isLoadingLocales)
-              SizedBox(
+              const SizedBox(
                 height: 40,
                 child: Center(
                   child: SizedBox(
@@ -437,7 +434,7 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
                     color: secondaryTextColor,
                   ),
                 ),
-              )
+              ),
           ],
         ),
       ),
@@ -477,9 +474,10 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
                 if (state.currencies.isNotEmpty) {
                   return BlocBuilder<CurrencyCubit, String?>(
                     builder: (context, selectedCurrency) {
-                      final dropdownValue = state.currencies.any(
-                        (item) => item.code == selectedCurrency,
-                      )
+                      final dropdownValue =
+                          state.currencies.any(
+                            (item) => item.code == selectedCurrency,
+                          )
                           ? selectedCurrency
                           : state.currencies.first.code;
 
@@ -505,9 +503,9 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
                         }).toList(),
                         onChanged: (value) {
                           if (value == null) return;
-                          context.read<PreferencesCubit>().updateSelectedCurrency(
-                            value,
-                          );
+                          context
+                              .read<PreferencesCubit>()
+                              .updateSelectedCurrency(value);
                           context.read<CurrencyCubit>().setCurrency(value);
                         },
                       );
@@ -516,7 +514,7 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
                 }
 
                 if (state.isLoadingCurrencies) {
-                  return SizedBox(
+                  return const SizedBox(
                     height: 40,
                     child: Center(
                       child: SizedBox(
@@ -581,7 +579,10 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
               },
               borderRadius: BorderRadius.circular(10),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 16,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -612,8 +613,8 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
               child: BlocBuilder<PreferencesCubit, PreferencesState>(
                 builder: (context, state) {
                   if (state.isLoadingCmsPages) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
                       child: Center(
                         child: SizedBox(
                           width: 20,
@@ -646,18 +647,15 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
 
                   return Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: List.generate(
-                      state.cmsPages.length,
-                      (index) {
-                        final page = state.cmsPages[index];
-                        return _buildCmsPageItem(
-                          context: context,
-                          page: page,
-                          isDark: isDark,
-                          secondaryTextColor: secondaryTextColor,
-                        );
-                      },
-                    ),
+                    children: List.generate(state.cmsPages.length, (index) {
+                      final page = state.cmsPages[index];
+                      return _buildCmsPageItem(
+                        context: context,
+                        page: page,
+                        isDark: isDark,
+                        secondaryTextColor: secondaryTextColor,
+                      );
+                    }),
                   );
                 },
               ),
@@ -705,11 +703,7 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(
-                Icons.chevron_right,
-                color: secondaryTextColor,
-                size: 18,
-              ),
+              Icon(Icons.chevron_right, color: secondaryTextColor, size: 18),
             ],
           ),
         ),
@@ -752,11 +746,7 @@ class _PreferencesBottomSheetState extends State<PreferencesBottomSheet> {
                     color: textColor,
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: textColor,
-                  size: 20,
-                ),
+                Icon(Icons.chevron_right, color: textColor, size: 20),
               ],
             ),
           ),

@@ -804,7 +804,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
-    final activeTrackColor = AppColors.primary500;
+    const activeTrackColor = AppColors.primary500;
     final inactiveTrackColor = isDark
         ? AppColors.neutral700
         : AppColors.neutral400;

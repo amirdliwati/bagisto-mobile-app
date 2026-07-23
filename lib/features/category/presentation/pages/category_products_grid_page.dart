@@ -325,20 +325,17 @@ class _CategoryProductsGridViewState extends State<_CategoryProductsGridView>
     const horizontalPadding = 20.0 * 2;
     const crossAxisSpacing = 12.0;
     final cardWidth =
-        (screenWidth - horizontalPadding - crossAxisSpacing * (crossAxisCount - 1)) /
-            crossAxisCount;
+        (screenWidth -
+            horizontalPadding -
+            crossAxisSpacing * (crossAxisCount - 1)) /
+        crossAxisCount;
     const textSectionHeight = 88.0;
     final mainAxisExtent = cardWidth + textSectionHeight;
 
     return SliverMainAxisGroup(
       slivers: [
         SliverPadding(
-          padding: EdgeInsets.fromLTRB(
-            20,
-            8,
-            20,
-            state.isLoadingMore ? 8 : 24,
-          ),
+          padding: EdgeInsets.fromLTRB(20, 8, 20, state.isLoadingMore ? 8 : 24),
           sliver: SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
@@ -604,7 +601,7 @@ class _CategoryProductsGridViewState extends State<_CategoryProductsGridView>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.shopping_bag_outlined,
               size: 48,
               color: AppColors.neutral400,
@@ -622,7 +619,7 @@ class _CategoryProductsGridViewState extends State<_CategoryProductsGridView>
             const SizedBox(height: 8),
             Text(
               l10n.categoryTryAdjustingFilters,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Roboto',
                 fontSize: 14,
                 color: AppColors.neutral500,
@@ -643,7 +640,7 @@ class _CategoryProductsGridViewState extends State<_CategoryProductsGridView>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 12),
             Text(
               l10n.categorySomethingWentWrong,
@@ -658,7 +655,7 @@ class _CategoryProductsGridViewState extends State<_CategoryProductsGridView>
             if (errorMessage != null)
               Text(
                 errorMessage,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 14,
                   color: AppColors.neutral500,
@@ -683,7 +680,7 @@ class _CategoryProductsGridViewState extends State<_CategoryProductsGridView>
               ),
               child: Text(
                 l10n.commonRetry,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.w600,
                   color: AppColors.white,
@@ -807,14 +804,14 @@ class _ProductCardGrid extends StatelessWidget {
                                   ? AppColors.neutral700
                                   : AppColors.neutral200,
                             ),
-                            errorWidget: (_, _, _) => Icon(
+                            errorWidget: (_, _, _) => const Icon(
                               Icons.image_outlined,
                               size: 32,
                               color: AppColors.neutral400,
                             ),
                           )
                         else
-                          Icon(
+                          const Icon(
                             Icons.image_outlined,
                             size: 32,
                             color: AppColors.neutral400,
@@ -896,9 +893,7 @@ class _ProductCardGrid extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     height: 1.2,
-                    color: isDark
-                        ? AppColors.neutral300
-                        : AppColors.neutral800,
+                    color: isDark ? AppColors.neutral300 : AppColors.neutral800,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -1153,14 +1148,14 @@ class _ProductCardList extends StatelessWidget {
                               ? AppColors.neutral700
                               : AppColors.neutral200,
                         ),
-                        errorWidget: (_, _, _) => Icon(
+                        errorWidget: (_, _, _) => const Icon(
                           Icons.image_outlined,
                           size: 32,
                           color: AppColors.neutral400,
                         ),
                       )
                     else
-                      Icon(
+                      const Icon(
                         Icons.image_outlined,
                         size: 32,
                         color: AppColors.neutral400,

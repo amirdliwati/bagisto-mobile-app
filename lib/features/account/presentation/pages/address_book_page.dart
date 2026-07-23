@@ -249,7 +249,11 @@ class AddressBookPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: AppColors.neutral400),
+            const Icon(
+              Icons.error_outline,
+              size: 64,
+              color: AppColors.neutral400,
+            ),
             const SizedBox(height: 16),
             Text(
               l10n.accountCouldNotLoadAddresses,
@@ -263,7 +267,7 @@ class AddressBookPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               errorMessage ?? l10n.accountPleaseTryAgain,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -316,7 +320,7 @@ class AddressBookPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.location_off_outlined,
                         size: 64,
                         color: AppColors.neutral400,
@@ -336,7 +340,7 @@ class AddressBookPage extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         l10n.accountAddAddressToGetStarted,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Roboto',
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
@@ -626,11 +630,11 @@ class _AddressListWithScrollState extends State<_AddressListWithScroll> {
 
         // Mutation overlay — blocks taps while performing action
         if (widget.state.isPerformingAction)
-          Positioned.fill(
+          const Positioned.fill(
             child: AbsorbPointer(
               child: ColoredBox(
                 color: Colors.black12,
-                child: const Center(
+                child: Center(
                   child: CircularProgressIndicator(color: AppColors.primary500),
                 ),
               ),

@@ -113,7 +113,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: AppBackButton(),
+        leading: const AppBackButton(),
         leadingWidth: 60,
         titleSpacing: 0,
         title: Text(
@@ -1383,7 +1383,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
             : const Icon(Icons.download, size: 20),
         label: Text(
           l10n.accountDownloadInvoice,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Roboto',
             fontWeight: FontWeight.w600,
             fontSize: 16,

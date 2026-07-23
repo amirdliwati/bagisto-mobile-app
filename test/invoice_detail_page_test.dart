@@ -60,10 +60,10 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const InvoiceDetailPage(invoice: invoice, order: order),
+        home: InvoiceDetailPage(invoice: invoice, order: order),
       ),
     );
 

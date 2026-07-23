@@ -225,7 +225,11 @@ class _AccountDashboardPageState extends State<AccountDashboardPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: AppColors.neutral400),
+            const Icon(
+              Icons.error_outline,
+              size: 64,
+              color: AppColors.neutral400,
+            ),
             const SizedBox(height: 16),
             Text(
               l10n.categorySomethingWentWrong,

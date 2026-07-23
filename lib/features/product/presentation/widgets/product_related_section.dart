@@ -99,13 +99,13 @@ class _RelatedProductCard extends StatelessWidget {
                                 ? AppColors.neutral700
                                 : AppColors.neutral200,
                           ),
-                          errorWidget: (ctx, url, err) => Icon(
+                          errorWidget: (ctx, url, err) => const Icon(
                             Icons.image_outlined,
                             size: 28,
                             color: AppColors.neutral400,
                           ),
                         )
-                      : Icon(
+                      : const Icon(
                           Icons.image_outlined,
                           size: 28,
                           color: AppColors.neutral400,
@@ -113,7 +113,7 @@ class _RelatedProductCard extends StatelessWidget {
                 ),
 
                 // ── Heart ──
-                Positioned(
+                const Positioned(
                   top: 5,
                   right: 5,
                   child: Icon(

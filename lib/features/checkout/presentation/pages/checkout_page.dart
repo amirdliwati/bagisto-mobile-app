@@ -1838,7 +1838,7 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
         child: Center(
           child: Text(
             AppLocalizations.of(context)!.checkoutYourCartEmpty,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'Roboto',
               fontSize: 14,
               color: AppColors.neutral400,
@@ -2650,7 +2650,7 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
                 ),
                 child: Text(
                   AppLocalizations.of(context)!.cartApplyCoupon,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Roboto',
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
@@ -2849,7 +2849,7 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
                         )
                       : Text(
                           AppLocalizations.of(context)!.checkoutPlaceOrder,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Roboto',
                             fontWeight: FontWeight.w700,
                             fontSize: 16,

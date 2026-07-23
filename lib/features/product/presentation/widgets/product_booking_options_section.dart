@@ -122,7 +122,8 @@ class ProductBookingOptionsSection extends StatelessWidget {
                 const SizedBox(height: 24),
                 _buildRentalTypeSelector(context, booking, form),
                 const SizedBox(height: 24),
-                if ((form['rentingType']?.toString().toLowerCase() ?? 'daily') ==
+                if ((form['rentingType']?.toString().toLowerCase() ??
+                        'daily') ==
                     'daily') ...[
                   _buildSectionHeading(
                     context,
@@ -183,98 +184,105 @@ class ProductBookingOptionsSection extends StatelessWidget {
                   _buildSlotField(context, booking, state),
                 ],
               ] else ...[
-              if ((booking.location ?? '').isNotEmpty) ...[
-                _label(context, l10n.productBookingLocation),
-                const SizedBox(height: 6),
-                Text(
-                  booking.location!,
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
-                    color: isDark ? AppColors.neutral100 : AppColors.neutral900,
+                if ((booking.location ?? '').isNotEmpty) ...[
+                  _label(context, l10n.productBookingLocation),
+                  const SizedBox(height: 6),
+                  Text(
+                    booking.location!,
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 14,
+                      color: isDark
+                          ? AppColors.neutral100
+                          : AppColors.neutral900,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if (booking.activeSlot?.duration != null) ...[
-                _label(context, l10n.productBookingSlotDuration),
-                const SizedBox(height: 6),
-                Text(
-                  l10n.productBookingDurationMinutes(
-                    booking.activeSlot!.duration!,
+                  const SizedBox(height: 12),
+                ],
+                if (booking.activeSlot?.duration != null) ...[
+                  _label(context, l10n.productBookingSlotDuration),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.productBookingDurationMinutes(
+                      booking.activeSlot!.duration!,
+                    ),
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 14,
+                      color: isDark
+                          ? AppColors.neutral200
+                          : AppColors.neutral700,
+                    ),
                   ),
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
-                    color: isDark ? AppColors.neutral200 : AppColors.neutral700,
+                  const SizedBox(height: 12),
+                ],
+                if ((booking.availableFrom ?? '').isNotEmpty ||
+                    (booking.availableTo ?? '').isNotEmpty) ...[
+                  _label(context, l10n.productBookingAvailability),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${_formatAvailabilityBoundary(booking.availableFrom) ?? '-'} - ${_formatAvailabilityBoundary(booking.availableTo) ?? '-'}',
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 14,
+                      color: isDark
+                          ? AppColors.neutral200
+                          : AppColors.neutral700,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if ((booking.availableFrom ?? '').isNotEmpty ||
-                  (booking.availableTo ?? '').isNotEmpty) ...[
-                _label(context, l10n.productBookingAvailability),
-                const SizedBox(height: 6),
-                Text(
-                  '${_formatAvailabilityBoundary(booking.availableFrom) ?? '-'} - ${_formatAvailabilityBoundary(booking.availableTo) ?? '-'}',
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
-                    color: isDark ? AppColors.neutral200 : AppColors.neutral700,
+                  const SizedBox(height: 12),
+                ],
+                if (type == 'rental') ...[
+                  _buildRentalTypeSelector(context, booking, form),
+                  const SizedBox(height: 12),
+                ],
+                if (type == 'rental' &&
+                    (form['rentingType']?.toString().toLowerCase() ??
+                            'daily') ==
+                        'daily') ...[
+                  _buildDateField(
+                    context,
+                    booking: booking,
+                    label: l10n.productBookingStartDate,
+                    value: form['dateFrom'],
+                    onChanged: (v) {
+                      context.read<ProductDetailBloc>().add(
+                        UpdateBookingField(key: 'dateFrom', value: v),
+                      );
+                    },
                   ),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if (type == 'rental') ...[
-                _buildRentalTypeSelector(context, booking, form),
-                const SizedBox(height: 12),
-              ],
-              if (type == 'rental' &&
-                  (form['rentingType']?.toString().toLowerCase() ?? 'daily') ==
-                      'daily') ...[
-                _buildDateField(
-                  context,
-                  booking: booking,
-                  label: l10n.productBookingStartDate,
-                  value: form['dateFrom'],
-                  onChanged: (v) {
-                    context.read<ProductDetailBloc>().add(
-                      UpdateBookingField(key: 'dateFrom', value: v),
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-                _buildDateField(
-                  context,
-                  booking: booking,
-                  label: l10n.productBookingEndDate,
-                  value: form['dateTo'],
-                  minimumDateOverride: _parseDateOnly(form['dateFrom']),
-                  onChanged: (v) {
-                    context.read<ProductDetailBloc>().add(
-                      UpdateBookingField(key: 'dateTo', value: v),
-                    );
-                  },
-                ),
-              ] else if (type != 'event') ...[
-                _buildDateField(
-                  context,
-                  booking: booking,
-                  label: l10n.productBookingDate,
-                  value: form['date'],
-                  onChanged: (v) {
-                    context.read<ProductDetailBloc>().add(
-                      UpdateBookingField(key: 'date', value: v),
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-                _buildSlotField(context, booking, state),
-              ],
-              if (type == 'table') ...[
-                const SizedBox(height: 10),
-                _buildNoteField(context, form['note']?.toString() ?? ''),
-              ],
+                  const SizedBox(height: 10),
+                  _buildDateField(
+                    context,
+                    booking: booking,
+                    label: l10n.productBookingEndDate,
+                    value: form['dateTo'],
+                    minimumDateOverride: _parseDateOnly(form['dateFrom']),
+                    onChanged: (v) {
+                      context.read<ProductDetailBloc>().add(
+                        UpdateBookingField(key: 'dateTo', value: v),
+                      );
+                    },
+                  ),
+                ] else if (type != 'event') ...[
+                  _buildDateField(
+                    context,
+                    booking: booking,
+                    label: l10n.productBookingDate,
+                    value: form['date'],
+                    onChanged: (v) {
+                      context.read<ProductDetailBloc>().add(
+                        UpdateBookingField(key: 'date', value: v),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  _buildSlotField(context, booking, state),
+                ],
+                if (type == 'table') ...[
+                  const SizedBox(height: 10),
+                  _buildNoteField(context, form['note']?.toString() ?? ''),
+                ],
               ],
             ],
           ),
@@ -325,7 +333,10 @@ class ProductBookingOptionsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildRentalOverview(BuildContext context, BookingProductData booking) {
+  Widget _buildRentalOverview(
+    BuildContext context,
+    BookingProductData booking,
+  ) {
     final hasLocation = (booking.location ?? '').trim().isNotEmpty;
     final l10n = AppLocalizations.of(context)!;
 
@@ -488,9 +499,7 @@ class ProductBookingOptionsSection extends StatelessWidget {
                   fontFamily: 'Roboto',
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: isDark
-                      ? AppColors.neutral200
-                      : AppColors.neutral600,
+                  color: isDark ? AppColors.neutral200 : AppColors.neutral600,
                 ),
               ),
               const SizedBox(height: 8),
@@ -501,9 +510,7 @@ class ProductBookingOptionsSection extends StatelessWidget {
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   height: 1.35,
-                  color: isDark
-                      ? AppColors.neutral100
-                      : AppColors.neutral900,
+                  color: isDark ? AppColors.neutral100 : AppColors.neutral900,
                 ),
               ),
               if (actionLabel != null && onTap != null) ...[
@@ -661,8 +668,8 @@ class ProductBookingOptionsSection extends StatelessWidget {
   }
 
   Widget _buildDateField(
-    BuildContext context,
-    {required BookingProductData booking,
+    BuildContext context, {
+    required BookingProductData booking,
     required String label,
     dynamic value,
     DateTime? minimumDateOverride,
@@ -680,14 +687,15 @@ class ProductBookingOptionsSection extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.productBookingNoDatesAvailable),
-              duration: Duration(seconds: 2),
+              duration: const Duration(seconds: 2),
             ),
           );
           return;
         }
 
         final selectedDate = _parseDateOnly(value?.toString());
-        final initialDate = selectedDate != null &&
+        final initialDate =
+            selectedDate != null &&
                 !selectedDate.isBefore(dateBounds.firstDate) &&
                 !selectedDate.isAfter(dateBounds.lastDate)
             ? selectedDate
@@ -781,7 +789,10 @@ class ProductBookingOptionsSection extends StatelessWidget {
       hintText = l10n.productBookingNoSlotsAvailable;
       helperText = l10n.productBookingNoSlotsAvailableForSelectedDate;
       helperColor = AppColors.primary600;
-    } else if (hasDate && !isLoading && options.isNotEmpty && selected == null) {
+    } else if (hasDate &&
+        !isLoading &&
+        options.isNotEmpty &&
+        selected == null) {
       helperText = l10n.productBookingSelectOneSlotToContinue;
     }
 
@@ -809,7 +820,7 @@ class ProductBookingOptionsSection extends StatelessWidget {
                     },
               hint: Text(
                 hintText,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
@@ -936,8 +947,9 @@ class ProductBookingOptionsSection extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 4),
                             child: Text(
                               ticket.originalPriceLabel ?? '',
-                              style: AppTextStyles.originalPriceText(context)
-                                  .copyWith(fontSize: 16),
+                              style: AppTextStyles.originalPriceText(
+                                context,
+                              ).copyWith(fontSize: 16),
                             ),
                           ),
                         Text(
@@ -1127,10 +1139,7 @@ class _BookingDateBounds {
   final DateTime firstDate;
   final DateTime lastDate;
 
-  const _BookingDateBounds({
-    required this.firstDate,
-    required this.lastDate,
-  });
+  const _BookingDateBounds({required this.firstDate, required this.lastDate});
 }
 
 class _EventTicketStepper extends StatelessWidget {
@@ -1161,10 +1170,7 @@ class _EventTicketStepper extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _StepperButton(
-            icon: Icons.remove,
-            onTap: onDecrease,
-          ),
+          _StepperButton(icon: Icons.remove, onTap: onDecrease),
           SizedBox(
             width: 36,
             child: Text(
@@ -1178,10 +1184,7 @@ class _EventTicketStepper extends StatelessWidget {
               ),
             ),
           ),
-          _StepperButton(
-            icon: Icons.add,
-            onTap: onIncrease,
-          ),
+          _StepperButton(icon: Icons.add, onTap: onIncrease),
         ],
       ),
     );
@@ -1200,10 +1203,7 @@ class _RentalOptionIndicator extends StatelessWidget {
       height: 28,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(
-          color: const Color(0xFF121A5A),
-          width: 2,
-        ),
+        border: Border.all(color: const Color(0xFF121A5A), width: 2),
       ),
       child: Center(
         child: AnimatedContainer(

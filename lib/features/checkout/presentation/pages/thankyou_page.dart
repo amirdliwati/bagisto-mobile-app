@@ -139,8 +139,10 @@ class ThankyouPage extends StatelessWidget {
                       GestureDetector(
                         onTap: () => _onContinueShopping(context),
                         child: Text(
-                          AppLocalizations.of(context)!.thankYouContinueShopping,
-                          style: TextStyle(
+                          AppLocalizations.of(
+                            context,
+                          )!.thankYouContinueShopping,
+                          style: const TextStyle(
                             fontFamily: 'Roboto',
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
@@ -237,8 +239,9 @@ class ThankyouPage extends StatelessWidget {
         // Fall back to creating a new repository from auth token
         final authState = context.read<AuthBloc>().state;
         if (authState is AuthAuthenticated) {
-          final client =
-              GraphQLClientProvider.authenticatedClient(authState.token);
+          final client = GraphQLClientProvider.authenticatedClient(
+            authState.token,
+          );
           repository = AccountRepository(client: client.value);
         } else {
           // If not authenticated, can't navigate to order details
@@ -251,7 +254,9 @@ class ThankyouPage extends StatelessWidget {
       OrderDetailPage.navigate(
         context,
         orderId: orderIdNum,
-        orderNumber: orderIncrementId != null ? '#$orderIncrementId' : '#$orderId',
+        orderNumber: orderIncrementId != null
+            ? '#$orderIncrementId'
+            : '#$orderId',
         repository: repository,
       );
     } else {

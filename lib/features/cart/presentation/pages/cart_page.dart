@@ -324,7 +324,7 @@ class _CartPageState extends State<CartPage> {
               ),
               child: Text(
                 AppLocalizations.of(context)!.cartContinueShopping,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -411,7 +411,7 @@ class _CartPageState extends State<CartPage> {
                                   : AppColors.neutral400,
                             ),
                           )
-                        : Icon(
+                        : const Icon(
                             Icons.image_outlined,
                             size: 32,
                             color: AppColors.neutral400,

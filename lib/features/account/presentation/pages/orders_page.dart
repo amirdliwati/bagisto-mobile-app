@@ -101,7 +101,7 @@ class OrdersPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.shopping_bag_outlined,
               size: 64,
               color: AppColors.neutral400,
@@ -120,7 +120,7 @@ class OrdersPage extends StatelessWidget {
             Text(
               l10n.accountOrdersEmptyDescription,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -142,7 +142,7 @@ class OrdersPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline_rounded,
               size: 64,
               color: AppColors.neutral400,
@@ -164,7 +164,7 @@ class OrdersPage extends StatelessWidget {
                   context.read<OrdersBloc>().add(const LoadOrders()),
               child: Text(
                 l10n.commonRetry,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.w600,
                   fontSize: 14,

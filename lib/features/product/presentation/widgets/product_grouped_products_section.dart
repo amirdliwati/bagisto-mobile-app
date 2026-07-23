@@ -125,7 +125,7 @@ class _GroupedProductPrice extends StatelessWidget {
       children: [
         Text(
           currentPriceLabel,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
             fontWeight: FontWeight.w600,

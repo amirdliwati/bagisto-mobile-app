@@ -108,7 +108,7 @@ class ProductInfoSection extends StatelessWidget {
         if (originalPrice != null)
           Text(
             originalPriceLabel ?? '',
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'Roboto',
               fontWeight: FontWeight.w600,
               fontSize: 16,
@@ -122,7 +122,7 @@ class ProductInfoSection extends StatelessWidget {
         if (discountPercent != null && discountPercent > 0)
           Text(
             l10n.productDiscountOff(discountPercent.toString()),
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'Roboto',
               fontWeight: FontWeight.w600,
               fontSize: 16,

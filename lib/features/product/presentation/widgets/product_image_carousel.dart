@@ -40,7 +40,7 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
         width: screenWidth,
         height: screenWidth,
         color: isDark ? AppColors.neutral800 : AppColors.neutral100,
-        child: Icon(
+        child: const Icon(
           Icons.image_outlined,
           size: 64,
           color: AppColors.neutral400,
@@ -81,7 +81,7 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
                   ),
                   errorWidget: (ctx, url, err) => Container(
                     color: isDark ? AppColors.neutral800 : AppColors.neutral100,
-                    child: Icon(
+                    child: const Icon(
                       Icons.broken_image_outlined,
                       size: 48,
                       color: AppColors.neutral400,
@@ -111,8 +111,8 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
                     color: isActive
                         ? AppColors.primary500
                         : (isDark
-                            ? AppColors.neutral50.withValues(alpha: 0.4)
-                            : AppColors.neutral50),
+                              ? AppColors.neutral50.withValues(alpha: 0.4)
+                              : AppColors.neutral50),
                   ),
                 );
               }),

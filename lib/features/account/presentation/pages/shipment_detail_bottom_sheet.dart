@@ -43,10 +43,7 @@ class ShipmentDetailBottomSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       builder: (_) => BlocProvider.value(
         value: bloc,
-        child: ShipmentDetailBottomSheet(
-          shipment: shipment,
-          bloc: bloc,
-        ),
+        child: ShipmentDetailBottomSheet(shipment: shipment, bloc: bloc),
       ),
     );
   }
@@ -76,9 +73,7 @@ class _ShipmentDetailBottomSheetState extends State<ShipmentDetailBottomSheet> {
         return Container(
           decoration: BoxDecoration(
             color: isDark ? AppColors.neutral900 : AppColors.white,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(16),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
           child: DraggableScrollableSheet(
             initialChildSize: 0.65,
@@ -105,7 +100,9 @@ class _ShipmentDetailBottomSheetState extends State<ShipmentDetailBottomSheet> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              l10n.accountShipmentNumber(displayShipment.shipmentNumber),
+                              l10n.accountShipmentNumber(
+                                displayShipment.shipmentNumber,
+                              ),
                               style: TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w500,
@@ -131,24 +128,23 @@ class _ShipmentDetailBottomSheetState extends State<ShipmentDetailBottomSheet> {
 
                       // ─── Tracking Number Card ───
                       // Figma: bg #F5F5F5, border #E5E5E5, rounded-10, p-12
-                      _TrackingNumberCard(
-                        shipment: displayShipment,
-                      ),
+                      _TrackingNumberCard(shipment: displayShipment),
 
                       const SizedBox(height: 8),
 
                       // ─── "N Item(s)" header with toggle ───
                       GestureDetector(
-                        onTap: () => setState(
-                            () => _itemsExpanded = !_itemsExpanded),
+                        onTap: () =>
+                            setState(() => _itemsExpanded = !_itemsExpanded),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                l10n.accountItemsCount(displayShipment.items.length),
+                                l10n.accountItemsCount(
+                                  displayShipment.items.length,
+                                ),
                                 style: TextStyle(
                                   fontFamily: 'Roboto',
                                   fontWeight: FontWeight.w500,
@@ -207,7 +203,7 @@ class _ShipmentDetailBottomSheetState extends State<ShipmentDetailBottomSheet> {
                             ),
                             child: Text(
                               l10n.accountTrack,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,

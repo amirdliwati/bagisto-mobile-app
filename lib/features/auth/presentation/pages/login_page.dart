@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         elevation: 0,
         leading: const AppBackButton(),
-        actions: [
+        actions: const [
           // Preferences button
           // IconButton(
           //   icon: Icon(
@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(l10n.authLoginSuccess),
-                backgroundColor: Color(0xFF00A63E),
+                backgroundColor: const Color(0xFF00A63E),
               ),
             );
             // Pop back to account page (which will detect logged-in state)
@@ -215,7 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       child: Text(
                         l10n.authForgotPasswordTitle,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Roboto',
                           fontWeight: FontWeight.w500,
                           fontSize: 14,
@@ -343,7 +343,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                         child: Text(
                           l10n.authSignUp,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Roboto',
                             fontWeight: FontWeight.w700,
                             fontSize: 14,

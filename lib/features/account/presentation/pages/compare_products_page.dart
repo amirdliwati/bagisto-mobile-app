@@ -45,7 +45,7 @@ class CompareProductsPage extends StatelessWidget {
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: AppBackButton(),
+        leading: const AppBackButton(),
         leadingWidth: 60,
         titleSpacing: 0,
         title: Text(
@@ -74,8 +74,10 @@ class CompareProductsPage extends StatelessWidget {
             context.read<CartBloc>().add(ClearCartMessage());
           }
           if (cartState.successMessage != null) {
-            final message =
-                _localizedCartMessage(context, cartState.successMessage!);
+            final message = _localizedCartMessage(
+              context,
+              cartState.successMessage!,
+            );
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
@@ -148,7 +150,7 @@ class CompareProductsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.compare_arrows_rounded,
               size: 64,
               color: AppColors.neutral400,
@@ -167,7 +169,7 @@ class CompareProductsPage extends StatelessWidget {
             Text(
               l10n.accountAddProductsToCompareHint,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -189,7 +191,7 @@ class CompareProductsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline_rounded,
               size: 64,
               color: AppColors.neutral400,
@@ -211,7 +213,7 @@ class CompareProductsPage extends StatelessWidget {
                   context.read<CompareBloc>().add(const LoadCompareItems()),
               child: Text(
                 l10n.commonRetry,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -408,15 +410,16 @@ class _ProductCard extends StatelessWidget {
                               ? Image.network(
                                   item.baseImageUrl!,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Center(
-                                    child: Icon(
-                                      Icons.image_not_supported_outlined,
-                                      size: 48,
-                                      color: AppColors.neutral400,
-                                    ),
-                                  ),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Center(
+                                        child: Icon(
+                                          Icons.image_not_supported_outlined,
+                                          size: 48,
+                                          color: AppColors.neutral400,
+                                        ),
+                                      ),
                                 )
-                              : Center(
+                              : const Center(
                                   child: Icon(
                                     Icons.image_outlined,
                                     size: 48,
@@ -450,7 +453,7 @@ class _ProductCard extends StatelessWidget {
                                         ),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.visibility_outlined,
                                         size: 18,
                                         color: AppColors.neutral800,
@@ -630,7 +633,7 @@ class _ProductCard extends StatelessWidget {
                             )
                           : Text(
                               l10n.productAddToCart,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w700,
                                 fontSize: 14,
@@ -662,8 +665,8 @@ class _ProductCard extends StatelessWidget {
                     RemoveCompareItem(id: item.id),
                   );
                 },
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
                   child: Icon(
                     Icons.delete_outline_rounded,
                     size: 24,
@@ -847,9 +850,9 @@ class _WishlistIcon extends StatelessWidget {
                 ? null
                 : () async {
                     try {
-                      final result = await context.read<WishlistCubit>().toggleWishlist(
-                        productId: productId,
-                      );
+                      final result = await context
+                          .read<WishlistCubit>()
+                          .toggleWishlist(productId: productId);
                       if (!context.mounted) return;
 
                       final l10n = AppLocalizations.of(context)!;
@@ -931,5 +934,4 @@ class _WishlistIcon extends StatelessWidget {
       },
     );
   }
-
 }

@@ -764,7 +764,7 @@ class ProductAttributesSection extends StatelessWidget {
                     if ((link.displayPriceLabel ?? '').isNotEmpty)
                       Text(
                         '+ ${link.displayPriceLabel}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Roboto',
                           fontSize: 14,
                           fontWeight: FontWeight.w500,

@@ -323,7 +323,7 @@ class _SearchPageViewState extends State<_SearchPageView> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.error_outline,
                             size: 48,
                             color: AppColors.neutral400,
@@ -519,7 +519,7 @@ class _SearchPageViewState extends State<_SearchPageView> {
                       context.read<SearchBloc>().add(ClearAllRecentSearches()),
                   child: Text(
                     l10n.searchClearAll,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Roboto',
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -692,13 +692,13 @@ class _SearchPageViewState extends State<_SearchPageView> {
                       imageUrl: category.logoUrl!,
                       fit: BoxFit.cover,
                       placeholder: (context, url) => const SizedBox.shrink(),
-                      errorWidget: (context, url, error) => Icon(
+                      errorWidget: (context, url, error) => const Icon(
                         Icons.category_outlined,
                         size: 24,
                         color: AppColors.neutral400,
                       ),
                     )
-                  : Icon(
+                  : const Icon(
                       Icons.category_outlined,
                       size: 24,
                       color: AppColors.neutral400,
@@ -861,7 +861,7 @@ class _SearchPageViewState extends State<_SearchPageView> {
                                 ? AppColors.neutral800
                                 : AppColors.neutral100,
                           ),
-                          errorWidget: (context, url, error) => Center(
+                          errorWidget: (context, url, error) => const Center(
                             child: Icon(
                               Icons.image_outlined,
                               size: 40,
@@ -869,7 +869,7 @@ class _SearchPageViewState extends State<_SearchPageView> {
                             ),
                           ),
                         )
-                      : Center(
+                      : const Center(
                           child: Icon(
                             Icons.image_outlined,
                             size: 40,
@@ -963,7 +963,7 @@ class _SearchPageViewState extends State<_SearchPageView> {
                   const SizedBox(width: 3),
                   Text(
                     product.formattedOriginalPrice ?? '',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Roboto',
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -1094,7 +1094,7 @@ class _SearchPageViewState extends State<_SearchPageView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search_off, size: 64, color: AppColors.neutral400),
+          const Icon(Icons.search_off, size: 64, color: AppColors.neutral400),
           const SizedBox(height: 16),
           Text(l10n.searchNoProductsFound, style: AppTextStyles.text4(context)),
           const SizedBox(height: 8),

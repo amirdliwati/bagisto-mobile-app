@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/account/data/models/account_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../constants/api_constants.dart';
 import '../currency/currency_cubit.dart';
 import '../currency/currency_formatter.dart';
 import '../graphql/queries.dart';
@@ -98,20 +97,20 @@ class ChannelBootstrapService {
 
     if (localesData is List) {
       return localesData
-        .whereType<Map<String, dynamic>>()
-        .map(ShopLocale.fromJson)
-        .toList();
+          .whereType<Map<String, dynamic>>()
+          .map(ShopLocale.fromJson)
+          .toList();
     }
 
     final edges = localesData is Map<String, dynamic>
-      ? localesData['edges'] as List<dynamic>? ?? const []
-      : const [];
+        ? localesData['edges'] as List<dynamic>? ?? const []
+        : const [];
 
     return edges
-      .map((edge) => edge['node'])
-      .whereType<Map<String, dynamic>>()
-      .map(ShopLocale.fromJson)
-      .toList();
+        .map((edge) => edge['node'])
+        .whereType<Map<String, dynamic>>()
+        .map(ShopLocale.fromJson)
+        .toList();
   }
 
   List<ShopCurrency> _parseCurrencies(Map<String, dynamic> channel) {
@@ -119,20 +118,20 @@ class ChannelBootstrapService {
 
     if (currenciesData is List) {
       return currenciesData
-        .whereType<Map<String, dynamic>>()
-        .map(ShopCurrency.fromJson)
-        .toList();
+          .whereType<Map<String, dynamic>>()
+          .map(ShopCurrency.fromJson)
+          .toList();
     }
 
     final edges = currenciesData is Map<String, dynamic>
-      ? currenciesData['edges'] as List<dynamic>? ?? const []
-      : const [];
+        ? currenciesData['edges'] as List<dynamic>? ?? const []
+        : const [];
 
     return edges
-      .map((edge) => edge['node'])
-      .whereType<Map<String, dynamic>>()
-      .map(ShopCurrency.fromJson)
-      .toList();
+        .map((edge) => edge['node'])
+        .whereType<Map<String, dynamic>>()
+        .map(ShopCurrency.fromJson)
+        .toList();
   }
 
   String? _resolveDefaultLocaleCode(

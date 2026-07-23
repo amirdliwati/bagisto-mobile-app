@@ -24,7 +24,8 @@ class ProfileHeader extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
 
-    final name = profile?.displayName ?? fallbackName ?? l10n.accountUserFallback;
+    final name =
+        profile?.displayName ?? fallbackName ?? l10n.accountUserFallback;
     final email = profile?.email ?? fallbackEmail ?? '';
     final initials =
         profile?.initials ?? (name.isNotEmpty ? name[0].toUpperCase() : 'U');
@@ -40,7 +41,7 @@ class ProfileHeader extends StatelessWidget {
             Container(
               width: 48,
               height: 48,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.primary500,
                 shape: BoxShape.circle,
               ),
@@ -100,8 +101,8 @@ class ProfileHeader extends StatelessWidget {
                 child: InkWell(
                   // onTap: onSettingsTap,
                   borderRadius: BorderRadius.circular(10),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
                     // child: Icon(
                     //   Icons.settings_outlined,
                     //   size: 24,

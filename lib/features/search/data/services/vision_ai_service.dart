@@ -8,7 +8,8 @@ import '../exceptions/image_search_exceptions.dart';
 /// Abstract base class for Vision AI services
 abstract class VisionAIService {
   /// Recognize labels/objects in an image file
-  Future<ImageRecognitionResponse> recognizeImage(File imageFile, {
+  Future<ImageRecognitionResponse> recognizeImage(
+    File imageFile, {
     int maxResults = 10,
     double confidenceThreshold = 0.5,
   });
@@ -19,8 +20,9 @@ abstract class VisionAIService {
 
 /// Google Cloud Vision API implementation
 class GoogleVisionAIService implements VisionAIService {
-  static const String _visionApiUrl = 'https://vision.googleapis.com/v1/images:annotate';
-  
+  static const String _visionApiUrl =
+      'https://vision.googleapis.com/v1/images:annotate';
+
   final String apiKey;
   final int maxResults;
   final double confidenceThreshold;
@@ -53,18 +55,10 @@ class GoogleVisionAIService implements VisionAIService {
       final requestBody = {
         'requests': [
           {
-            'image': {
-              'content': base64Image,
-            },
+            'image': {'content': base64Image},
             'features': [
-              {
-                'type': 'LABEL_DETECTION',
-                'maxResults': maxResults,
-              },
-              {
-                'type': 'OBJECT_LOCALIZATION',
-                'maxResults': 5,
-              },
+              {'type': 'LABEL_DETECTION', 'maxResults': maxResults},
+              {'type': 'OBJECT_LOCALIZATION', 'maxResults': 5},
             ],
           },
         ],
@@ -88,7 +82,9 @@ class GoogleVisionAIService implements VisionAIService {
   }
 
   /// Make HTTP request to Google Vision API
-  Future<Map<String, dynamic>> _makeApiRequest(Map<String, dynamic> requestBody) async {
+  Future<Map<String, dynamic>> _makeApiRequest(
+    Map<String, dynamic> requestBody,
+  ) async {
     try {
       final httpClient = HttpClient();
       final request = await httpClient.postUrl(
@@ -128,7 +124,7 @@ class GoogleVisionAIService implements VisionAIService {
       final responses = response['responses'] as List<dynamic>?;
       if (responses == null || responses.isEmpty) {
         return ImageRecognitionResponse(
-          labels: [],
+          labels: const [],
           processedAt: DateTime.now(),
         );
       }
@@ -138,13 +134,15 @@ class GoogleVisionAIService implements VisionAIService {
       // Extract labels from label detection
       final labels = <Map<String, dynamic>>[];
       if (firstResponse.containsKey('labelAnnotations')) {
-        final labelAnnotations = firstResponse['labelAnnotations'] as List<dynamic>;
+        final labelAnnotations =
+            firstResponse['labelAnnotations'] as List<dynamic>;
         labels.addAll(labelAnnotations.map((e) => e as Map<String, dynamic>));
       }
 
       // Extract objects from object localization
       if (firstResponse.containsKey('localizedObjectAnnotations')) {
-        final objectAnnotations = firstResponse['localizedObjectAnnotations'] as List<dynamic>;
+        final objectAnnotations =
+            firstResponse['localizedObjectAnnotations'] as List<dynamic>;
         labels.addAll(objectAnnotations.map((e) => e as Map<String, dynamic>));
       }
 
@@ -168,7 +166,9 @@ class GoogleVisionAIService implements VisionAIService {
   /// Parse individual label from JSON
   LabelModel _parseLabelFromJson(Map<String, dynamic> json) {
     return LabelModel(
-      id: json['mid'] as String? ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id:
+          json['mid'] as String? ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       name: json['description'] as String? ?? '',
       confidence: (json['score'] as num? ?? 0).toDouble(),
       description: json['description'] as String?,
@@ -242,7 +242,10 @@ class MockVisionAIService implements VisionAIService {
 
     // Return mock labels (filtered by confidence)
     final filteredLabels = _mockLabels
-        .where((label) => (label['confidence'] as num).toDouble() >= confidenceThreshold)
+        .where(
+          (label) =>
+              (label['confidence'] as num).toDouble() >= confidenceThreshold,
+        )
         .take(maxResults)
         .toList();
 

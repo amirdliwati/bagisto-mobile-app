@@ -34,7 +34,7 @@ class WishlistPage extends StatelessWidget {
         backgroundColor: isDark ? AppColors.neutral900 : AppColors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: AppBackButton(isIosStyle: false),
+        leading: const AppBackButton(isIosStyle: false),
         leadingWidth: 60,
         title: Text(
           l10n.accountWishlist,
@@ -48,8 +48,10 @@ class WishlistPage extends StatelessWidget {
         listener: (context, state) {
           // Show snackbar for success/error messages
           if (state.successMessage != null) {
-            final message =
-                _localizedWishlistMessage(context, state.successMessage!);
+            final message = _localizedWishlistMessage(
+              context,
+              state.successMessage!,
+            );
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
@@ -127,7 +129,11 @@ class WishlistPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 64, color: AppColors.neutral400),
+            const Icon(
+              Icons.error_outline,
+              size: 64,
+              color: AppColors.neutral400,
+            ),
             const SizedBox(height: 16),
             Text(
               state.errorMessage ?? l10n.categorySomethingWentWrong,
@@ -143,7 +149,7 @@ class WishlistPage extends StatelessWidget {
               },
               child: Text(
                 l10n.accountTryAgain,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -296,10 +302,7 @@ class _WishlistListState extends State<_WishlistList> {
     if (item.numericId == null) return;
 
     context.read<WishlistBloc>().add(
-      MoveWishlistItemToCart(
-        numericId: item.numericId!,
-        quantity: quantity,
-      ),
+      MoveWishlistItemToCart(numericId: item.numericId!, quantity: quantity),
     );
   }
 
@@ -398,7 +401,6 @@ class _WishlistListState extends State<_WishlistList> {
       ),
     );
   }
-
 }
 
 /// Single wishlist item card matching Figma design
@@ -566,7 +568,7 @@ class _WishlistItemCard extends StatelessWidget {
                     onTap: isProcessing ? null : onRemove,
                     child: Text(
                       AppLocalizations.of(context)!.cartRemove,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Roboto',
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
@@ -695,7 +697,7 @@ class _AddToCartButton extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           l10n.accountMoveToCart,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Roboto',
             fontWeight: FontWeight.w700,
             fontSize: 14,

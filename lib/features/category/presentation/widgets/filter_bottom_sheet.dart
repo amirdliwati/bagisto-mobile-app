@@ -95,10 +95,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     _localFilters = widget.activeFilters.map(
       (key, value) => MapEntry(key, Set<String>.from(value)),
     );
-    _localPriceMin =
-        widget.selectedPriceMin ?? widget.priceRangeMin ?? 0;
-    _localPriceMax =
-        widget.selectedPriceMax ?? widget.priceRangeMax ?? 10000;
+    _localPriceMin = widget.selectedPriceMin ?? widget.priceRangeMin ?? 0;
+    _localPriceMax = widget.selectedPriceMax ?? widget.priceRangeMax ?? 10000;
     _selectedCategoryIndex = widget.initialSelectedIndex ?? 0;
   }
 
@@ -130,10 +128,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   }
 
   bool get _isPriceActive {
-    final hasMinChange = widget.priceRangeMin != null &&
-        _localPriceMin > widget.priceRangeMin!;
-    final hasMaxChange = widget.priceRangeMax != null &&
-        _localPriceMax < widget.priceRangeMax!;
+    final hasMinChange =
+        widget.priceRangeMin != null && _localPriceMin > widget.priceRangeMin!;
+    final hasMaxChange =
+        widget.priceRangeMax != null && _localPriceMax < widget.priceRangeMax!;
     return hasMinChange || hasMaxChange;
   }
 
@@ -197,9 +195,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
 
                       // Right: filter options
-                      Expanded(
-                        child: _buildRightPanel(isDark, attrs),
-                      ),
+                      Expanded(child: _buildRightPanel(isDark, attrs)),
                     ],
                   ),
           ),
@@ -227,7 +223,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 6, vertical: 2),
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary500,
                     borderRadius: BorderRadius.circular(4),
@@ -261,7 +259,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     padding: const EdgeInsets.only(right: 16),
                     child: Text(
                       AppLocalizations.of(context)!.categoryClearAll,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Roboto',
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -275,8 +273,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 child: Icon(
                   Icons.close,
                   size: 24,
-                  color:
-                      isDark ? AppColors.neutral300 : AppColors.neutral800,
+                  color: isDark ? AppColors.neutral300 : AppColors.neutral800,
                 ),
               ),
             ],
@@ -305,16 +302,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           return GestureDetector(
             onTap: () => setState(() => _selectedCategoryIndex = index),
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 12, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? (isDark
-                        ? AppColors.neutral700
-                        : AppColors.white)
-                    : (isDark
-                        ? AppColors.neutral800
-                        : AppColors.neutral50),
+                    ? (isDark ? AppColors.neutral700 : AppColors.white)
+                    : (isDark ? AppColors.neutral800 : AppColors.neutral50),
                 border: Border(
                   left: BorderSide(
                     color: isSelected
@@ -338,8 +330,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         color: isSelected
                             ? AppColors.primary500
                             : (isDark
-                                ? AppColors.neutral300
-                                : AppColors.neutral700),
+                                  ? AppColors.neutral300
+                                  : AppColors.neutral700),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -349,7 +341,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     const SizedBox(width: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 1),
+                        horizontal: 5,
+                        vertical: 1,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.primary500,
                         borderRadius: BorderRadius.circular(4),
@@ -416,11 +410,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildPriceTag(isDark, currentMin),
-              Container(
-                width: 16,
-                height: 1,
-                color: AppColors.neutral400,
-              ),
+              Container(width: 16, height: 1, color: AppColors.neutral400),
               _buildPriceTag(isDark, currentMax),
             ],
           ),
@@ -431,8 +421,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: AppColors.primary500,
-              inactiveTrackColor:
-                  isDark ? AppColors.neutral700 : AppColors.neutral200,
+              inactiveTrackColor: isDark
+                  ? AppColors.neutral700
+                  : AppColors.neutral200,
               thumbColor: AppColors.primary500,
               overlayColor: AppColors.primary500.withValues(alpha: 0.12),
               trackHeight: 3,
@@ -457,8 +448,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   _localPriceMin = values.start;
                   _localPriceMax = values.end;
                 });
-                widget.onPriceRangeChanged
-                    ?.call(values.start, values.end);
+                widget.onPriceRangeChanged?.call(values.start, values.end);
               },
             ),
           ),
@@ -471,7 +461,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             children: [
               Text(
                 CurrencyFormatter.formatAmount(rangeMin, fractionDigits: 0),
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 12,
                   color: AppColors.neutral500,
@@ -479,7 +469,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
               Text(
                 CurrencyFormatter.formatAmount(rangeMax, fractionDigits: 0),
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 12,
                   color: AppColors.neutral500,
@@ -532,9 +522,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     fontFamily: 'Roboto',
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: isDark
-                        ? AppColors.neutral200
-                        : AppColors.neutral900,
+                    color: isDark ? AppColors.neutral200 : AppColors.neutral900,
                   ),
                 ),
               ),
@@ -549,7 +537,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       widget.onToggle(attr.code, id);
                     }
                   },
-                  child: Text(
+                  child: const Text(
                     'Clear',
                     style: TextStyle(
                       fontFamily: 'Roboto',
@@ -609,15 +597,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       color: isSelected
                           ? AppColors.primary500
                           : (isDark
-                              ? AppColors.neutral600
-                              : AppColors.neutral200),
+                                ? AppColors.neutral600
+                                : AppColors.neutral200),
                       width: isSelected ? 2.5 : 1,
                     ),
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: AppColors.primary500
-                                  .withValues(alpha: 0.3),
+                              color: AppColors.primary500.withValues(
+                                alpha: 0.3,
+                              ),
                               blurRadius: 6,
                               spreadRadius: 1,
                             ),
@@ -625,7 +614,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         : null,
                   ),
                   child: isSelected
-                      ? const Icon(Icons.check, size: 18, color: AppColors.white)
+                      ? const Icon(
+                          Icons.check,
+                          size: 18,
+                          color: AppColors.white,
+                        )
                       : null,
                 ),
                 const SizedBox(height: 6),
@@ -642,8 +635,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       color: isSelected
                           ? AppColors.primary500
                           : (isDark
-                              ? AppColors.neutral300
-                              : AppColors.neutral700),
+                                ? AppColors.neutral300
+                                : AppColors.neutral700),
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 1,
@@ -709,8 +702,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         return InkWell(
           onTap: () => _toggleOption(attr.code, optionId),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
               children: [
                 // ── Checkbox ──
@@ -723,8 +715,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       color: isSelected
                           ? AppColors.primary500
                           : (isDark
-                              ? AppColors.neutral500
-                              : AppColors.neutral300),
+                                ? AppColors.neutral500
+                                : AppColors.neutral300),
                       width: 1.5,
                     ),
                     color: isSelected
@@ -750,22 +742,21 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       width: 24,
                       height: 24,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) =>
-                          const SizedBox.shrink(),
+                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
                     ),
                   ),
                   const SizedBox(width: 8),
                 ],
 
                 // ── Color swatch (if any, for inline display) ──
-                if (option.hasColorSwatch &&
-                    !option.hasImageSwatch) ...[
+                if (option.hasColorSwatch && !option.hasImageSwatch) ...[
                   Container(
                     width: 20,
                     height: 20,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _parseColor(option.swatchValue) ??
+                      color:
+                          _parseColor(option.swatchValue) ??
                           AppColors.neutral300,
                       border: Border.all(
                         color: isDark
@@ -788,12 +779,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           ? FontWeight.w500
                           : FontWeight.w400,
                       color: isSelected
-                          ? (isDark
-                              ? AppColors.white
-                              : AppColors.neutral900)
+                          ? (isDark ? AppColors.white : AppColors.neutral900)
                           : (isDark
-                              ? AppColors.neutral300
-                              : AppColors.neutral700),
+                                ? AppColors.neutral300
+                                : AppColors.neutral700),
                     ),
                   ),
                 ),
@@ -812,7 +801,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.filter_list_off,
               size: 48,
               color: AppColors.neutral400,
@@ -830,7 +819,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             const SizedBox(height: 4),
             Text(
               AppLocalizations.of(context)!.categoryFiltersWillAppear,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Roboto',
                 fontSize: 13,
                 color: AppColors.neutral500,
@@ -846,7 +835,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Widget _buildApplyButton(bool isDark) {
     return Container(
       padding: EdgeInsets.fromLTRB(
-          20, 12, 20, MediaQuery.of(context).padding.bottom + 12),
+        20,
+        12,
+        20,
+        MediaQuery.of(context).padding.bottom + 12,
+      ),
       decoration: BoxDecoration(
         color: isDark ? AppColors.neutral800 : AppColors.white,
         border: Border(
@@ -873,7 +866,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           ),
           child: Text(
             _totalSelected > 0
-                ? AppLocalizations.of(context)!.categoryApplyFiltersCount(_totalSelected)
+                ? AppLocalizations.of(
+                    context,
+                  )!.categoryApplyFiltersCount(_totalSelected)
                 : AppLocalizations.of(context)!.categoryApplyFilters,
             style: const TextStyle(
               fontFamily: 'Roboto',

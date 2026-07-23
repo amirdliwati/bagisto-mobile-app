@@ -140,16 +140,16 @@ class FCMService {
           AndroidInitializationSettings('@mipmap/ic_launcher');
 
       // iOS initialization
-      final DarwinInitializationSettings
-      iosSettings = DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
-        onDidReceiveLocalNotification:
-            (int id, String? title, String? body, String? payload) async {
-              debugPrint('📲 Local notification received on device');
-            },
-      );
+      final DarwinInitializationSettings iosSettings =
+          DarwinInitializationSettings(
+            requestAlertPermission: true,
+            requestBadgePermission: true,
+            requestSoundPermission: true,
+            onDidReceiveLocalNotification:
+                (int id, String? title, String? body, String? payload) async {
+                  debugPrint('📲 Local notification received on device');
+                },
+          );
 
       final InitializationSettings initSettings = InitializationSettings(
         android: androidSettings,
@@ -333,7 +333,7 @@ class FCMService {
       final notification = message.notification;
       if (notification == null) return;
 
-      final androidDetails = AndroidNotificationDetails(
+      const androidDetails = AndroidNotificationDetails(
         'bagisto_notifications',
         'Bagisto Notifications',
         channelDescription:
@@ -346,7 +346,7 @@ class FCMService {
         autoCancel: true,
       );
 
-      final iosDetails = const DarwinNotificationDetails(
+      const iosDetails = DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
@@ -490,7 +490,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final notification = message.notification;
     if (notification != null) {
       try {
-        final androidDetails = AndroidNotificationDetails(
+        const androidDetails = AndroidNotificationDetails(
           'bagisto_notifications',
           'Bagisto Notifications',
           channelDescription: 'Bagisto app notifications',
@@ -498,7 +498,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           priority: Priority.high,
         );
 
-        final iosDetails = const DarwinNotificationDetails(
+        const iosDetails = DarwinNotificationDetails(
           presentAlert: true,
           presentBadge: true,
           presentSound: true,

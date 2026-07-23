@@ -52,7 +52,7 @@ class AuthRepository {
     final data = result.data?['customerLogin'];
     if (data == null) {
       debugPrint('🔐 AuthRepo.login — customerLogin is null');
-      throw AuthException('Invalid response from server');
+      throw const AuthException('Invalid response from server');
     }
 
     final loginResult = CustomerLogin.fromJson(data);
@@ -117,7 +117,7 @@ class AuthRepository {
     final responseData = result.data?['customerSignUp'];
     if (responseData == null) {
       debugPrint('📝 AuthRepo.register — customerSignUp is null in response');
-      throw AuthException('Invalid response from server');
+      throw const AuthException('Invalid response from server');
     }
 
     final success = responseData['success'] as bool? ?? false;
@@ -129,7 +129,7 @@ class AuthRepository {
     final customerData = responseData['customer'] as Map<String, dynamic>?;
     if (customerData == null) {
       debugPrint('📝 AuthRepo.register — customer is null in response');
-      throw AuthException('Invalid response from server');
+      throw const AuthException('Invalid response from server');
     }
 
     final map = Map<String, dynamic>.from(customerData);
@@ -166,7 +166,7 @@ class AuthRepository {
 
     final data = result.data?['forgotPassword'];
     if (data == null) {
-      throw AuthException('Invalid response from server');
+      throw const AuthException('Invalid response from server');
     }
 
     final success = data['success'] as bool? ?? false;
