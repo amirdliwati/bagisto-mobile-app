@@ -1,0 +1,10 @@
+- `[ ]` Fix warnings and errors in `lib/main.dart`
+- `[ ]` Fix warnings and errors in `lib/features/search/presentation/pages/image_search_screen.dart`
+- `[ ]` Fix warnings and errors in `lib/features/search/presentation/pages/label_selection_screen.dart`
+- `[ ]` Fix warnings and errors in `lib/core/widgets/app_back_button.dart`
+- `[ ]` Fix warnings and errors in `lib/features/account/presentation/pages/settings_bottom_sheet.dart`
+- `[ ]` Fix warnings and errors in `lib/features/auth/data/repository/auth_repository.dart`
+- `[ ]` Fix warnings and errors in `lib/features/category/presentation/bloc/product_list_bloc.dart`
+- `[ ]` Fix warnings and errors in `lib/features/account/presentation/pages/downloadable_products_page.dart`
+- `[ ]` Fix warnings and errors in `lib/driver_main.dart`
+- `[ ]` Verify with `flutter analyze`
