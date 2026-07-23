@@ -198,6 +198,14 @@ class HomeProduct extends Equatable {
       }
     }
 
+    final imagesList = json['images'];
+    if (resolvedBaseImageUrl == null && imagesList is List && imagesList.isNotEmpty) {
+      final first = imagesList.first;
+      if (first is Map<String, dynamic>) {
+        resolvedBaseImageUrl = first['url'] as String? ?? first['publicPath'] as String?;
+      }
+    }
+
     final priceHtml = json['priceHtml'] as Map<String, dynamic>?;
 
     // Debug: log raw price fields from API

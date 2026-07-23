@@ -259,7 +259,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 builder: (context, state) {
                   // Show full-screen loader only on first load (no data yet).
                   if (state.status == HomeStatus.loading &&
-                      state.customizations.isEmpty) {
+                      state.customizations.isEmpty &&
+                      state.categories.isEmpty) {
                     return const Center(
                       child: CircularProgressIndicator(
                         color: AppColors.primary500,
@@ -268,22 +269,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   }
 
                   if (state.status == HomeStatus.error &&
-                      state.customizations.isEmpty) {
+                      state.customizations.isEmpty &&
+                      state.categories.isEmpty) {
                     return _buildError(context, state);
                   }
 
-                  // Show content for loaded/initial states, or when
-                  // data exists even during a background refresh.
-                  if (state.customizations.isNotEmpty) {
-                    return _buildContent(context, state);
-                  }
-
-                  // Fallback: initial state with no data yet.
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.primary500,
-                    ),
-                  );
+                  // Show content if loaded, or if we have any data (categories or customizations)
+                  return _buildContent(context, state);
                 },
               ),
             ),

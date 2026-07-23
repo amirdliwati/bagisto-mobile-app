@@ -474,6 +474,14 @@ class ProductModel {
       }
     }
 
+    final imagesList = json['images'];
+    if (resolvedBaseImageUrl == null && imagesList is List && imagesList.isNotEmpty) {
+      final first = imagesList.first;
+      if (first is Map<String, dynamic>) {
+        resolvedBaseImageUrl = first['url'] as String? ?? first['publicPath'] as String?;
+      }
+    }
+
     final priceHtml = json['priceHtml'] as Map<String, dynamic>?;
 
     return ProductModel(
@@ -1491,7 +1499,7 @@ class ProductImage {
       numericId: json['_id'] as int?,
       type: json['type'] as String?,
       path: json['path'] as String? ?? '',
-      publicPath: json['publicPath'] as String?,
+      publicPath: json['publicPath'] as String? ?? json['url'] as String?,
       position: json['position'] as String?,
     );
   }

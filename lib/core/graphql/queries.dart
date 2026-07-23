@@ -85,7 +85,7 @@ class CategoryQueries {
   /// Source: nextjs-commerce/src/graphql/catelog/queries/HomeCategories.ts
   static const String getHomeCategories = r'''
     query Categories {
-      categories: homeCategories {
+      categories: homeCategories(getCategoryTree: true) {
         id
         logoUrl
         position
@@ -120,6 +120,12 @@ class ProductQueries {
         mediumImageUrl
         originalImageUrl
       }
+      images {
+        id
+        url
+        path
+        type
+      }
       reviews {
         rating
         id
@@ -153,6 +159,12 @@ class ProductQueries {
       cacheBaseImage {
         mediumImageUrl
         originalImageUrl
+      }
+      images {
+        id
+        url
+        path
+        type
       }
       reviews {
         rating
@@ -195,16 +207,10 @@ class ProductQueries {
       size
       brand
       images {
-        edges {
-          node {
-            id
-            _id
-            path
-            publicPath
-            type
-            position
-          }
-        }
+        id
+        url
+        path
+        type
       }
       reviews {
         edges {
@@ -796,16 +802,10 @@ $slotFields
       size
       brand
       images {
-        edges {
-          node {
-            id
-            _id
-            path
-            publicPath
-            type
-            position
-          }
-        }
+        id
+        url
+        path
+        type
       }
       superAttributeOptions
       combinations
