@@ -264,7 +264,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget _buildLogo(bool isDark) {
     return Center(
       child: SvgPicture.asset(
-        'assets/images/bagisto_logo.svg',
+        'assets/images/frontier_logo.svg',
         height: 60,
         width: 60,
       ),
