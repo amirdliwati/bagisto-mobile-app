@@ -1186,14 +1186,34 @@ class CompareItem {
       }
     }
 
+    int productNumId = 0;
+    if (product['_id'] is int) {
+      productNumId = product['_id'] as int;
+    } else if (product['_id'] != null) {
+      productNumId = int.tryParse(product['_id'].toString()) ?? 0;
+    }
+    if (productNumId == 0 && product['id'] != null) {
+      final idStr = product['id'].toString();
+      final match = RegExp(r'/(\d+)$').firstMatch(idStr);
+      productNumId = int.tryParse(match?.group(1) ?? idStr) ?? 0;
+    }
+
+    int compNumId = 0;
+    if (json['_id'] is int) {
+      compNumId = json['_id'] as int;
+    } else if (json['_id'] != null) {
+      compNumId = int.tryParse(json['_id'].toString()) ?? 0;
+    }
+    if (compNumId == 0 && json['id'] != null) {
+      final idStr = json['id'].toString();
+      final match = RegExp(r'/(\d+)$').firstMatch(idStr);
+      compNumId = int.tryParse(match?.group(1) ?? idStr) ?? 0;
+    }
+
     return CompareItem(
       id: json['id']?.toString() ?? '',
-      numericId: json['_id'] is int
-          ? json['_id'] as int
-          : int.tryParse(json['_id']?.toString() ?? '0') ?? 0,
-      productNumericId: product['_id'] is int
-          ? product['_id'] as int
-          : int.tryParse(product['_id']?.toString() ?? '0') ?? 0,
+      numericId: compNumId,
+      productNumericId: productNumId,
       productName: product['name']?.toString() ?? '',
       sku: product['sku']?.toString(),
       type: product['type']?.toString(),
@@ -1952,7 +1972,7 @@ class OrderDetail {
           .toList();
     }
 
-    // Parse addresses from edges
+    // Parse addresses from edges or raw list
     OrderAddress? billing;
     OrderAddress? shipping;
     final rawAddresses = json['addresses'];
@@ -1967,6 +1987,18 @@ class OrderDetail {
           billing = addr;
         } else if (type.contains('shipping')) {
           shipping = addr;
+        }
+      }
+    } else if (rawAddresses is List) {
+      for (var node in rawAddresses) {
+        if (node is Map<String, dynamic>) {
+          final type = node['addressType']?.toString().toLowerCase() ?? '';
+          final addr = OrderAddress.fromJson(node);
+          if (type.contains('billing')) {
+            billing = addr;
+          } else if (type.contains('shipping')) {
+            shipping = addr;
+          }
         }
       }
     } else if (json['billingAddress'] is Map<String, dynamic>) {
@@ -1993,6 +2025,10 @@ class OrderDetail {
                 OrderInvoice.fromJson((e['node'] ?? e) as Map<String, dynamic>),
           )
           .toList();
+    } else if (rawInvoices is List) {
+      invoices = rawInvoices
+          .map((e) => OrderInvoice.fromJson(e as Map<String, dynamic>))
+          .toList();
     }
 
     // Parse shipments
@@ -2005,6 +2041,10 @@ class OrderDetail {
               (e['node'] ?? e) as Map<String, dynamic>,
             ),
           )
+          .toList();
+    } else if (rawShipments is List) {
+      shipments = rawShipments
+          .map((e) => OrderShipment.fromJson(e as Map<String, dynamic>))
           .toList();
     }
 

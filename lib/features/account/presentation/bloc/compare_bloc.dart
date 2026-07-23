@@ -133,7 +133,11 @@ class CompareBloc extends Bloc<CompareEvent, CompareState> {
     ));
 
     try {
-      await repository.deleteCompareItem(event.id);
+      final itemToRemove = state.items.firstWhere(
+        (item) => item.id == event.id,
+        orElse: () => state.items.first,
+      );
+      await repository.deleteCompareItem(event.id, productId: itemToRemove.productNumericId);
       final updatedItems =
           state.items.where((item) => item.id != event.id).toList();
       debugPrint('✅ CompareBloc: Removed item ${event.id}');

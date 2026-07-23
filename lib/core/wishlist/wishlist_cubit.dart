@@ -114,7 +114,7 @@ class WishlistCubit extends Cubit<WishlistCubitState> {
           '❤️ WishlistCubit: removing product $productId (iri=$wishlistIri)',
         );
 
-        await repo.deleteWishlistItem(id: wishlistIri);
+        await repo.deleteWishlistItem(id: wishlistIri, productId: productId);
 
         // Single atomic emit: remove from map + remove from processing
         final updatedMap = Map<int, String>.from(state.wishlistedProducts)

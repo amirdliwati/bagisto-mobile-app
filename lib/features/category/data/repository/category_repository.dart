@@ -514,7 +514,7 @@ class CategoryRepository {
     final result = await client.query(
       QueryOptions(
         document: gql(FilterQueries.getCategoryAttributeFilters),
-        variables: {'categorySlug': categorySlug, 'first': first},
+        variables: {'categorySlug': categorySlug},
         fetchPolicy: FetchPolicy.cacheAndNetwork,
       ),
     );
@@ -526,17 +526,38 @@ class CategoryRepository {
       throw result.exception!;
     }
 
-    final edges =
-        result.data?['categoryAttributeFilters']?['edges'] as List<dynamic>? ??
-        [];
+    final getFilterAttributeData = result.data?['getFilterAttribute'];
+    if (getFilterAttributeData == null) {
+      return [];
+    }
 
-    final attributes = edges.map((edge) {
-      final node = edge['node'] as Map<String, dynamic>;
-      return FilterAttribute.fromCategoryFilterJson(node);
+    final double? minPrice = _parseDouble(getFilterAttributeData['minPrice']);
+    final double? maxPrice = _parseDouble(getFilterAttributeData['maxPrice']);
+    
+    final rawAttributes = getFilterAttributeData['filterAttributes'] as List<dynamic>? ?? [];
+
+    final attributes = rawAttributes.map((node) {
+      return FilterAttribute.fromCategoryFilterJson(node as Map<String, dynamic>);
     }).toList();
 
     // Sort by position
     attributes.sort((a, b) => (a.position ?? 999).compareTo(b.position ?? 999));
+
+    // If minPrice and maxPrice are available, add a price filter at the beginning
+    if (minPrice != null && maxPrice != null) {
+      attributes.insert(
+        0,
+        FilterAttribute(
+          id: 'price',
+          code: 'price',
+          adminName: 'Price',
+          type: 'price',
+          minPrice: minPrice,
+          maxPrice: maxPrice,
+          isFilterable: true,
+        ),
+      );
+    }
 
     debugPrint(
       '[CategoryRepo] getCategoryAttributeFilters loaded ${attributes.length} attributes: '
@@ -544,6 +565,14 @@ class CategoryRepository {
     );
 
     return attributes;
+  }
+
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 
   /// Fetch related products for a given product

@@ -165,14 +165,17 @@ class AccountRepository {
     return CustomerProfile.fromJson(data);
   }
 
-  /// Fetch customer addresses via getCustomerAddresses query
+  /// Fetch customer addresses via customerAddresses query
   Future<List<CustomerAddress>> getCustomerAddresses({int first = 10}) async {
     debugPrint('📍 AccountRepo.getCustomerAddresses');
 
     final result = await client.query(
       QueryOptions(
         document: gql(AccountQueries.getCustomerAddresses),
-        variables: {'first': first},
+        variables: {
+          'first': first,
+          'page': 1,
+        },
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
@@ -183,10 +186,9 @@ class AccountRepository {
       throw AccountException(message);
     }
 
-    final edges = result.data?['getCustomerAddresses']?['edges'] as List? ?? [];
-    final addresses = edges.map<CustomerAddress>((edge) {
-      final node = edge['node'] ?? edge;
-      return CustomerAddress.fromJson(node);
+    final dataList = result.data?['customerAddresses']?['data'] as List? ?? [];
+    final addresses = dataList.map<CustomerAddress>((node) {
+      return CustomerAddress.fromJson(node as Map<String, dynamic>);
     }).toList();
 
     debugPrint(
@@ -201,7 +203,10 @@ class AccountRepository {
     final result = await client.query(
       QueryOptions(
         document: gql(AccountQueries.getCustomerOrders),
-        variables: {'first': first},
+        variables: {
+          'first': first,
+          'page': 1,
+        },
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
@@ -212,10 +217,9 @@ class AccountRepository {
       throw AccountException(message);
     }
 
-    final edges = result.data?['customerOrders']?['edges'] as List? ?? [];
-    final orders = edges.map<RecentOrder>((edge) {
-      final node = edge['node'] ?? edge;
-      return RecentOrder.fromJson(node);
+    final dataList = result.data?['customerOrders']?['data'] as List? ?? [];
+    final orders = dataList.map<RecentOrder>((node) {
+      return RecentOrder.fromJson(node as Map<String, dynamic>);
     }).toList();
 
     debugPrint('📦 AccountRepo.getRecentOrders — got ${orders.length} orders');
@@ -233,10 +237,13 @@ class AccountRepository {
     })
   >
   getWishlist({int first = 20, String? after}) async {
-    debugPrint('❤️ AccountRepo.getWishlist');
+    debugPrint('❤️ AccountRepo.getWishlist (first=$first, after=$after)');
 
-    final variables = <String, dynamic>{'first': first};
-    if (after != null) variables['after'] = after;
+    final page = after != null ? (int.tryParse(after) ?? 1) + 1 : 1;
+    final variables = <String, dynamic>{
+      'first': first,
+      'page': page,
+    };
 
     final result = await client.query(
       QueryOptions(
@@ -262,15 +269,15 @@ class AccountRepository {
       );
     }
 
-    final edges = data['edges'] as List<dynamic>? ?? [];
-    final items = edges
-        .map((e) => WishlistItem.fromJson(e['node'] as Map<String, dynamic>))
+    final dataList = data['data'] as List<dynamic>? ?? [];
+    final items = dataList
+        .map((e) => WishlistItem.fromJson(e as Map<String, dynamic>))
         .toList();
-    final totalCount = data['totalCount'] as int? ?? items.length;
-
-    final pageInfo = data['pageInfo'] as Map<String, dynamic>?;
-    final hasNextPage = pageInfo?['hasNextPage'] as bool? ?? false;
-    final endCursor = pageInfo?['endCursor']?.toString();
+    
+    final paginatorInfo = data['paginatorInfo'] as Map<String, dynamic>?;
+    final totalCount = paginatorInfo?['total'] as int? ?? items.length;
+    final hasNextPage = paginatorInfo?['hasMorePages'] as bool? ?? false;
+    final endCursor = paginatorInfo?['currentPage']?.toString();
 
     debugPrint(
       '❤️ AccountRepo.getWishlist — ${items.length} items (total: $totalCount, hasNext: $hasNextPage)',
@@ -283,15 +290,30 @@ class AccountRepository {
     );
   }
 
-  /// Delete a wishlist item by IRI id.
-  Future<void> deleteWishlistItem({required String id}) async {
-    debugPrint('🗑️ AccountRepo.deleteWishlistItem (id=$id)');
+  /// Delete a wishlist item by IRI id or product ID.
+  Future<void> deleteWishlistItem({required String id, int? productId}) async {
+    debugPrint('🗑️ AccountRepo.deleteWishlistItem (id=$id, productId=$productId)');
+
+    int? resolvedProductId = productId;
+    if (resolvedProductId == null) {
+      resolvedProductId = int.tryParse(id);
+    }
+    if (resolvedProductId == null) {
+      final match = RegExp(r'/(\d+)$').firstMatch(id);
+      if (match != null) {
+        resolvedProductId = int.tryParse(match.group(1)!);
+      }
+    }
+
+    if (resolvedProductId == null) {
+      throw AccountException('Product ID is required to remove from wishlist');
+    }
 
     final result = await client.mutate(
       MutationOptions(
         document: gql(AccountQueries.deleteWishlist),
         variables: {
-          'input': {'id': id},
+          'productId': resolvedProductId,
         },
       ),
     );
@@ -384,9 +406,8 @@ class AccountRepository {
     return (reviews: reviews, totalCount: totalCount);
   }
 
-  /// Fetch customer reviews via customerReviews query (cursor-paginated).
+  /// Fetch customer reviews via reviewsList query (offset-paginated).
   /// Returns review list with nested product data (name, images).
-  /// Falls back to productReviews if customerReviews is unavailable.
   Future<
     ({
       List<ProductReview> reviews,
@@ -396,13 +417,15 @@ class AccountRepository {
     })
   >
   getCustomerReviews({int first = 10, String? after}) async {
-    debugPrint('⭐ AccountRepo.getCustomerReviews');
+    debugPrint('⭐ AccountRepo.getCustomerReviews (first=$first, after=$after)');
 
-    final variables = <String, dynamic>{'first': first};
-    if (after != null) variables['after'] = after;
+    final page = after != null ? (int.tryParse(after) ?? 1) + 1 : 1;
+    final variables = <String, dynamic>{
+      'first': first,
+      'page': page,
+    };
 
-    // Try customerReviews first
-    var result = await client.query(
+    final result = await client.query(
       QueryOptions(
         document: gql(AccountQueries.getCustomerReviews),
         variables: variables,
@@ -410,31 +433,13 @@ class AccountRepository {
       ),
     );
 
-    // Determine which response key to use
-    String responseKey = 'customerReviews';
-
     if (result.hasException) {
       final message = _extractErrorMessage(result.exception!);
-      debugPrint('⭐ CustomerReviews failed: $message');
-      // Fallback: try productReviews if customerReviews not available
-      debugPrint('⭐ Falling back to productReviews');
-      result = await client.query(
-        QueryOptions(
-          document: gql(AccountQueries.getCustomerReviews),
-          variables: variables,
-          fetchPolicy: FetchPolicy.networkOnly,
-        ),
-      );
-      responseKey = 'productReviews';
-
-      if (result.hasException) {
-        final message = _extractErrorMessage(result.exception!);
-        debugPrint('⭐ AccountRepo.getCustomerReviews — error: $message');
-        throw AccountException(message);
-      }
+      debugPrint('⭐ AccountRepo.getCustomerReviews — error: $message');
+      throw AccountException(message);
     }
 
-    final data = result.data?[responseKey];
+    final data = result.data?['customerReviews'];
     if (data == null) {
       return (
         reviews: const <ProductReview>[],
@@ -444,14 +449,15 @@ class AccountRepository {
       );
     }
 
-    final edges = data['edges'] as List<dynamic>? ?? [];
-    final reviews = edges
-        .map((e) => ProductReview.fromJson(e['node'] as Map<String, dynamic>))
+    final dataList = data['data'] as List<dynamic>? ?? [];
+    final reviews = dataList
+        .map((e) => ProductReview.fromJson(e as Map<String, dynamic>))
         .toList();
-    final totalCount = data['totalCount'] as int? ?? reviews.length;
-    final pageInfo = data['pageInfo'] as Map<String, dynamic>?;
-    final hasNextPage = pageInfo?['hasNextPage'] as bool? ?? false;
-    final endCursor = pageInfo?['endCursor']?.toString();
+    
+    final paginatorInfo = data['paginatorInfo'] as Map<String, dynamic>?;
+    final totalCount = paginatorInfo?['total'] as int? ?? reviews.length;
+    final hasNextPage = paginatorInfo?['hasMorePages'] as bool? ?? false;
+    final endCursor = paginatorInfo?['currentPage']?.toString();
 
     debugPrint(
       '⭐ AccountRepo.getCustomerReviews — ${reviews.length} reviews (total: $totalCount, hasNext: $hasNextPage)',
@@ -864,10 +870,13 @@ class AccountRepository {
     int first = 20,
     String? after,
   }) async {
-    debugPrint('🔀 AccountRepo.getCompareItems');
+    debugPrint('🔀 AccountRepo.getCompareItems (first=$first, after=$after)');
 
-    final variables = <String, dynamic>{'first': first};
-    if (after != null) variables['after'] = after;
+    final page = after != null ? (int.tryParse(after) ?? 1) + 1 : 1;
+    final variables = <String, dynamic>{
+      'first': first,
+      'page': page,
+    };
 
     final result = await client.query(
       QueryOptions(
@@ -888,11 +897,11 @@ class AccountRepository {
       return (items: <CompareItem>[], totalCount: 0);
     }
 
-    final edges = connection['edges'] as List<dynamic>? ?? [];
-    final totalCount = connection['totalCount'] as int? ?? edges.length;
+    final dataList = connection['data'] as List<dynamic>? ?? [];
+    final paginatorInfo = connection['paginatorInfo'] as Map<String, dynamic>?;
+    final totalCount = paginatorInfo?['total'] as int? ?? dataList.length;
 
-    final items = edges.map<CompareItem>((edge) {
-      final node = (edge as Map<String, dynamic>)['node'] ?? edge;
+    final items = dataList.map<CompareItem>((node) {
       return CompareItem.fromJson(node as Map<String, dynamic>);
     }).toList();
 
@@ -902,14 +911,29 @@ class AccountRepository {
     return (items: items, totalCount: totalCount);
   }
 
-  /// Delete a single compare item by IRI id.
-  Future<void> deleteCompareItem(String id) async {
-    debugPrint('🔀 AccountRepo.deleteCompareItem($id)');
+  /// Delete a single compare item by IRI id or product ID.
+  Future<void> deleteCompareItem(String id, {int? productId}) async {
+    debugPrint('🔀 AccountRepo.deleteCompareItem(id=$id, productId=$productId)');
+
+    int? resolvedProductId = productId;
+    if (resolvedProductId == null) {
+      resolvedProductId = int.tryParse(id);
+    }
+    if (resolvedProductId == null) {
+      final match = RegExp(r'/(\d+)$').firstMatch(id);
+      if (match != null) {
+        resolvedProductId = int.tryParse(match.group(1)!);
+      }
+    }
+
+    if (resolvedProductId == null) {
+      throw AccountException('Product ID is required to remove from compare');
+    }
 
     final result = await client.mutate(
       MutationOptions(
         document: gql(AccountQueries.deleteCompareItem),
-        variables: {'id': id},
+        variables: {'productId': resolvedProductId},
       ),
     );
 
@@ -941,8 +965,6 @@ class AccountRepository {
 
   /// Add product to wishlist.
   /// [productId] is the numeric product ID.
-  /// Add product to wishlist.
-  /// [productId] is the numeric product ID.
   /// Returns the wishlist item IRI id (e.g. "/api/shop/wishlists/69").
   Future<String?> addToWishlist({required int productId}) async {
     debugPrint('❤️ AccountRepo.addToWishlist (productId=$productId)');
@@ -951,7 +973,7 @@ class AccountRepository {
       MutationOptions(
         document: gql(AccountQueries.createWishlist),
         variables: {
-          'input': {'productId': productId},
+          'productId': productId,
         },
       ),
     );
@@ -977,7 +999,7 @@ class AccountRepository {
       MutationOptions(
         document: gql(AccountQueries.createCompareItem),
         variables: {
-          'input': {'productId': productId},
+          'productId': productId,
         },
       ),
     );
@@ -1037,8 +1059,8 @@ class AccountRepository {
     return ProductReview.fromJson(data as Map<String, dynamic>);
   }
 
-  /// Fetch customer orders with cursor-based pagination.
-  /// Supports optional [status] filter and cursor [after] for pagination.
+  /// Fetch customer orders with offset-based pagination.
+  /// Supports optional [status] filter and page number for pagination.
   Future<
     ({
       List<CustomerOrder> orders,
@@ -1052,9 +1074,14 @@ class AccountRepository {
       '📦 AccountRepo.getCustomerOrders (first=$first, status=$status)',
     );
 
-    final variables = <String, dynamic>{'first': first};
-    if (after != null) variables['after'] = after;
-    if (status != null) variables['status'] = status;
+    final page = after != null ? (int.tryParse(after) ?? 1) + 1 : 1;
+    final variables = <String, dynamic>{
+      'first': first,
+      'page': page,
+    };
+    if (status != null) {
+      variables['input'] = {'status': status};
+    }
 
     final result = await client.query(
       QueryOptions(
@@ -1080,14 +1107,14 @@ class AccountRepository {
       );
     }
 
-    final edges = data['edges'] as List<dynamic>? ?? [];
-    final orders = edges
-        .map((e) => CustomerOrder.fromJson(e['node'] as Map<String, dynamic>))
+    final dataList = data['data'] as List<dynamic>? ?? [];
+    final orders = dataList
+        .map((e) => CustomerOrder.fromJson(e as Map<String, dynamic>))
         .toList();
-    final totalCount = data['totalCount'] as int? ?? orders.length;
-    final pageInfo = data['pageInfo'] as Map<String, dynamic>?;
-    final hasNextPage = pageInfo?['hasNextPage'] as bool? ?? false;
-    final endCursor = pageInfo?['endCursor']?.toString();
+    final paginatorInfo = data['paginatorInfo'] as Map<String, dynamic>?;
+    final totalCount = paginatorInfo?['total'] as int? ?? orders.length;
+    final hasNextPage = paginatorInfo?['hasMorePages'] as bool? ?? false;
+    final endCursor = paginatorInfo?['currentPage']?.toString();
 
     debugPrint(
       '📦 AccountRepo.getCustomerOrders — ${orders.length} orders (total: $totalCount, hasNext: $hasNextPage)',
@@ -1101,17 +1128,14 @@ class AccountRepository {
   }
 
   /// Fetch a single customer order detail by numeric ID.
-  /// The Bagisto API expects an IRI ID for the `customerOrder(id: ID!)` query.
-  /// We construct it as: `/api/shop/customer-orders/{numericId}`
+  /// The Bagisto API expects the numeric ID for the `orderDetail(id: ID!)` query.
   Future<OrderDetail> getCustomerOrder(int orderId) async {
     debugPrint('📦 AccountRepo.getCustomerOrder (id=$orderId)');
-
-    final iriId = '/api/shop/customer-orders/$orderId';
 
     final result = await client.query(
       QueryOptions(
         document: gql(AccountQueries.getCustomerOrder),
-        variables: {'id': iriId},
+        variables: {'id': orderId.toString()},
         fetchPolicy: FetchPolicy.noCache,
       ),
     );

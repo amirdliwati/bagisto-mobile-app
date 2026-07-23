@@ -1841,82 +1841,42 @@ class FilterQueries {
   /// Returns all filterable attributes for a given category slug,
   /// including price range, swatch info, and translated option labels.
   static const String getCategoryAttributeFilters = r'''
-    query CategoryAttributeFilter($categorySlug: String, $first: Int) {
-      categoryAttributeFilters(categorySlug: $categorySlug, first: $first) {
-        edges {
-          node {
+    query CategoryAttributeFilter($categorySlug: String!) {
+      getFilterAttribute(categorySlug: $categorySlug) {
+        minPrice
+        maxPrice
+        filterAttributes {
+          id
+          code
+          adminName
+          type
+          swatchType
+          validation
+          position
+          isRequired
+          isUnique
+          isFilterable
+          isComparable
+          isConfigurable
+          isUserDefined
+          isVisibleOnFront
+          defaultValue
+          translations {
             id
-            _id
-            code
+            name
+          }
+          options {
+            id
             adminName
-            type
-            swatchType
-            validation
-            position
-            isRequired
-            isUnique
-            isFilterable
-            isComparable
-            isConfigurable
-            isUserDefined
-            isVisibleOnFront
-            valuePerLocale
-            valuePerChannel
-            defaultValue
-            maxPrice
-            minPrice
-            validations
+            sortOrder
+            swatchValue
+            swatchValueUrl
             translations {
-              edges {
-                node {
-                  id
-                  _id
-                  attributeId
-                  locale
-                  name
-                }
-              }
-            }
-            options {
-              edges {
-                node {
-                  id
-                  _id
-                  adminName
-                  sortOrder
-                  swatchValue
-                  swatchValueUrl
-                  translation {
-                    id
-                    _id
-                    attributeOptionId
-                    locale
-                    label
-                  }
-                  translations {
-                    edges {
-                      node {
-                        id
-                        _id
-                        attributeOptionId
-                        locale
-                        label
-                      }
-                    }
-                  }
-                }
-              }
+              id
+              label
             }
           }
-          cursor
         }
-        pageInfo {
-          endCursor
-          startCursor
-          hasNextPage
-          hasPreviousPage
-        }
-        totalCount
       }
     }
   ''';

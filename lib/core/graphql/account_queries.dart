@@ -7,11 +7,11 @@
 
 class AccountQueries {
   /// Get customer profile
-  /// Actual API query: readCustomerProfile(id: ID!)
-  /// Returns: CustomerProfile type
+  /// Actual API query: accountInfo
+  /// Returns: Customer type
   static const String getCustomerProfile = r'''
     query getCustomerProfile {
-      readCustomerProfile {
+      readCustomerProfile: accountInfo {
         id
         firstName
         lastName
@@ -27,40 +27,38 @@ class AccountQueries {
     }
   ''';
 
-  /// Get customer addresses (cursor-based pagination)
-  /// Actual API query: getCustomerAddresses
-  /// Returns: GetCustomerAddressesCursorConnection
+  /// Get customer addresses (offset-based pagination)
+  /// Actual API query: customerAddresses
+  /// Returns: AddressPaginator
   static const String getCustomerAddresses = r'''
-    query getCustomerAddresses($first: Int, $after: String) {
-      getCustomerAddresses(first: $first, after: $after) {
-        edges {
-          node {
-            id
-            _id
-            addressType
-            firstName
-            lastName
-            email
-            companyName
-            vatId
-            address
-            city
-            state
-            country
-            postcode
-            phone
-            defaultAddress
-            useForShipping
-            createdAt
-            updatedAt
-            name
-          }
+    query getCustomerAddresses($first: Int!, $page: Int) {
+      customerAddresses(first: $first, page: $page) {
+        data {
+          id
+          addressType
+          firstName
+          lastName
+          email
+          companyName
+          vatId
+          address
+          city
+          state
+          country
+          postcode
+          phone
+          defaultAddress
+          useForShipping
+          createdAt
+          updatedAt
+          name
         }
-        pageInfo {
-          hasNextPage
-          endCursor
+        paginatorInfo {
+          currentPage
+          lastPage
+          hasMorePages
+          total
         }
-        totalCount
       }
     }
   ''';
@@ -95,52 +93,41 @@ class AccountQueries {
     }
   ''';
 
-  /// Get customer reviews (cursor-based pagination) with product data.
-  /// Bagisto API query: customerReviews(first: Int, after: String)
-  /// Returns review with nested product (name, sku, type, images) for UI display.
+  /// Get customer reviews (offset-based pagination) with product data.
+  /// Bagisto API query: reviewsList(first: Int!, page: Int)
+  /// Returns review with nested product for UI display.
   static const String getCustomerReviews = r'''
-    query getCustomerReviews($first: Int, $after: String) {
-      customerReviews(first: $first, after: $after) {
-        edges {
-          cursor
-          node {
+    query getCustomerReviews($first: Int!, $page: Int) {
+      customerReviews: reviewsList(first: $first, page: $page) {
+        data {
+          id
+          title
+          comment
+          rating
+          status
+          name
+          product {
             id
-            _id
-            title
-            comment
-            rating
-            status
+            sku
+            type
             name
-            product {
+            images {
               id
-              _id
-              sku
-              type
-              name
-              baseImageUrl
-              images {
-                edges {
-                  node {
-                    path
-                  }
-                }
-              }
+              url
             }
-            customer {
-              id
-              _id
-            }
-            createdAt
-            updatedAt
           }
+          customer {
+            id
+          }
+          createdAt
+          updatedAt
         }
-        pageInfo {
-          endCursor
-          startCursor
-          hasNextPage
-          hasPreviousPage
+        paginatorInfo {
+          currentPage
+          lastPage
+          hasMorePages
+          total
         }
-        totalCount
       }
     }
   ''';
@@ -311,66 +298,50 @@ class AccountQueries {
 
   // ─── Wishlist Queries & Mutations ───
 
-  /// Get wishlists (cursor-paginated).
-  /// Bagisto API: wishlists(first: Int, after: String)
-  /// Returns: WishlistCursorConnection { edges { node { ... } }, pageInfo, totalCount }
+  // ─── Wishlist Queries & Mutations ───
+
+  /// Get wishlists (offset-paginated).
+  /// Bagisto API: wishlists(first: Int!, page: Int)
+  /// Returns: WishlistPaginator
   static const String getWishlists = r'''
-    query GetAllWishlists($first: Int, $after: String) {
-      wishlists(first: $first, after: $after) {
-        edges {
-          cursor
-          node {
+    query GetAllWishlists($first: Int!, $page: Int) {
+      wishlists(first: $first, page: $page) {
+        data {
+          id
+          product {
             id
-            _id
-            product {
+            name
+            price
+            specialPrice
+            sku
+            type
+            description
+            urlKey
+            images {
               id
-              _id
-              name
-              price
-              formattedPrice
-              specialPrice
-              formattedSpecialPrice
-              sku
-              type
-              description
-              baseImageUrl
-              urlKey
+              url
             }
-            customer {
-              id
-              email
-            }
-            channel {
-              id
-              code
-              translation {
-                name
-              }
-            }
-            createdAt
-            updatedAt
           }
+          createdAt
+          updatedAt
         }
-        pageInfo {
-          endCursor
-          startCursor
-          hasNextPage
-          hasPreviousPage
+        paginatorInfo {
+          currentPage
+          lastPage
+          hasMorePages
+          total
         }
-        totalCount
       }
     }
   ''';
 
   /// Delete a wishlist item.
-  /// Bagisto API mutation: deleteWishlist(input: deleteWishlistInput!)
+  /// Bagisto API mutation: removeFromWishlist(productId: ID!)
   static const String deleteWishlist = r'''
-    mutation DeleteWishlist($input: deleteWishlistInput!) {
-      deleteWishlist(input: $input) {
-        wishlist {
-          id
-          _id
-        }
+    mutation DeleteWishlist($productId: ID!) {
+      removeFromWishlist(productId: $productId) {
+        success
+        message
       }
     }
   ''';
@@ -391,77 +362,65 @@ class AccountQueries {
   // Compare Items
   // ──────────────────────────────────────────────
 
-  /// Get compare items (cursor-paginated).
-  /// Bagisto API query: compareItems(first: Int, after: String)
-  /// Returns: CompareItemCursorConnection
+  /// Get compare items (offset-paginated).
+  /// Bagisto API query: compareProducts(first: Int!, page: Int)
+  /// Returns: CompareProductPaginator
   static const String getCompareItems = r'''
-    query GetCompareItems($first: Int, $after: String) {
-      compareItems(first: $first, after: $after) {
-        edges {
-          cursor
-          node {
+    query GetCompareItems($first: Int!, $page: Int) {
+      compareItems: compareProducts(first: $first, page: $page) {
+        data {
+          id
+          product {
             id
-            _id
-            product {
+            name
+            description
+            price
+            specialPrice
+            sku
+            type
+            urlKey
+            images {
               id
-              _id
-              name
-              description
-              price
-              formattedPrice
-              specialPrice
-              formattedSpecialPrice
-              sku
-              type
-              baseImageUrl
-              urlKey
+              url
             }
-            customer {
-              id
-              email
-              firstName
-              lastName
-            }
-            createdAt
-            updatedAt
           }
+          customer {
+            id
+            email
+            firstName
+            lastName
+          }
+          createdAt
+          updatedAt
         }
-        pageInfo {
-          endCursor
-          startCursor
-          hasNextPage
-          hasPreviousPage
+        paginatorInfo {
+          currentPage
+          lastPage
+          hasMorePages
+          total
         }
-        totalCount
       }
     }
   ''';
 
   /// Delete a single compare item.
-  /// Bagisto API mutation: deleteCompareItem(input: deleteCompareItemInput!)
+  /// Bagisto API mutation: removeFromCompareProduct(productId: ID!)
   static const String deleteCompareItem = r'''
-    mutation DeleteCompareItem($id: ID!) {
-      deleteCompareItem(input: {id: $id}) {
-        compareItem {
-          id
-          product {
-            sku
-            type
-            createdAt
-          }
-        }
+    mutation DeleteCompareItem($productId: ID!) {
+      removeFromCompareProduct(productId: $productId) {
+        success
+        message
       }
     }
   ''';
 
   /// Delete all compare items.
-  /// Bagisto API mutation: createDeleteAllCompareItems(input: {})
+  /// Bagisto API mutation: removeAllCompareProducts
   static const String deleteAllCompareItems = r'''
     mutation createDeleteAllCompareItems {
-      createDeleteAllCompareItems(input: {}) {
-        deleteAllCompareItems {
-          message
-        }
+      deleteAllCompareItems: removeAllCompareProducts {
+        success
+        message
       }
     }
   ''';
@@ -471,13 +430,15 @@ class AccountQueries {
   // ──────────────────────────────────────────────
 
   /// Add product to wishlist.
-  /// Bagisto API mutation: createWishlist(input: createWishlistInput!)
+  /// Bagisto API mutation: addToWishlist(productId: ID!)
   static const String createWishlist = r'''
-    mutation CreateWishlist($input: createWishlistInput!) {
-      createWishlist(input: $input) {
+    mutation CreateWishlist($productId: ID!) {
+      createWishlist: addToWishlist(productId: $productId) {
+        success
+        message
         wishlist {
           id
-          _id
+          productId
           product {
             id
             name
@@ -494,13 +455,15 @@ class AccountQueries {
   // ──────────────────────────────────────────────
 
   /// Add product to compare list.
-  /// Bagisto API mutation: createCompareItem(input: createCompareItemInput!)
+  /// Bagisto API mutation: addToCompare(productId: ID!)
   static const String createCompareItem = r'''
-    mutation CreateCompareItem($input: createCompareItemInput!) {
-      createCompareItem(input: $input) {
-        compareItem {
+    mutation CreateCompareItem($productId: ID!) {
+      createCompareItem: addToCompare(productId: $productId) {
+        success
+        message
+        compareProduct {
           id
-          _id
+          productId
           createdAt
           updatedAt
           product {
@@ -518,58 +481,52 @@ class AccountQueries {
   // Customer Orders
   // ──────────────────────────────────────────────
 
-  /// Get customer orders (cursor-based pagination).
-  /// Bagisto API query: customerOrders(first: Int, after: String, status: String)
-  /// Returns: CustomerOrderCursorConnection
+  /// Get customer orders (offset-based pagination).
+  /// Bagisto API query: orders(first: Int!, page: Int, input: FilterOrderInput)
+  /// Returns: OrderPaginator
   static const String getCustomerOrders = r'''
-    query getCustomerOrders($first: Int, $after: String, $status: String) {
-      customerOrders(first: $first, after: $after, status: $status) {
-        edges {
-          cursor
-          node {
-            id
-            _id
-            incrementId
-            status
-            channelName
-            customerEmail
-            customerFirstName
-            customerLastName
-            totalItemCount
-            totalQtyOrdered
-            grandTotal
-            baseGrandTotal
-            subTotal
-            taxAmount
-            discountAmount
-            shippingAmount
-            shippingTitle
-            couponCode
-            orderCurrencyCode
-            baseCurrencyCode
-            createdAt
-            updatedAt
-          }
+    query getCustomerOrders($first: Int!, $page: Int, $input: FilterOrderInput) {
+      customerOrders: orders(first: $first, page: $page, input: $input) {
+        data {
+          id
+          incrementId
+          status
+          channelName
+          customerEmail
+          customerFirstName
+          customerLastName
+          totalItemCount
+          totalQtyOrdered
+          grandTotal
+          baseGrandTotal
+          subTotal
+          taxAmount
+          discountAmount
+          shippingAmount
+          shippingTitle
+          couponCode
+          orderCurrencyCode
+          baseCurrencyCode
+          createdAt
+          updatedAt
         }
-        pageInfo {
-          endCursor
-          startCursor
-          hasNextPage
-          hasPreviousPage
+        paginatorInfo {
+          currentPage
+          lastPage
+          hasMorePages
+          total
         }
-        totalCount
       }
     }
   ''';
 
   /// Get a single customer order detail by ID.
-  /// Bagisto API query: customerOrder(id: ID!)
-  /// The id is the IRI format (e.g. "/api/shop/customer-orders/1").
-  /// Note: The Bagisto storefront schema only exposes flat scalar fields
-  /// on CustomerOrder — no nested items/addresses/payment/invoices/shipments.
+  /// Bagisto API query: orderDetail(id: ID!)
+  /// The id is the order ID.
   static const String getCustomerOrder = r'''
     query getCustomerOrder($id: ID!) {
-      customerOrder(id: $id) {
+      customerOrder: orderDetail(id: $id) {
+        id
         incrementId
         status
         channelName
@@ -601,52 +558,42 @@ class AccountQueries {
           methodTitle
         }
         items {
-          edges {
-            node {
-              id
-              _id
-              sku
-              name
-              additional
-              price
-              total
-              qtyOrdered
-              qtyShipped
-              qtyInvoiced
-              qtyCanceled
-              qtyRefunded
-            }
-          }
+          id
+          sku
+          name
+          additional
+          price
+          total
+          qtyOrdered
+          qtyShipped
+          qtyInvoiced
+          qtyCanceled
+          qtyRefunded
         }
         addresses {
-          edges {
-            node {
-              id
-              _id
-              addressType
-              parentAddressId
-              customerId
-              cartId
-              orderId
-              name
-              firstName
-              lastName
-              companyName
-              address
-              city
-              state
-              country
-              postcode
-              useForShipping
-              email
-              phone
-              gender
-              vatId
-              defaultAddress
-              createdAt
-              updatedAt
-            }
-          }
+          id
+          addressType
+          parentAddressId
+          customerId
+          cartId
+          orderId
+          name
+          firstName
+          lastName
+          companyName
+          address
+          city
+          state
+          country
+          postcode
+          useForShipping
+          email
+          phone
+          gender
+          vatId
+          defaultAddress
+          createdAt
+          updatedAt
         }
         createdAt
         updatedAt

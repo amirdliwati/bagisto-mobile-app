@@ -233,21 +233,22 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
     emit(state.copyWith(processingIds: {...state.processingIds, event.id}));
 
     try {
-      await repository.deleteWishlistItem(id: event.id);
+      final itemToRemove = state.items.firstWhere(
+        (item) => item.id == event.id,
+        orElse: () => state.items.first,
+      );
+      final productId = itemToRemove.productNumericId;
+
+      await repository.deleteWishlistItem(id: event.id, productId: productId);
 
       // Remove from local list
       final updatedItems = state.items
           .where((item) => item.id != event.id)
           .toList();
       final updatedProcessing = Set<String>.from(state.processingIds)
-        ..remove(event.id);
+          ..remove(event.id);
 
       // Also sync with global WishlistCubit if available
-      final itemToRemove = state.items.firstWhere(
-        (item) => item.id == event.id,
-        orElse: () => state.items.first,
-      );
-      final productId = itemToRemove.productNumericId;
       if (productId != null && wishlistCubit != null) {
         wishlistCubit!.removeProductFromWishlist(productId);
         debugPrint('❤️ WishlistBloc: synced removal with WishlistCubit');

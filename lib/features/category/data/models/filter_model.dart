@@ -67,17 +67,30 @@ class FilterAttribute {
   }
 
   /// Parse from the `categoryAttributeFilters` API response node
+  /// Parse from the `categoryAttributeFilters` API response node
   factory FilterAttribute.fromCategoryFilterJson(Map<String, dynamic> json) {
-    final optionEdges =
-        json['options']?['edges'] as List<dynamic>? ?? [];
+    final rawOptions = json['options'];
+    List<dynamic> optionNodes = [];
+    if (rawOptions is Map && rawOptions['edges'] is List) {
+      optionNodes = (rawOptions['edges'] as List)
+          .map((e) => (e['node'] ?? e) as Map<String, dynamic>)
+          .toList();
+    } else if (rawOptions is List) {
+      optionNodes = rawOptions;
+    }
 
     // Extract translated name
     String? translatedName;
-    final translationEdges =
-        json['translations']?['edges'] as List<dynamic>?;
-    if (translationEdges != null && translationEdges.isNotEmpty) {
-      final firstTranslation =
-          translationEdges.first['node'] as Map<String, dynamic>?;
+    final rawTranslations = json['translations'];
+    if (rawTranslations is Map && rawTranslations['edges'] is List) {
+      final translationEdges = rawTranslations['edges'] as List;
+      if (translationEdges.isNotEmpty) {
+        final firstTranslation =
+            translationEdges.first['node'] as Map<String, dynamic>?;
+        translatedName = firstTranslation?['name'] as String?;
+      }
+    } else if (rawTranslations is List && rawTranslations.isNotEmpty) {
+      final firstTranslation = rawTranslations.first as Map<String, dynamic>?;
       translatedName = firstTranslation?['name'] as String?;
     }
 
@@ -95,9 +108,8 @@ class FilterAttribute {
       maxPrice: _parseDouble(json['maxPrice']),
       minPrice: _parseDouble(json['minPrice']),
       translatedName: translatedName,
-      options: optionEdges.map((edge) {
-        final node = edge['node'] as Map<String, dynamic>;
-        return FilterOption.fromCategoryFilterJson(node);
+      options: optionNodes.map((node) {
+        return FilterOption.fromCategoryFilterJson(node as Map<String, dynamic>);
       }).toList(),
     );
   }
@@ -149,18 +161,23 @@ class FilterOption {
 
   /// Parse from the `categoryAttributeFilters` option node
   factory FilterOption.fromCategoryFilterJson(Map<String, dynamic> json) {
-    // Try direct translation first, then translations edges
+    // Try direct translation first, then translations edges/list
     String? label;
     final directTranslation = json['translation'] as Map<String, dynamic>?;
     if (directTranslation != null) {
       label = directTranslation['label'] as String?;
     }
     if (label == null || label.isEmpty) {
-      final translationEdges =
-          json['translations']?['edges'] as List<dynamic>?;
-      if (translationEdges != null && translationEdges.isNotEmpty) {
-        final firstTranslation =
-            translationEdges.first['node'] as Map<String, dynamic>?;
+      final rawTranslations = json['translations'];
+      if (rawTranslations is Map && rawTranslations['edges'] is List) {
+        final translationEdges = rawTranslations['edges'] as List;
+        if (translationEdges.isNotEmpty) {
+          final firstTranslation =
+              translationEdges.first['node'] as Map<String, dynamic>?;
+          label = firstTranslation?['label'] as String?;
+        }
+      } else if (rawTranslations is List && rawTranslations.isNotEmpty) {
+        final firstTranslation = rawTranslations.first as Map<String, dynamic>?;
         label = firstTranslation?['label'] as String?;
       }
     }

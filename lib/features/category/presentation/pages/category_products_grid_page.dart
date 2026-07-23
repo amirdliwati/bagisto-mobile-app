@@ -327,7 +327,7 @@ class _CategoryProductsGridViewState extends State<_CategoryProductsGridView>
     final cardWidth =
         (screenWidth - horizontalPadding - crossAxisSpacing * (crossAxisCount - 1)) /
             crossAxisCount;
-    const textSectionHeight = 80.0;
+    const textSectionHeight = 88.0;
     final mainAxisExtent = cardWidth + textSectionHeight;
 
     return SliverMainAxisGroup(
