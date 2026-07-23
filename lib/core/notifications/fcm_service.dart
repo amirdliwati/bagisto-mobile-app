@@ -352,7 +352,7 @@ class FCMService {
         presentSound: true,
       );
 
-      final notificationDetails = NotificationDetails(
+      const notificationDetails = NotificationDetails(
         android: androidDetails,
         iOS: iosDetails,
       );
@@ -508,7 +508,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           message.hashCode,
           notification.title,
           notification.body,
-          NotificationDetails(android: androidDetails, iOS: iosDetails),
+          const NotificationDetails(android: androidDetails, iOS: iosDetails),
         );
 
         debugPrint('✅ Background notification displayed');

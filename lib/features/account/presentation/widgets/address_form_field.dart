@@ -68,7 +68,7 @@ class AddressFormField extends StatelessWidget {
 
     final focusBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: focusBorderColor, width: 1.5),
+      borderSide: const BorderSide(color: focusBorderColor, width: 1.5),
     );
 
     final errorBorder = OutlineInputBorder(

@@ -746,7 +746,7 @@ class CheckoutRepository {
     final result = await _authedClient.mutate(
       MutationOptions(
         document: gql(CheckoutMutations.createRemoveCoupon),
-        variables: const {'input': const {}},
+        variables: const {'input': {}},
       ),
     );
 
