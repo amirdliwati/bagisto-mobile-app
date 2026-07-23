@@ -489,7 +489,7 @@ class _DownloadableProductCard extends StatelessWidget {
                     color: _getStatusColor(
                       product.status,
                       isDark,
-                    ).withOpacity(0.15),
+                    ).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(

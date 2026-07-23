@@ -19,7 +19,7 @@ class LabelSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: true,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
           context.read<ImageSearchBloc>().add(ClearImageSearchEvent());
         }

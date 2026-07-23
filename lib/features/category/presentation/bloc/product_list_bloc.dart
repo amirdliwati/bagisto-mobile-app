@@ -364,9 +364,6 @@ class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
         useCacheFirst: true, // Only check cache, no network
       );
 
-      // Extract price range from cached filter attributes if available
-      double? priceMin;
-      double? priceMax;
 
       // If we have cached products, show them immediately without loader
       if (cachedResult.products.isNotEmpty) {

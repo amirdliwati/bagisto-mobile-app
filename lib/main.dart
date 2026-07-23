@@ -629,7 +629,7 @@ class _AppWithAuthCartSyncState extends State<_AppWithAuthCartSync> {
                 darkTheme: AppTheme.darkTheme,
                 themeMode: themeMode,
                 locale: locale,
-                localizationsDelegates: [
+                localizationsDelegates: const [
                   AppLocalizations.delegate,
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,

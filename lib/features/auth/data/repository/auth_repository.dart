@@ -184,9 +184,6 @@ class AuthRepository {
   /// Clears device token from local storage after logout.
   Future<bool> logout() async {
     try {
-      // Get device token to send to API
-      final token = await DeviceTokenService.getDeviceToken();
-
       final result = await client.mutate(
         MutationOptions(
           document: gql(logoutMutation),

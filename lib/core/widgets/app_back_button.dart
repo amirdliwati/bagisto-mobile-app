@@ -83,8 +83,8 @@ class _AppBackButtonState extends State<AppBackButton>
         child: InkWell(
           onTap: _onPressed,
           borderRadius: BorderRadius.circular(widget.tapAreaSize / 2),
-          splashColor: iconColor.withOpacity(0.1),
-          highlightColor: iconColor.withOpacity(0.05),
+          splashColor: iconColor.withValues(alpha: 0.1),
+          highlightColor: iconColor.withValues(alpha: 0.05),
           onHighlightChanged: (isHighlighted) {
             if (isHighlighted) {
               _animationController.forward();

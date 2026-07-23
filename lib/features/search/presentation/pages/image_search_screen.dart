@@ -208,6 +208,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
       final imageBytes = await _capturedImage!.readAsBytes();
       var decodedImage = img.decodeImage(imageBytes);
 
+      if (!context.mounted) return;
       if (decodedImage == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.searchFailedToProcessImage)),
@@ -242,19 +243,21 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
       // Save cropped image back to the file
       await _capturedImage!.writeAsBytes(img.encodePng(decodedImage));
 
+      if (!context.mounted) return;
+
       // Process cropped image with ML Kit
       setState(() {
         _isCropping = false;
       });
 
-      if (mounted && state.selectedImage != null) {
+      if (context.mounted && state.selectedImage != null) {
         // Use the same file reference (which now contains the cropped image)
         context
             .read<ImageSearchBloc>()
             .add(ProcessImageEvent(state.selectedImage!));
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Crop error: $e')),
         );
@@ -486,7 +489,7 @@ class _CropOverlayPainter extends CustomPainter {
     canvas.drawPath(
       path,
       Paint()
-        ..color = Colors.black.withOpacity(0.4)
+        ..color = Colors.black.withValues(alpha: 0.4)
         ..style = PaintingStyle.fill,
     );
 
