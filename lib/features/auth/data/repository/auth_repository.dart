@@ -49,7 +49,7 @@ class AuthRepository {
 
     debugPrint('🔐 AuthRepo.login — raw data: ${result.data}');
 
-    final data = result.data?['createCustomerLogin']?['customerLogin'];
+    final data = result.data?['customerLogin'];
     if (data == null) {
       debugPrint('🔐 AuthRepo.login — customerLogin is null');
       throw AuthException('Invalid response from server');
@@ -96,12 +96,10 @@ class AuthRepository {
             'lastName': lastName,
             'email': email,
             'password': password,
-            'confirmPassword': confirmPassword,
-            'status': '1',
-            'isVerified': '1',
-            'isSuspended': '0',
+            'passwordConfirmation': confirmPassword,
             'subscribedToNewsLetter': true,
-            'deviceToken': ?token,
+            'agreement': true,
+            'deviceToken': token,
           },
         },
         fetchPolicy: FetchPolicy.noCache,
@@ -116,13 +114,30 @@ class AuthRepository {
 
     debugPrint('📝 AuthRepo.register — raw data: ${result.data}');
 
-    final data = result.data?['createCustomer']?['customer'];
-    if (data == null) {
+    final responseData = result.data?['customerSignUp'];
+    if (responseData == null) {
+      debugPrint('📝 AuthRepo.register — customerSignUp is null in response');
+      throw AuthException('Invalid response from server');
+    }
+
+    final success = responseData['success'] as bool? ?? false;
+    final message = responseData['message'] as String? ?? '';
+    if (!success) {
+      throw AuthException(message.isNotEmpty ? message : 'Registration failed');
+    }
+
+    final customerData = responseData['customer'] as Map<String, dynamic>?;
+    if (customerData == null) {
       debugPrint('📝 AuthRepo.register — customer is null in response');
       throw AuthException('Invalid response from server');
     }
 
-    final customer = Customer.fromJson(data);
+    final map = Map<String, dynamic>.from(customerData);
+    final accessToken = responseData['accessToken']?.toString();
+    map['token'] = accessToken;
+    map['apiToken'] = accessToken;
+
+    final customer = Customer.fromJson(map);
     debugPrint(
       '📝 AuthRepo.register — success: ${customer.displayName}, token: ${customer.token}',
     );
@@ -149,7 +164,7 @@ class AuthRepository {
       throw AuthException(message);
     }
 
-    final data = result.data?['createForgotPassword']?['forgotPassword'];
+    final data = result.data?['forgotPassword'];
     if (data == null) {
       throw AuthException('Invalid response from server');
     }
@@ -175,9 +190,6 @@ class AuthRepository {
       final result = await client.mutate(
         MutationOptions(
           document: gql(logoutMutation),
-          variables: {
-            'input': {'deviceToken': ?token},
-          },
           fetchPolicy: FetchPolicy.noCache,
         ),
       );
@@ -187,7 +199,7 @@ class AuthRepository {
         throw AuthException(message);
       }
 
-      final data = result.data?['createLogout']?['logout'];
+      final data = result.data?['customerLogout'];
 
       // Clear device token on logout
       await DeviceTokenService.clearDeviceToken();

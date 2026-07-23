@@ -1,24 +1,26 @@
 /// GraphQL mutations for authentication
-/// Bagisto API: createCustomerLogin, createCustomer, createForgotPassword, createLogout
+/// Bagisto API: customerLogin, customerSignUp, forgotPassword, customerLogout
 library;
 
 const String loginMutation = r'''
-  mutation loginCustomer($input: createCustomerLoginInput!) {
-    createCustomerLogin(input: $input) {
-      customerLogin {
+  mutation loginCustomer($input: LoginInput!) {
+    customerLogin(input: $input) {
+      success
+      message
+      token: accessToken
+      customer {
         id
-        apiToken
-        token
-        message
-        success
       }
     }
   }
 ''';
 
 const String registerMutation = r'''
-  mutation registerCustomer($input: createCustomerInput!) {
-    createCustomer(input: $input) {
+  mutation registerCustomer($input: SignUpInput!) {
+    customerSignUp(input: $input) {
+      success
+      message
+      accessToken
       customer {
         id
         firstName
@@ -41,22 +43,18 @@ const String registerMutation = r'''
 
 const String forgotPasswordMutation = r'''
   mutation forgotPassword($email: String!) {
-    createForgotPassword(input: { email: $email }) {
-      forgotPassword {
-        success
-        message
-      }
+    forgotPassword(email: $email) {
+      success
+      message
     }
   }
 ''';
 
 const String logoutMutation = r'''
-  mutation createLogout($input: createLogoutInput!) {
-    createLogout(input: $input) {
-      logout {
-        success
-        message
-      }
+  mutation customerLogout {
+    customerLogout {
+      success
+      message
     }
   }
 ''';
