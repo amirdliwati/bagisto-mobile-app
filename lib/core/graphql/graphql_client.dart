@@ -77,6 +77,9 @@ class LoggingHttpClient extends http.BaseClient {
     _logApiMessage('📨 Request Type: ${request.method}');
     if (requestJson != null || variables != null) {
       _logApiMessage('🧩 Payload attached');
+      if (variables != null) {
+        _logApiMessage('🔧 Variables: ${jsonEncode(variables)}');
+      }
     }
 
     try {

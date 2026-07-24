@@ -1,10 +1,4 @@
-- `[x]` Fix warnings and errors in `lib/main.dart`
-- `[x]` Fix warnings and errors in `lib/features/search/presentation/pages/image_search_screen.dart`
-- `[x]` Fix warnings and errors in `lib/features/search/presentation/pages/label_selection_screen.dart`
-- `[x]` Fix warnings and errors in `lib/core/widgets/app_back_button.dart`
-- `[x]` Fix warnings and errors in `lib/features/account/presentation/pages/settings_bottom_sheet.dart`
-- `[x]` Fix warnings and errors in `lib/features/auth/data/repository/auth_repository.dart`
-- `[x]` Fix warnings and errors in `lib/features/category/presentation/bloc/product_list_bloc.dart`
-- `[x]` Fix warnings and errors in `lib/features/account/presentation/pages/downloadable_products_page.dart`
-- `[x]` Fix warnings and errors in `lib/driver_main.dart`
+- `[x]` Revert `loginMutation` in `lib/core/graphql/auth_mutations.dart` to `customerLogin`
+- `[x]` Update `AuthRepository.login` to parse `customerLogin`
 - `[x]` Verify with `flutter analyze`
+- `[ ]` Confirm login functionality with user

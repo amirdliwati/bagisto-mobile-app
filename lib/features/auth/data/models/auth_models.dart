@@ -6,29 +6,33 @@
 library;
 
 class CustomerLogin {
-  final String? id;
-  final String? apiToken;
-  final String? token;
+  final String? accessToken;
   final String? message;
   final bool success;
+  final Customer? customer;
 
   const CustomerLogin({
-    this.id,
-    this.apiToken,
-    this.token,
+    this.accessToken,
     this.message,
     this.success = false,
+    this.customer,
   });
 
   factory CustomerLogin.fromJson(Map<String, dynamic> json) {
     return CustomerLogin(
-      id: json['id']?.toString(),
-      apiToken: json['apiToken']?.toString(),
-      token: json['token']?.toString(),
+      accessToken: json['accessToken']?.toString(),
       message: json['message']?.toString(),
       success: _parseBool(json['success']),
+      customer: json['customer'] != null
+          ? Customer.fromJson(json['customer'] as Map<String, dynamic>)
+          : null,
     );
   }
+
+  // Compatibility getters for old code
+  String? get id => customer?.id;
+  String? get token => accessToken;
+  String? get apiToken => accessToken;
 }
 
 class Customer {

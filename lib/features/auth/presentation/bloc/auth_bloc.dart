@@ -199,11 +199,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
 
       final userId = loginResult.id;
+      final userName = loginResult.customer?.displayName ?? event.email;
 
       // Persist token and user info
       await AuthStorage.saveToken(token);
       await AuthStorage.saveUserInfo(
-        name: event.email,
+        name: userName,
         email: event.email,
         userId: userId,
       );
@@ -212,7 +213,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(
         AuthAuthenticated(
           token: token,
-          userName: event.email,
+          userName: userName,
           userEmail: event.email,
           userId: userId,
           deviceToken: deviceToken,

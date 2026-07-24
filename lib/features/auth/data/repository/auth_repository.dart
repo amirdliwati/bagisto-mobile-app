@@ -31,11 +31,8 @@ class AuthRepository {
       MutationOptions(
         document: gql(loginMutation),
         variables: {
-          'input': {
-            'email': email,
-            'password': password,
-            'deviceToken': ?token,
-          },
+          'email': email,
+          'password': password,
         },
         fetchPolicy: FetchPolicy.noCache,
       ),
@@ -91,16 +88,11 @@ class AuthRepository {
       MutationOptions(
         document: gql(registerMutation),
         variables: {
-          'input': {
-            'firstName': firstName,
-            'lastName': lastName,
-            'email': email,
-            'password': password,
-            'passwordConfirmation': confirmPassword,
-            'subscribedToNewsLetter': true,
-            'agreement': true,
-            'deviceToken': token,
-          },
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+          'password': password,
+          'passwordConfirmation': confirmPassword,
         },
         fetchPolicy: FetchPolicy.noCache,
       ),

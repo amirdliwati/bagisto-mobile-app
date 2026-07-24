@@ -3,21 +3,48 @@
 library;
 
 const String loginMutation = r'''
-  mutation loginCustomer($input: LoginInput!) {
-    customerLogin(input: $input) {
+  mutation loginCustomer($email: String!, $password: String!) {
+    customerLogin(input: { email: $email, password: $password }) {
       success
       message
-      token: accessToken
+      accessToken
       customer {
         id
+        firstName
+        lastName
+        email
+        phone
+        status
+        apiToken
+        customerGroupId
+        subscribedToNewsLetter
+        isVerified
+        isSuspended
+        token
+        rememberToken
+        name
       }
     }
   }
 ''';
 
 const String registerMutation = r'''
-  mutation registerCustomer($input: SignUpInput!) {
-    customerSignUp(input: $input) {
+  mutation registerCustomer(
+    $firstName: String!,
+    $lastName: String!,
+    $email: String!,
+    $password: String!,
+    $passwordConfirmation: String!
+  ) {
+    customerSignUp(input: {
+      firstName: $firstName,
+      lastName: $lastName,
+      email: $email,
+      password: $password,
+      passwordConfirmation: $passwordConfirmation,
+      subscribedToNewsLetter: true,
+      agreement: true
+    }) {
       success
       message
       accessToken
