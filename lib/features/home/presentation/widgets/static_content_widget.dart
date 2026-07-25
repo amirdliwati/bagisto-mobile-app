@@ -27,8 +27,13 @@ class StaticContentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Parse the HTML and determine which layout to use
-    if (html.contains('top-collection-container') ||
-        html.contains('top-collection-grid')) {
+    if (html.contains('home-offer')) {
+      return _buildHomeOffer(context);
+    } else if (html.contains('top-collection-container') ||
+        html.contains('top-collection-grid') ||
+        html.contains('section-game') ||
+        html.contains('collection-card-wrapper') ||
+        html.contains('single-collection-card')) {
       return _buildTopCollections(context);
     } else if (html.contains('inline-col-wrapper')) {
       return _buildBoldCollections(context);
@@ -101,6 +106,30 @@ class StaticContentWidget extends StatelessWidget {
   // SECTION BUILDERS
   // ──────────────────────────────────────────────────────────────────────
 
+  /// Build "Offer Information" banner layout
+  Widget _buildHomeOffer(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Extract text inside h1
+    final textMatch = RegExp(r'<h1[^>]*>(.*?)</h1>', dotAll: true).firstMatch(html);
+    final text = textMatch?.group(1)?.trim() ?? 'Offer';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE8EDFE),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontFamily: 'Roboto',
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: isDark ? Colors.white : const Color(0xFF1E3A8A),
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
   /// Build "Top Collections" style layout
   /// A header with title followed by a grid of collection cards
   Widget _buildTopCollections(BuildContext context) {
@@ -112,25 +141,56 @@ class StaticContentWidget extends StatelessWidget {
     ).firstMatch(html);
     final title = titleMatch?.group(1)?.trim() ?? l10n.homeCollections;
 
-    // Extract collection cards — find each card block, then extract image + title
+    // Extract collection cards — find each card block
     final cardBlockPattern = RegExp(
-      r'<div class="top-collection-card"[^>]*>(.*?)</div>',
+      r'<div class="(?:top-collection-card|single-collection-card)"[^>]*>(.*?)</div>',
       dotAll: true,
     );
     final titlePattern = RegExp(r'<h3[^>]*>(.*?)</h3>', dotAll: true);
+    final subtitlePattern = RegExp(r'<p[^>]*>(.*?)</p>', dotAll: true);
 
     final cards = <_CollectionCard>[];
 
     for (final block in cardBlockPattern.allMatches(html)) {
       final blockHtml = block.group(0) ?? '';
       final imageUrl = _extractBestImageUrl(blockHtml);
+      
       final cardTitleMatch = titlePattern.firstMatch(blockHtml);
-      final cardTitle = cardTitleMatch?.group(1)?.trim() ?? '';
+      String cardTitle = cardTitleMatch?.group(1)?.trim() ?? '';
+      
+      final cardSubtitleMatch = subtitlePattern.firstMatch(blockHtml);
+      final cardSubtitle = cardSubtitleMatch?.group(1)?.trim() ?? '';
+
+      // Fallback 1: Extract from alt/aria-label
+      if (cardTitle.isEmpty) {
+        final altMatch = RegExp(r'alt="([^"]+)"').firstMatch(blockHtml);
+        if (altMatch != null) {
+          final alt = altMatch.group(1) ?? '';
+          if (alt.isNotEmpty && alt != title) {
+            cardTitle = alt;
+          }
+        }
+      }
+
+      // Fallback 2: Extract from href link
+      if (cardTitle.isEmpty) {
+        final hrefMatch = RegExp(r'href="([^"]+)"').firstMatch(blockHtml);
+        if (hrefMatch != null) {
+          final href = hrefMatch.group(1) ?? '';
+          if (href.isNotEmpty) {
+            final cleanHref = href.replaceAll('-', ' ').trim();
+            if (cleanHref.isNotEmpty) {
+              cardTitle = cleanHref[0].toUpperCase() + cleanHref.substring(1);
+            }
+          }
+        }
+      }
 
       cards.add(
         _CollectionCard(
           imageUrl: _getFullUrl(imageUrl),
           title: cardTitle,
+          subtitle: cardSubtitle,
         ),
       );
     }
@@ -148,6 +208,7 @@ class StaticContentWidget extends StatelessWidget {
           _CollectionCard(
             imageUrl: _getFullUrl(images[i]),
             title: titles[i],
+            subtitle: '',
           ),
         );
       }
@@ -155,7 +216,7 @@ class StaticContentWidget extends StatelessWidget {
       // If we have images but no titles, still show them
       if (cards.isEmpty && images.isNotEmpty) {
         for (final img in images) {
-          cards.add(_CollectionCard(imageUrl: _getFullUrl(img), title: ''));
+          cards.add(_CollectionCard(imageUrl: _getFullUrl(img), title: '', subtitle: ''));
         }
       }
     }
@@ -173,9 +234,9 @@ class StaticContentWidget extends StatelessWidget {
               return Text(
                 title,
                 style: TextStyle(
-                  fontFamily: 'DM Serif Display',
-                  fontSize: 28,
-                  fontWeight: FontWeight.w400,
+                  fontFamily: 'Roboto',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
                   color: isDark ? AppColors.neutral100 : AppColors.neutral900,
                 ),
                 textAlign: TextAlign.center,
@@ -194,7 +255,7 @@ class StaticContentWidget extends StatelessWidget {
               crossAxisCount: 2,
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
-              childAspectRatio: 1.0,
+              childAspectRatio: 0.95,
             ),
             itemCount: cards.length,
             itemBuilder: (context, index) {
@@ -208,58 +269,104 @@ class StaticContentWidget extends StatelessWidget {
 
   Widget _buildCollectionCard(_CollectionCard card, BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Stack(
-      children: [
-        // Image
-        ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: CachedNetworkImage(
-            imageUrl: card.imageUrl,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-            placeholder: (context, url) => Container(
-              color: isDark ? AppColors.neutral800 : AppColors.neutral100,
-              child: const Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppColors.primary500,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Image
+            CachedNetworkImage(
+              imageUrl: card.imageUrl,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: isDark ? AppColors.neutral800 : AppColors.neutral100,
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.primary500,
+                  ),
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: isDark ? AppColors.neutral800 : AppColors.neutral100,
+                child: Icon(
+                  Icons.image_outlined,
+                  size: 40,
+                  color: isDark ? AppColors.neutral500 : AppColors.neutral400,
                 ),
               ),
             ),
-            errorWidget: (context, url, error) => Container(
-              color: isDark ? AppColors.neutral800 : AppColors.neutral100,
-              child: Icon(
-                Icons.image_outlined,
-                size: 40,
-                color: isDark ? AppColors.neutral500 : AppColors.neutral400,
+            // Gradient Overlay
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.65),
+                    ],
+                    stops: const [0.5, 0.7, 1.0],
+                  ),
+                ),
               ),
             ),
-          ),
+            // Title and Subtitle overlay at bottom-left
+            Positioned(
+              left: 12,
+              right: 12,
+              bottom: 12,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    card.title.isNotEmpty ? card.title : 'Collection',
+                    style: const TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (card.subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      card.subtitle,
+                      style: TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white.withOpacity(0.85),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
         ),
-        // Title overlay at bottom
-        if (card.title.isNotEmpty)
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 20,
-            child: Text(
-              card.title,
-              style: TextStyle(
-                fontFamily: 'DM Serif Display',
-                fontSize: 20,
-                fontWeight: FontWeight.w400,
-                color: isDark ? AppColors.neutral100 : AppColors.neutral900,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-      ],
+      ),
     );
   }
 
-  /// Build "Bold Collections" style layout
-  /// An inline layout with image on one side and content on the other
   Widget _buildBoldCollections(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     // Extract image — prefer data-src over src
@@ -283,106 +390,135 @@ class StaticContentWidget extends StatelessWidget {
     // Check for button
     final hasButton =
         html.contains('primary-button') || html.contains('<button');
+    
+    final isRtl = html.contains('direction-rtl');
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Builder(
         builder: (ctx) {
           final isDark = Theme.of(ctx).brightness == Brightness.dark;
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Image
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: AspectRatio(
-                    aspectRatio: 1.24, // 632/510
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: isDark
-                            ? AppColors.neutral800
-                            : AppColors.neutral100,
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppColors.primary500,
-                          ),
+          
+          final List<Widget> rowChildren = [
+            // Image
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: AspectRatio(
+                  aspectRatio: 1.1,
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: isDark
+                          ? AppColors.neutral800
+                          : AppColors.neutral100,
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primary500,
                         ),
                       ),
-                      errorWidget: (context, url, error) => Container(
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      color: isDark
+                          ? AppColors.neutral800
+                          : AppColors.neutral100,
+                      child: Icon(
+                        Icons.image_outlined,
+                        size: 32,
                         color: isDark
-                            ? AppColors.neutral800
-                            : AppColors.neutral100,
-                        child: Icon(
-                          Icons.image_outlined,
-                          size: 40,
-                          color: isDark
-                              ? AppColors.neutral500
-                              : AppColors.neutral400,
-                        ),
+                            ? AppColors.neutral500
+                            : AppColors.neutral400,
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 24),
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+            ),
+            const SizedBox(width: 16),
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.neutral100
+                          : AppColors.neutral900,
+                      height: 1.3,
+                    ),
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (description.isNotEmpty) ...[
+                    const SizedBox(height: 6),
                     Text(
-                      title,
+                      description,
                       style: TextStyle(
-                        fontFamily: 'DM Serif Display',
-                        fontSize: 28,
-                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Roboto',
+                        fontSize: 12,
                         color: isDark
-                            ? AppColors.neutral100
-                            : AppColors.neutral900,
-                        height: 1.2,
+                            ? AppColors.neutral400
+                            : AppColors.neutral600,
+                        height: 1.4,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                  if (hasButton) ...[
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: onViewAllPressed,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary500,
+                        foregroundColor: AppColors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.homeViewAll,
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                     ),
-                    if (description.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        description,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          color: isDark
-                              ? AppColors.neutral400
-                              : AppColors.neutral600,
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
-                    if (hasButton) ...[
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: onViewAllPressed,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary500,
-                          foregroundColor: AppColors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(l10n.homeViewAll),
-                      ),
-                    ],
                   ],
-                ),
+                ],
               ),
-            ],
+            ),
+          ];
+
+          return Card(
+            color: isDark ? AppColors.neutral800 : AppColors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                color: isDark ? AppColors.neutral700 : AppColors.neutral100,
+                width: 1,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: isRtl ? rowChildren.reversed.toList() : rowChildren,
+              ),
+            ),
           );
         },
       ),
@@ -589,8 +725,13 @@ class StaticContentWidget extends StatelessWidget {
 class _CollectionCard {
   final String imageUrl;
   final String title;
+  final String subtitle;
 
-  _CollectionCard({required this.imageUrl, required this.title});
+  _CollectionCard({
+    required this.imageUrl,
+    required this.title,
+    required this.subtitle,
+  });
 }
 
 class _ServiceCard {

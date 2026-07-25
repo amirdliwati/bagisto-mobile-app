@@ -105,6 +105,32 @@ class ProductCardSmall extends StatelessWidget {
                       ),
                     ),
                   ),
+                  // Discount badge (bottom-right)
+                  if (product.hasDiscount && product.discountPercent > 0)
+                    Positioned(
+                      bottom: 4,
+                      right: 4,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: AppColors.neutral200.withOpacity(0.5),
+                            width: 0.5,
+                          ),
+                        ),
+                        child: Text(
+                          '${product.discountPercent}% off',
+                          style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 9,
+                            color: AppColors.primary500,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -120,22 +146,55 @@ class ProductCardSmall extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 6),
-              Text(
-                _priceLabel(),
-                style: TextStyle(
-                  fontFamily: 'Roboto',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: isDark ? AppColors.white : AppColors.neutral900,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              _buildPriceRow(isDark),
               const SizedBox(height: 6),
               _buildRating(context),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPriceRow(bool isDark) {
+    if (product.hasDiscount) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            product.displayPriceLabel,
+            style: TextStyle(
+              fontFamily: 'Roboto',
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+              color: isDark ? AppColors.white : AppColors.neutral900,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              product.originalPriceLabel ?? '',
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w400,
+                fontSize: 11,
+                color: AppColors.neutral500,
+                decoration: TextDecoration.lineThrough,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      );
+    }
+    return Text(
+      product.displayPriceLabel,
+      style: TextStyle(
+        fontFamily: 'Roboto',
+        fontWeight: FontWeight.w600,
+        fontSize: 13,
+        color: isDark ? AppColors.white : AppColors.neutral900,
       ),
     );
   }
@@ -189,9 +248,6 @@ class ProductCardSmall extends StatelessWidget {
     );
   }
 
-  String _priceLabel() {
-    return product.displayPriceLabel;
-  }
 
   Widget _placeholder(bool isDark) {
     return Center(

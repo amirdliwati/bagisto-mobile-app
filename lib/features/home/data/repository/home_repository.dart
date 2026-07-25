@@ -17,49 +17,156 @@ class HomeRepository {
   HomeRepository({required GraphQLClient client}) : _client = client;
 
   /// Fetches the theme customization entries that define homepage sections.
+  static final List<ThemeCustomization> _fallbackCustomizations = [
+    const ThemeCustomization(
+      id: '1',
+      type: 'image_carousel',
+      name: 'Image Carousel',
+      status: true,
+      sortOrder: 1,
+      options: {
+        'images': [
+          {
+            'image': 'slider1.png',
+            'image_url': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80',
+            'title': 'New Collection',
+            'link': '',
+          },
+          {
+            'image': 'slider2.png',
+            'image_url': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80',
+            'title': 'Premium Quality',
+            'link': '',
+          }
+        ]
+      },
+    ),
+    const ThemeCustomization(
+      id: '2',
+      type: 'category_carousel',
+      name: 'Category Carousel',
+      status: true,
+      sortOrder: 2,
+      options: {},
+    ),
+    const ThemeCustomization(
+      id: '3',
+      type: 'product_carousel',
+      name: 'Featured Products',
+      status: true,
+      sortOrder: 3,
+      options: {
+        'filters': {
+          'limit': '6',
+          'sort': 'created_at-desc',
+        }
+      },
+    ),
+    const ThemeCustomization(
+      id: '5',
+      type: 'static_content',
+      name: 'Collections',
+      status: true,
+      sortOrder: 4,
+      options: {
+        'html': '''
+          <div class="top-collection-grid">
+            <h2>Our Collections</h2>
+            <div class="top-collection-card">
+              <img src="https://store.frontier-ibs.com/themes/default/assets/images/collection1.png" alt="Mens"/>
+              <h3>Mens</h3>
+            </div>
+            <div class="top-collection-card">
+              <img src="https://store.frontier-ibs.com/themes/default/assets/images/collection2.png" alt="Womens"/>
+              <h3>Womens</h3>
+            </div>
+          </div>
+        '''
+      },
+    ),
+    const ThemeCustomization(
+      id: '7',
+      type: 'product_carousel',
+      name: 'New Products',
+      status: true,
+      sortOrder: 5,
+      options: {
+        'filters': {
+          'limit': '4',
+          'sort': 'created_at-desc',
+        }
+      },
+    ),
+    const ThemeCustomization(
+      id: '8',
+      type: 'product_carousel',
+      name: 'Hot Deals',
+      status: true,
+      sortOrder: 6,
+      options: {
+        'filters': {
+          'limit': '6',
+          'sort': 'created_at-desc',
+        }
+      },
+    ),
+  ];
+
   Future<List<ThemeCustomization>> fetchThemeCustomizations() async {
     // Read the user's preferred locale for selecting the right translation
     final prefs = await SharedPreferences.getInstance();
     final locale = prefs.getString(LocaleCubit.localeKey) ?? 'en';
 
-    final result = await _client.query(
-      QueryOptions(
-        document: gql(ThemeQueries.getThemeCustomization),
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
-      ),
-    );
+    try {
+      final result = await _client.query(
+        QueryOptions(
+          document: gql(ThemeQueries.getThemeCustomization),
+          fetchPolicy: FetchPolicy.cacheAndNetwork,
+        ),
+      );
 
-    if (result.hasException) {
-      // Some deployments can return internal errors for this resolver.
-      // Degrade gracefully so the rest of the home data can still load.
-      return [];
-    }
+      if (result.hasException) {
+        // Some deployments can return internal errors for this resolver.
+        // Degrade gracefully so the rest of the home data can still load.
+        return _fallbackCustomizations;
+      }
 
-    final customizationsData = result.data?['themeCustomizations'];
+      final customizationsData = result.data?['themeCustomizations'];
+      if (customizationsData == null) {
+        return _fallbackCustomizations;
+      }
 
-    final List<Map<String, dynamic>> nodes;
-    if (customizationsData is List) {
-      nodes = customizationsData.whereType<Map<String, dynamic>>().toList();
-    } else {
-      final edges = (customizationsData as Map<String, dynamic>?)?['edges']
-              as List? ??
-          const [];
-      nodes = edges
-          .map((e) => e['node'])
-          .whereType<Map<String, dynamic>>()
+      final List<Map<String, dynamic>> nodes;
+      if (customizationsData is List) {
+        nodes = customizationsData.whereType<Map<String, dynamic>>().toList();
+      } else {
+        final edges = (customizationsData as Map<String, dynamic>?)?['edges']
+                as List? ??
+            const [];
+        nodes = edges
+            .map((e) => e['node'])
+            .whereType<Map<String, dynamic>>()
+            .toList();
+      }
+
+      final list = nodes
+          .map(
+            (node) => ThemeCustomization.fromJson(
+              node,
+              preferredLocale: locale,
+            ),
+          )
+          .where((tc) => tc.status)
           .toList();
-    }
 
-    return nodes
-        .map(
-          (node) => ThemeCustomization.fromJson(
-            node,
-            preferredLocale: locale,
-          ),
-        )
-        .where((tc) => tc.status)
-        .toList()
-      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      if (list.isEmpty) {
+        return _fallbackCustomizations;
+      }
+
+      return list..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    } catch (_) {
+      return _fallbackCustomizations;
+    }
   }
 
   /// Fetches categories for the horizontal category carousel.

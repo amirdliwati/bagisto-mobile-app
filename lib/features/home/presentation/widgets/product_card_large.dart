@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../l10n/app_localizations.dart';
 import '../../data/models/home_models.dart';
 
 /// Large product card (Figma node 86:962).
@@ -137,12 +136,36 @@ class ProductCardLarge extends StatelessWidget {
               ),
             ),
           ),
+        if (product.hasDiscount && product.discountPercent > 0)
+          Positioned(
+            bottom: 6,
+            right: 6,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.neutral200.withOpacity(0.5),
+                  width: 0.5,
+                ),
+              ),
+              child: Text(
+                '${product.discountPercent}% off',
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                  color: AppColors.primary500,
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
 
   Widget _buildPriceRow(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     if (product.hasDiscount) {
       // Figma: flex row (not wrap) with gap-3, items centered vertically
@@ -164,7 +187,7 @@ class ProductCardLarge extends StatelessWidget {
                 color: isDark ? AppColors.white : AppColors.neutral900,
               ),
             ),
-            const SizedBox(width: 3),
+            const SizedBox(width: 4),
             Text(
               product.originalPriceLabel ?? '',
               style: const TextStyle(
@@ -174,17 +197,6 @@ class ProductCardLarge extends StatelessWidget {
                 height: 1.0,
                 color: AppColors.neutral500,
                 decoration: TextDecoration.lineThrough,
-              ),
-            ),
-            const SizedBox(width: 3),
-            Text(
-              l10n.homeDiscountOff(product.discountPercent.toString()),
-              style: const TextStyle(
-                fontFamily: 'Roboto',
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                height: 1.0,
-                color: AppColors.primary500,
               ),
             ),
           ],

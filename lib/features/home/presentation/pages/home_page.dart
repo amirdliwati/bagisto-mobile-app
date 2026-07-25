@@ -302,13 +302,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             child: GestureDetector(
               onTap: () => _openSearchPage(context),
               child: Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: isDark ? AppColors.neutral800 : AppColors.white,
                   border: Border.all(
                     color: isDark ? AppColors.neutral700 : AppColors.neutral200,
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(24), // Pill-shaped!
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -318,16 +318,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       children: [
                         SvgPicture.asset(
                           'assets/images/frontier_logo.svg',
-                          width: 20,
-                          height: 20,
+                          width: 22,
+                          height: 22,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 6),
                         Text(
                           'frontier',
                           style: TextStyle(
                             fontFamily: 'Montserrat',
                             fontWeight: FontWeight.w700,
-                            fontSize: 13,
+                            fontSize: 14,
                             color: isDark
                                 ? AppColors.neutral100
                                 : AppColors.black,
@@ -336,36 +336,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       ],
                     ),
                     // Search icon
-                    GestureDetector(
-                      onTap: () => _openSearchPage(context),
-                      child: Icon(
-                        Icons.search,
-                        size: 24,
-                        color: isDark
-                            ? AppColors.neutral400
-                            : AppColors.neutral800,
-                      ),
+                    Icon(
+                      Icons.search,
+                      size: 22,
+                      color: isDark
+                          ? AppColors.neutral400
+                          : AppColors.neutral800,
                     ),
                   ],
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 6),
-          // Notification bell
-          // Container(
-          //   width: 44,
-          //   height: 46,
-          //   decoration: BoxDecoration(
-          //     border: Border.all(color: AppColors.neutral200),
-          //     borderRadius: BorderRadius.circular(10),
-          //   ),
-          //   child: const Icon(
-          //     Icons.notifications_outlined,
-          //     size: 24,
-          //     color: AppColors.neutral800,
-          //   ),
-          // ),
         ],
       ),
     );
