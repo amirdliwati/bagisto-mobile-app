@@ -374,8 +374,11 @@ class BannerImage extends Equatable {
 
   factory BannerImage.fromJson(Map<String, dynamic> json) {
     return BannerImage(
-      imageUrl: json['image'] as String? ?? '',
-      link: json['link'] as String? ?? '',
+      imageUrl: json['image'] as String? ??
+          json['image_url'] as String? ??
+          json['imageUrl'] as String? ??
+          '',
+      link: json['link'] as String? ?? json['url'] as String? ?? '',
       title: json['title'] as String?,
     );
   }

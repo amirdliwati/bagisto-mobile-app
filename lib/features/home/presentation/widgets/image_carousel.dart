@@ -176,7 +176,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
                               : AppColors.neutral100,
                           child: Image.network(
                             url,
-                            fit: BoxFit.contain,
+                            fit: BoxFit.cover,
                             width: double.infinity,
                             errorBuilder: (context, error, stackTrace) =>
                                 Center(
