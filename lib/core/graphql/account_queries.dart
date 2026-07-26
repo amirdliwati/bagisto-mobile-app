@@ -51,7 +51,6 @@ class AccountQueries {
           useForShipping
           createdAt
           updatedAt
-          name
         }
         paginatorInfo {
           currentPage

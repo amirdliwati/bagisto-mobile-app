@@ -181,7 +181,6 @@ class ProductQueries {
   static const String _productDetailedCommonFragment = r'''
     fragment ProductDetailedCommon on Product {
       id
-      _id
       sku
       type
       name
@@ -189,23 +188,9 @@ class ProductQueries {
       description
       shortDescription
       price
-      formattedPrice
-      baseImageUrl
-      minimumPrice
-      formattedMinimumPrice
       specialPrice
-      formattedSpecialPrice
-      maximumPrice
-      formattedMaximumPrice
-      regularMinimumPrice
-      regularMaximumPrice
-      formattedRegularMinimumPrice
-      formattedRegularMaximumPrice
       isSaleable
       guestCheckout
-      color
-      size
-      brand
       images {
         id
         url
@@ -213,180 +198,109 @@ class ProductQueries {
         type
       }
       reviews {
-        edges {
-          node {
-            rating
-            id
-            name
-            title
-            comment
-            createdAt
-          }
-        }
+        rating
+        id
+        name
+        title
+        comment
+        createdAt
       }
       relatedProducts {
-        edges {
-          node {
-            id
-            _id
-            sku
-            name
-            urlKey
-            type
-            baseImageUrl
-            price
-            formattedPrice
-            minimumPrice
-            formattedMinimumPrice
-            specialPrice
-            formattedSpecialPrice
-            isSaleable
-          }
-        }
+        id
+        sku
+        name
+        urlKey
+        type
+        price
+        specialPrice
+        isSaleable
       }
       customizableOptions {
-        edges {
-          node {
-            id
-            _id
-            type
-            isRequired
-            maxCharacters
-            supportedFileExtensions
-            sortOrder
-            translation {
-              id
-              locale
-              label
-            }
-            customizableOptionPrices {
-              edges {
-                node {
-                  id
-                  _id
-                  label
-                  price
-                  formattedPrice
-                  sortOrder
-                }
-              }
-            }
-          }
+        id
+        type
+        isRequired
+        maxCharacters
+        supportedFileExtensions
+        sortOrder
+        translations {
+          id
+          locale
+          label
+        }
+        customizableOptionPrices {
+          id
+          label
+          price
+          sortOrder
         }
       }
     }
   ''';
 
   static const String _configurableDetailedFields = r'''
-      superAttributeOptions
-      combinations
       attributeValues {
-        edges {
-          node {
-            value
-            attribute {
-              code
-              adminName
-            }
-          }
+        attribute {
+          code
+          adminName
         }
       }
       variants {
-        edges {
-          node {
-            id
-            name
-            sku
-            price
-            formattedPrice
-            specialPrice
-            formattedSpecialPrice
-            baseImageUrl
-            attributeValues {
-              edges {
-                node {
-                  value
-                  attribute {
-                    code
-                    adminName
-                  }
-                }
-              }
-            }
+        id
+        name
+        sku
+        price
+        specialPrice
+        attributeValues {
+          attribute {
+            code
+            adminName
           }
         }
       }
       categories {
-        edges {
-          node {
-            id
-            translation {
-              name
-            }
-          }
-        }
+        id
+        name
       }
   ''';
 
   static const String _downloadableDetailedFields = r'''
       downloadableLinks {
-        edges {
-          node {
-            id
-            _id
-            type
-            price
-            formattedPrice
-            downloads
-            sortOrder
-            fileUrl
-            sampleFileUrl
-            translation {
-              title
-            }
-          }
+        id
+        type
+        price
+        downloads
+        sortOrder
+        fileUrl
+        sampleFileUrl
+        translations {
+          title
         }
       }
       downloadableSamples {
-        edges {
-          node {
-            id
-            _id
-            type
-            fileUrl
-            sortOrder
-            translation {
-              title
-            }
-          }
+        id
+        type
+        fileUrl
+        sortOrder
+        translations {
+          title
         }
       }
   ''';
 
   static const String _groupedDetailedFields = r'''
       groupedProducts {
-        edges {
-          node {
+        id
+        qty
+        sortOrder
+        associatedProduct {
+          id
+          name
+          sku
+          price
+          specialPrice
+          images(first: 3) {
             id
-            qty
-            sortOrder
-            associatedProduct {
-              id
-              name
-              sku
-              price
-              formattedPrice
-              specialPrice
-              formattedSpecialPrice
-              images(first: 3) {
-                edges {
-                  node {
-                    id
-                    publicPath
-                  }
-                }
-              }
-            }
+            publicPath
           }
         }
       }
@@ -394,122 +308,34 @@ class ProductQueries {
 
   static const String _bundleDetailedFields = r'''
       bundleOptions {
-        edges {
-          node {
+        id
+        type
+        isRequired
+        sortOrder
+        translations {
+          label
+        }
+        bundleOptionProducts {
+          id
+          qty
+          isDefault
+          isUserDefined
+          sortOrder
+          product {
             id
-            type
-            isRequired
-            sortOrder
-            translation {
-              label
-            }
-            bundleOptionProducts {
-              edges {
-                node {
-                  id
-                  qty
-                  isDefault
-                  isUserDefined
-                  sortOrder
-                  product {
-                    id
-                    name
-                    sku
-                    price
-                    formattedPrice
-                    images(first: 3) {
-                      edges {
-                        node {
-                          id
-                          publicPath
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+            name
+            sku
+            price
+            images(first: 3) {
+              id
+              publicPath
             }
           }
         }
       }
   ''';
 
-  static const String _bookingDetailedFields = r'''
-      bookingProducts {
-        edges {
-          node {
-            id
-            _id
-            type
-            qty
-            location
-            showLocation
-            availableFrom
-            availableTo
-            defaultSlot {
-              id
-              _id
-              bookingType
-              duration
-              breakTime
-              slots
-            }
-            appointmentSlot {
-              id
-              _id
-              bookingProductId
-              duration
-              breakTime
-              sameSlotAllDays
-              slots
-            }
-            rentalSlot {
-              id
-              _id
-              bookingProductId
-              rentingType
-              dailyPrice
-              hourlyPrice
-              sameSlotAllDays
-              slots
-            }
-            tableSlot {
-              id
-              _id
-              bookingProductId
-              priceType
-              guestLimit
-              duration
-              breakTime
-              preventSchedulingBefore
-              sameSlotAllDays
-              slots
-            }
-            eventTickets {
-              edges {
-                node {
-                  id
-                  _id
-                  bookingProductId
-                  price
-                  formattedPrice
-                  qty
-                  specialPrice
-                  formattedSpecialPrice
-                  specialPriceFrom
-                  specialPriceTo
-                  translation {
-                    locale
-                    name
-                    description
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-  ''';
+  static const String _bookingDetailedFields = '';
 
   static String _typeSpecificDetailedFields(String? productType) {
     final normalized = (productType ?? '').toLowerCase().trim();
@@ -550,9 +376,11 @@ class ProductQueries {
     $_productDetailedCommonFragment
 
     query GetProductByUrlKey(\$urlKey: String!) {
-      product(urlKey: \$urlKey) {
-        ...ProductDetailedCommon
-        $typeFields
+      products: allProducts(input: [{key: "url_key", value: \$urlKey}]) {
+        data {
+          ...ProductDetailedCommon
+          $typeFields
+        }
       }
     }
   ''';
@@ -694,17 +522,21 @@ class ProductQueries {
   static String getBookingProductTypeByUrlKey =
       '''
     query GetBookingProductTypeByUrlKey(\$urlKey: String!) {
-      product(urlKey: \$urlKey) {
+      products: allProducts(input: [{key: "url_key", value: \$urlKey}]) {
+        data {
 $_bookingTypeProbeFields
+        }
       }
     }
   ''';
 
   static String getBookingProductTypeById =
       '''
-    query GetBookingProductTypeById(\$id: ID!) {
-      product(id: \$id) {
+    query GetBookingProductTypeById(\$id: String!) {
+      products: allProducts(input: [{key: "id", value: \$id}]) {
+        data {
 $_bookingTypeProbeFields
+        }
       }
     }
   ''';
@@ -713,13 +545,15 @@ $_bookingTypeProbeFields
     final slotFields = _bookingSlotFieldsForType(bookingType);
     return '''
     query GetBookingProductByUrlKeyForType(\$urlKey: String!) {
-      product(urlKey: \$urlKey) {
+      products: allProducts(input: [{key: "url_key", value: \$urlKey}]) {
+        data {
 $_bookingProductCoreFields
-        bookingProducts {
-          edges {
-            node {
+          bookingProducts {
+            edges {
+              node {
 $_bookingCommonNodeFields
 $slotFields
+              }
             }
           }
         }
@@ -731,14 +565,16 @@ $slotFields
   static String getBookingProductByIdForType(String bookingType) {
     final slotFields = _bookingSlotFieldsForType(bookingType);
     return '''
-    query GetBookingProductByIdForType(\$id: ID!) {
-      product(id: \$id) {
+    query GetBookingProductByIdForType(\$id: String!) {
+      products: allProducts(input: [{key: "id", value: \$id}]) {
+        data {
 $_bookingProductCoreFields
-        bookingProducts {
-          edges {
-            node {
+          bookingProducts {
+            edges {
+              node {
 $_bookingCommonNodeFields
 $slotFields
+              }
             }
           }
         }
@@ -771,313 +607,6 @@ $slotFields
         slotId
         time
         slots
-      }
-    }
-  ''';
-
-  /// Product detailed fragment
-  static const String _productDetailedFragment = r'''
-    fragment ProductDetailed on Product {
-      id
-      _id
-      sku
-      type
-      name
-      urlKey
-      description
-      shortDescription
-      price
-      baseImageUrl
-      minimumPrice
-      specialPrice
-      maximumPrice
-      formattedMaximumPrice
-      regularMinimumPrice
-      regularMaximumPrice
-      formattedRegularMinimumPrice
-      formattedRegularMaximumPrice
-      isSaleable
-      guestCheckout
-      color
-      size
-      brand
-      images {
-        id
-        url
-        path
-        type
-      }
-      superAttributeOptions
-      combinations
-      attributeValues {
-        edges {
-          node {
-            value
-            attribute {
-              code
-              adminName
-            }
-          }
-        }
-      }
-      variants {
-        edges {
-          node {
-            id
-            name
-            sku
-            price
-            formattedPrice
-            specialPrice
-            formattedSpecialPrice
-            baseImageUrl
-            attributeValues {
-              edges {
-                node {
-                  value
-                  attribute {
-                    code
-                    adminName
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      categories {
-        edges {
-          node {
-            id
-            translation {
-              name
-            }
-          }
-        }
-      }
-      reviews {
-        edges {
-          node {
-            rating
-            id
-            name
-            title
-            comment
-            createdAt
-          }
-        }
-      }
-      relatedProducts {
-        edges {
-          node {
-            id
-            _id
-            sku
-            name
-            urlKey
-            type
-            baseImageUrl
-            price
-            minimumPrice
-            specialPrice
-            isSaleable
-          }
-        }
-      }
-      customizableOptions {
-        edges {
-          node {
-            id
-            _id
-            type
-            isRequired
-            maxCharacters
-            supportedFileExtensions
-            sortOrder
-            translation {
-              id
-              locale
-              label
-            }
-            customizableOptionPrices {
-              edges {
-                node {
-                  id
-                  _id
-                  label
-                  price
-                  formattedPrice
-                  sortOrder
-                }
-              }
-            }
-          }
-        }
-      }
-      downloadableLinks {
-        edges {
-          node {
-            id
-            _id
-            type
-            price
-            downloads
-            sortOrder
-            fileUrl
-            sampleFileUrl
-            translation {
-              title
-            }
-          }
-        }
-      }
-      downloadableSamples {
-        edges {
-          node {
-            id
-            _id
-            type
-            fileUrl
-            sortOrder
-            translation {
-              title
-            }
-          }
-        }
-      }
-      groupedProducts {
-        edges {
-          node {
-            id
-            qty
-            sortOrder
-            associatedProduct {
-              id
-              name
-              sku
-              price
-              specialPrice
-              images(first: 3) {
-                edges {
-                  node {
-                    id
-                    publicPath
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      bundleOptions {
-        edges {
-          node {
-            id
-            type
-            isRequired
-            sortOrder
-            translation {
-              label
-            }
-            bundleOptionProducts {
-              edges {
-                node {
-                  id
-                  qty
-                  isDefault
-                  isUserDefined
-                  sortOrder
-                  product {
-                    id
-                    name
-                    sku
-                    price
-                    images(first: 3) {
-                      edges {
-                        node {
-                          id
-                          publicPath
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      bookingProducts {
-        edges {
-          node {
-            id
-            _id
-            type
-            qty
-            location
-            showLocation
-            availableFrom
-            availableTo
-            defaultSlot {
-              id
-              _id
-              bookingType
-              duration
-              breakTime
-              slots
-            }
-            appointmentSlot {
-              id
-              _id
-              bookingProductId
-              duration
-              breakTime
-              sameSlotAllDays
-              slots
-            }
-            rentalSlot {
-              id
-              _id
-              bookingProductId
-              rentingType
-              dailyPrice
-              hourlyPrice
-              sameSlotAllDays
-              slots
-            }
-            tableSlot {
-              id
-              _id
-              bookingProductId
-              priceType
-              guestLimit
-              duration
-              breakTime
-              preventSchedulingBefore
-              sameSlotAllDays
-              slots
-            }
-            eventTickets {
-              edges {
-                node {
-                  id
-                  _id
-                  bookingProductId
-                  price
-                  qty
-                  specialPrice
-                  specialPriceFrom
-                  specialPriceTo
-                  translation {
-                    locale
-                    name
-                    description
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     }
   ''';
@@ -1130,11 +659,13 @@ $slotFields
   /// Source: nextjs-commerce/src/graphql/catelog/queries/Product.ts
   static String getProductByUrlKey =
       '''
-    $_productDetailedFragment
+    $_productDetailedCommonFragment
 
     query GetProductById(\$urlKey: String!) {
-      product(urlKey: \$urlKey) {
-        ...ProductDetailed
+      products: allProducts(input: [{key: "url_key", value: \$urlKey}]) {
+        data {
+          ...ProductDetailedCommon
+        }
       }
     }
   ''';
@@ -1145,15 +676,13 @@ $slotFields
       '''
     $_productSectionFragment
 
-    query GetRelatedProducts(\$urlKey: String, \$first: Int) {
-      product(urlKey: \$urlKey) {
-        id
-        sku
-        relatedProducts(first: \$first) {
-          edges {
-            node {
-              ...ProductSection
-            }
+    query GetRelatedProducts(\$urlKey: String!) {
+      products: allProducts(input: [{key: "url_key", value: \$urlKey}]) {
+        data {
+          id
+          sku
+          relatedProducts {
+            ...ProductSection
           }
         }
       }
@@ -1163,11 +692,13 @@ $slotFields
   /// GET_PRODUCT_BY_ID – single product detail by numeric id
   static String getProductById =
       '''
-    $_productDetailedFragment
+    $_productDetailedCommonFragment
 
-    query GetProductById(\$id: ID!) {
-      product(id: \$id) {
-        ...ProductDetailed
+    query GetProductById(\$id: String!) {
+      products: allProducts(input: [{key: "id", value: \$id}]) {
+        data {
+          ...ProductDetailedCommon
+        }
       }
     }
   ''';

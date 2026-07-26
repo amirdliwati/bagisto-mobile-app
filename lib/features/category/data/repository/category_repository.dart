@@ -273,8 +273,13 @@ class CategoryRepository {
         throw result.exception!;
       }
 
+      final productData = result.data?['product'] ?? (result.data?['products']?['data'] as List?)?.firstOrNull;
+      if (productData == null) {
+        throw Exception('Product not found: $urlKey');
+      }
+
       final product = ProductModel.fromJson(
-        result.data!['product'] as Map<String, dynamic>,
+        productData as Map<String, dynamic>,
       );
       _logBookingAvailability(product, source: 'urlKey:$urlKey');
       return product;
@@ -294,8 +299,13 @@ class CategoryRepository {
       throw result.exception!;
     }
 
+    final productData = result.data?['product'] ?? (result.data?['products']?['data'] as List?)?.firstOrNull;
+    if (productData == null) {
+      throw Exception('Product not found: $urlKey');
+    }
+
     final product = ProductModel.fromJson(
-      result.data!['product'] as Map<String, dynamic>,
+      productData as Map<String, dynamic>,
     );
     _logBookingAvailability(product, source: 'urlKey:$urlKey');
     return product;
@@ -324,8 +334,13 @@ class CategoryRepository {
         throw result.exception!;
       }
 
+      final productData = result.data?['product'] ?? (result.data?['products']?['data'] as List?)?.firstOrNull;
+      if (productData == null) {
+        throw Exception('Product not found: $productId');
+      }
+
       final product = ProductModel.fromJson(
-        result.data!['product'] as Map<String, dynamic>,
+        productData as Map<String, dynamic>,
       );
       _logBookingAvailability(product, source: 'id:$productId');
       return product;
@@ -345,8 +360,13 @@ class CategoryRepository {
       throw result.exception!;
     }
 
+    final productData = result.data?['product'] ?? (result.data?['products']?['data'] as List?)?.firstOrNull;
+    if (productData == null) {
+      throw Exception('Product not found: $productId');
+    }
+
     final product = ProductModel.fromJson(
-      result.data!['product'] as Map<String, dynamic>,
+      productData as Map<String, dynamic>,
     );
     _logBookingAvailability(product, source: 'id:$productId');
     return product;
@@ -413,7 +433,7 @@ class CategoryRepository {
       throw result.exception!;
     }
 
-    final product = result.data?['product'] as Map<String, dynamic>?;
+    final product = result.data?['product'] ?? (result.data?['products']?['data'] as List?)?.firstOrNull;
     final edges = product?['bookingProducts']?['edges'] as List<dynamic>? ?? [];
     if (edges.isEmpty) return 'default';
 
@@ -436,7 +456,7 @@ class CategoryRepository {
       throw result.exception!;
     }
 
-    final product = result.data?['product'] as Map<String, dynamic>?;
+    final product = result.data?['product'] ?? (result.data?['products']?['data'] as List?)?.firstOrNull;
     final edges = product?['bookingProducts']?['edges'] as List<dynamic>? ?? [];
     if (edges.isEmpty) return 'default';
 
@@ -592,10 +612,14 @@ class CategoryRepository {
       throw result.exception!;
     }
 
-    final edges =
-        result.data?['product']?['relatedProducts']?['edges']
-            as List<dynamic>? ??
-        [];
+    final productData = result.data?['product'] ?? (result.data?['products']?['data'] as List?)?.firstOrNull;
+    final relatedList = productData?['relatedProducts'];
+    if (relatedList is List) {
+      return relatedList
+          .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    final edges = relatedList?['edges'] as List<dynamic>? ?? [];
     return edges
         .map((e) => ProductModel.fromJson(e['node'] as Map<String, dynamic>))
         .toList();
