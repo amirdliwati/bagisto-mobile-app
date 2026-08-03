@@ -408,7 +408,7 @@ class _CountHeader extends StatelessWidget {
         children: [
           // "N Reviews" — Figma node: 245:5807
           Text(
-            '${totalCount} ${totalCount == 1 ? l10n.accountReviewSingular : l10n.accountReviewPlural}',
+            '$totalCount ${totalCount == 1 ? l10n.accountReviewSingular : l10n.accountReviewPlural}',
             style: TextStyle(
               fontFamily: 'Roboto',
               fontWeight: FontWeight.w500,
@@ -516,7 +516,7 @@ class _ReviewCard extends StatelessWidget {
               ? Image.network(
                   review.productImageUrl!,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Center(
+                  errorBuilder: (_, _, _) => Center(
                     child: Icon(
                       Icons.image_not_supported_outlined,
                       size: 28,

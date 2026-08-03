@@ -34,7 +34,7 @@ class AuthRepository {
           'input': {
             'email': email,
             'password': password,
-            if (token != null) 'deviceToken': token,
+            'deviceToken': ?token,
           },
         },
         fetchPolicy: FetchPolicy.noCache,
@@ -101,7 +101,7 @@ class AuthRepository {
             'isVerified': '1',
             'isSuspended': '0',
             'subscribedToNewsLetter': true,
-            if (token != null) 'deviceToken': token,
+            'deviceToken': ?token,
           },
         },
         fetchPolicy: FetchPolicy.noCache,
@@ -176,7 +176,7 @@ class AuthRepository {
         MutationOptions(
           document: gql(logoutMutation),
           variables: {
-            'input': {if (token != null) 'deviceToken': token},
+            'input': {'deviceToken': ?token},
           },
           fetchPolicy: FetchPolicy.noCache,
         ),

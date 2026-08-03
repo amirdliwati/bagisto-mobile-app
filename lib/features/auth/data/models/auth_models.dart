@@ -3,6 +3,7 @@
 /// IMPORTANT: The Bagisto API returns some fields as strings that might
 /// look like booleans (e.g. status="1", isVerified="1"). We store them
 /// as Strings to avoid type-cast crashes.
+library;
 
 class CustomerLogin {
   final String? id;

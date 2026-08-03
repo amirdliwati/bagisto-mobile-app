@@ -26,7 +26,7 @@ class CategoryCarousel extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 20),
+        separatorBuilder: (_, _) => const SizedBox(width: 20),
         itemBuilder: (context, index) {
           final category = categories[index];
           return _CategoryItem(
@@ -70,7 +70,7 @@ class _CategoryItem extends StatelessWidget {
                         width: 64,
                         height: 64,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _placeholder(context),
+                        errorBuilder: (_, _, _) => _placeholder(context),
                       )
                     : _placeholder(context),
               ),

@@ -71,7 +71,7 @@ class ProductCardSmall extends StatelessWidget {
                               fit: BoxFit.cover,
                               width: w,
                               height: w,
-                            errorBuilder: (_, __, ___) => _placeholder(isDark),
+                            errorBuilder: (_, _, _) => _placeholder(isDark),
                           )
                         : _placeholder(isDark),
                     ),

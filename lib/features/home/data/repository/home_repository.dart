@@ -87,7 +87,7 @@ class HomeRepository {
           'first': first,
           'sortKey': sortKey,
           'reverse': reverse,
-          if (filter != null) 'filter': filter,
+          'filter': ?filter,
         },
         fetchPolicy: FetchPolicy.cacheAndNetwork,
       ),

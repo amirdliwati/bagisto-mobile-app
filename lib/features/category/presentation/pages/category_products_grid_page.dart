@@ -802,12 +802,12 @@ class _ProductCardGrid extends StatelessWidget {
                           CachedNetworkImage(
                             imageUrl: product.baseImageUrl!,
                             fit: BoxFit.cover,
-                            placeholder: (_, __) => Container(
+                            placeholder: (_, _) => Container(
                               color: isDark
                                   ? AppColors.neutral700
                                   : AppColors.neutral200,
                             ),
-                            errorWidget: (_, __, ___) => Icon(
+                            errorWidget: (_, _, _) => Icon(
                               Icons.image_outlined,
                               size: 32,
                               color: AppColors.neutral400,
@@ -1148,12 +1148,12 @@ class _ProductCardList extends StatelessWidget {
                       CachedNetworkImage(
                         imageUrl: product.baseImageUrl!,
                         fit: BoxFit.cover,
-                        placeholder: (_, __) => Container(
+                        placeholder: (_, _) => Container(
                           color: isDark
                               ? AppColors.neutral700
                               : AppColors.neutral200,
                         ),
-                        errorWidget: (_, __, ___) => Icon(
+                        errorWidget: (_, _, _) => Icon(
                           Icons.image_outlined,
                           size: 32,
                           color: AppColors.neutral400,

@@ -1,5 +1,6 @@
 /// GraphQL mutations for authentication
 /// Bagisto API: createCustomerLogin, createCustomer, createForgotPassword, createLogout
+library;
 
 const String loginMutation = r'''
   mutation loginCustomer($input: createCustomerLoginInput!) {

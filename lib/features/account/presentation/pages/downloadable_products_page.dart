@@ -483,7 +483,7 @@ class _DownloadableProductCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(product.status, isDark).withOpacity(0.15),
+                    color: _getStatusColor(product.status, isDark).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(

@@ -1,5 +1,6 @@
 /// GraphQL queries and mutations for Bagisto checkout flow
 /// Based on the actual Bagisto Headless Commerce GraphQL schema
+library;
 
 class CheckoutQueries {
   /// Get saved checkout addresses (billing & shipping)

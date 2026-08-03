@@ -302,7 +302,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                   // Labels as vertical list
                   ...state.labels.map((label) {
                     return _buildLabelListItem(context, label);
-                  }).toList(),
+                  }),
 
                   const SizedBox(height: 20),
 
@@ -486,7 +486,7 @@ class _CropOverlayPainter extends CustomPainter {
     canvas.drawPath(
       path,
       Paint()
-        ..color = Colors.black.withOpacity(0.4)
+        ..color = Colors.black.withValues(alpha: 0.4)
         ..style = PaintingStyle.fill,
     );
 
