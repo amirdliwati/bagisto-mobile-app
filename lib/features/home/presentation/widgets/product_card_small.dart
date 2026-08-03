@@ -116,7 +116,7 @@ class ProductCardSmall extends StatelessWidget {
                           color: AppColors.white,
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: AppColors.neutral200.withOpacity(0.5),
+                            color: AppColors.neutral200.withValues(alpha: 0.5),
                             width: 0.5,
                           ),
                         ),

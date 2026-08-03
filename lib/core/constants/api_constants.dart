@@ -4,7 +4,7 @@ const String bagistoEndpoint =
 
 /// Storefront key for Bagisto API
 const String storefrontKey =
-    'pk_storefront_zQEnkGcyxcKxpuMl0YSqN4NwfKizMB0K';
+    'tFVCf+jSp4RJgY985gJQD+XYd8RxoOpDf36ds05YPJI=';
 
 /// Default channel code used by request headers.
 const String channelCode = 'default';

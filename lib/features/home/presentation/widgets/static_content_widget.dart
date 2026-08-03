@@ -274,7 +274,7 @@ class StaticContentWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -316,8 +316,8 @@ class StaticContentWidget extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.1),
-                      Colors.black.withOpacity(0.65),
+                      Colors.black.withValues(alpha: 0.1),
+                      Colors.black.withValues(alpha: 0.65),
                     ],
                     stops: const [0.5, 0.7, 1.0],
                   ),
@@ -352,7 +352,7 @@ class StaticContentWidget extends StatelessWidget {
                         fontFamily: 'Roboto',
                         fontSize: 11,
                         fontWeight: FontWeight.w400,
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withValues(alpha: 0.85),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
