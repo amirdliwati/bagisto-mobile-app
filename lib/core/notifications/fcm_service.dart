@@ -145,10 +145,6 @@ class FCMService {
             requestAlertPermission: true,
             requestBadgePermission: true,
             requestSoundPermission: true,
-            onDidReceiveLocalNotification:
-                (int id, String? title, String? body, String? payload) async {
-                  debugPrint('📲 Local notification received on device');
-                },
           );
 
       final InitializationSettings initSettings = InitializationSettings(
@@ -157,7 +153,7 @@ class FCMService {
       );
 
       await _localNotificationsPlugin.initialize(
-        initSettings,
+        settings: initSettings,
         onDidReceiveNotificationResponse: (NotificationResponse response) {
           debugPrint('🔔 Local notification tapped');
 
@@ -358,10 +354,10 @@ class FCMService {
       );
 
       await _localNotificationsPlugin.show(
-        message.hashCode,
-        notification.title,
-        notification.body,
-        notificationDetails,
+        id: message.hashCode,
+        title: notification.title,
+        body: notification.body,
+        notificationDetails: notificationDetails,
         payload: message.data.isNotEmpty ? jsonEncode(message.data) : null,
       );
 
@@ -505,10 +501,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         );
 
         await localNotificationsPlugin.show(
-          message.hashCode,
-          notification.title,
-          notification.body,
-          const NotificationDetails(android: androidDetails, iOS: iosDetails),
+          id: message.hashCode,
+          title: notification.title,
+          body: notification.body,
+          notificationDetails: const NotificationDetails(android: androidDetails, iOS: iosDetails),
         );
 
         debugPrint('✅ Background notification displayed');
