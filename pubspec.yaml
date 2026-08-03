@@ -60,23 +60,23 @@ dependencies:
   shared_preferences: ^2.3.5
   provider: ^6.1.4
   flutter_svg: ^2.2.3
-  share_plus: ^10.0.0
+  share_plus: ^12.0.2
   url_launcher: ^6.2.0
   flutter_inappwebview: ^6.1.5
   speech_to_text: ^7.0.0
   open_filex: ^4.6.0
-  device_info_plus: ^11.1.0
+  device_info_plus: ^12.4.0
   dio: ^5.4.1
 
   # Image Handling & Camera
   image_picker: ^1.0.7
   image: ^4.1.7
-  camera: ^0.10.5+5
-  permission_handler: ^11.0.0
+  camera: ^0.12.0+2
+  permission_handler: ^13.0.0
 
   # On-device ML Kit for real object detection
-  google_mlkit_image_labeling: ^0.14.0
-  google_mlkit_object_detection: ^0.15.0
+  google_mlkit_image_labeling: ^0.15.0
+  google_mlkit_object_detection: ^0.16.0
 
   # Image Processing
   http: ^1.1.0
@@ -84,14 +84,14 @@ dependencies:
   path_provider: ^2.1.0
 
   # Firebase & Push Notifications
-  firebase_core: ^3.6.0
-  firebase_messaging: ^15.1.0
-  flutter_local_notifications: ^17.2.1
+  firebase_core: ^4.13.0
+  firebase_messaging: ^16.5.0
+  flutter_local_notifications: ^22.2.0
 
   # App Version Update
   in_app_update: ^4.2.5
   upgrader: ^13.6.0
-  package_info_plus: ^8.1.0
+  package_info_plus: ^9.0.1
 
   # Image Zoom & Fullscreen
   photo_view: ^0.15.0
@@ -100,9 +100,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.13.1
+  flutter_launcher_icons: ^0.14.4
   build_runner: ^2.4.8
-  flutter_lints: ^3.0.0
+  flutter_lints: ^6.0.0
   flutter_driver:
     sdk: flutter
 
