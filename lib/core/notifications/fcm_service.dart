@@ -153,7 +153,7 @@ class FCMService {
       );
 
       await _localNotificationsPlugin.initialize(
-        settings: initSettings,
+        initSettings,
         onDidReceiveNotificationResponse: (NotificationResponse response) {
           debugPrint('🔔 Local notification tapped');
 
@@ -354,10 +354,10 @@ class FCMService {
       );
 
       await _localNotificationsPlugin.show(
-        id: message.hashCode,
-        title: notification.title,
-        body: notification.body,
-        notificationDetails: notificationDetails,
+        message.hashCode,
+        notification.title,
+        notification.body,
+        notificationDetails,
         payload: message.data.isNotEmpty ? jsonEncode(message.data) : null,
       );
 
@@ -501,10 +501,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         );
 
         await localNotificationsPlugin.show(
-          id: message.hashCode,
-          title: notification.title,
-          body: notification.body,
-          notificationDetails: const NotificationDetails(android: androidDetails, iOS: iosDetails),
+          message.hashCode,
+          notification.title,
+          notification.body,
+          const NotificationDetails(android: androidDetails, iOS: iosDetails),
         );
 
         debugPrint('✅ Background notification displayed');
