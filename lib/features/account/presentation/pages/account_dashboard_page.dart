@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/navigation/route_observer.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/navigation/route_observer.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../data/repository/account_repository.dart';

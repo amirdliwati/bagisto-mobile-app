@@ -1148,7 +1148,10 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
 
       final selectedBillingAddress =
           state.selectedAddress ??
-          buildCheckoutAddressFromInput(input: event.input, prefix: 'billing');
+          buildCheckoutAddressFromInput(
+            input: event.input,
+            prefix: 'billing',
+          );
       final useSameAddressForShipping = event.input['useForShipping'] == true;
       final selectedShippingAddress = useSameAddressForShipping
           ? null
@@ -1531,7 +1534,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     if (state.addressConfirmed &&
         state.selectedAddress != null &&
         state.addresses.isNotEmpty) {
-      final shippingAddress = nextUseSameAddress
+      final shippingAddress =
+          nextUseSameAddress
           ? null
           : state.selectedShippingAddress ??
                 (state.addresses.length > 1
@@ -1548,7 +1552,11 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
       return;
     }
 
-    emit(state.copyWith(useSameAddressForShipping: nextUseSameAddress));
+    emit(
+      state.copyWith(
+        useSameAddressForShipping: nextUseSameAddress,
+      ),
+    );
   }
 
   void _onResetAddressConfirmation(

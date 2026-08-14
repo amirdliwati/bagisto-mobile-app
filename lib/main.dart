@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,16 +37,15 @@ import 'features/splash/presentation/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final firebaseEnabled = await FirebaseService.initialize();
 
   // Initialize Firebase
-  if (firebaseEnabled) {
+  try {
+    await FirebaseService.initialize();
     // Register background message handler
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  } else {
-    debugPrint(
-      '⚠️ Firebase is disabled. App will continue without push notifications.',
-    );
+  } catch (e) {
+    debugPrint('Firebase initialization error: $e');
+    // Continue anyway - Firebase is optional for other features
   }
 
   // Initialize Hive cache
@@ -67,39 +68,45 @@ void main() async {
     debugPrint('Channel bootstrap error: $e');
   }
 
-  // Initialize FCM notifications
-  // This must be done after Firebase initialization
-  if (firebaseEnabled) {
-    try {
-      await FCMService().initialize(
-        onForegroundMessage: _handleForegroundNotification,
-        onBackgroundMessage: _handleBackgroundNotification,
-        onMessageOpenedApp: _handleMessageOpenedApp,
-        onLocalNotificationTapped: _handleLocalNotificationTapped,
-      );
+  // Initialize FCM notifications in the background.
+  // Must NOT be awaited before runApp(): with a placeholder/dummy Firebase
+  // config (e.g. open-source builds) iOS token retrieval can hang, which would
+  // otherwise block the first frame and freeze the app on the launch screen.
+  unawaited(_initializeFcmNotifications());
 
-      // Token retrieval is now handled by FCMService with iOS APNS support
-      // Get the token from FCMService after initialization
-      debugPrint('⏳ Retrieving device token from FCMService...');
-      try {
-        final deviceToken = await FCMService().getDeviceToken();
-        if (deviceToken != null && deviceToken.isNotEmpty) {
-          debugPrint('✅ FCM device token is available');
-        } else {
-          debugPrint(
-            '⚠️ Token not yet available, FCMService will retry automatically',
-          );
-        }
-      } catch (e) {
-        debugPrint('⚠️ Token retrieval note: $e');
-        // Continue anyway - token will be obtained via retry mechanism
+  runApp(BagistoApp(prefs: prefs));
+}
+
+/// Sets up FCM messaging + device token retrieval without blocking startup.
+Future<void> _initializeFcmNotifications() async {
+  // This must be done after Firebase initialization
+  try {
+    await FCMService().initialize(
+      onForegroundMessage: _handleForegroundNotification,
+      onBackgroundMessage: _handleBackgroundNotification,
+      onMessageOpenedApp: _handleMessageOpenedApp,
+      onLocalNotificationTapped: _handleLocalNotificationTapped,
+    );
+
+    // Token retrieval is now handled by FCMService with iOS APNS support
+    // Get the token from FCMService after initialization
+    debugPrint('⏳ Retrieving device token from FCMService...');
+    try {
+      final deviceToken = await FCMService().getDeviceToken();
+      if (deviceToken != null && deviceToken.isNotEmpty) {
+        debugPrint('✅ FCM device token is available');
+      } else {
+        debugPrint(
+          '⚠️ Token not yet available, FCMService will retry automatically',
+        );
       }
     } catch (e) {
-      debugPrint('FCM initialization error: $e');
-      // Continue anyway - notifications are optional
+      debugPrint('⚠️ Token retrieval note: $e');
+      // Continue anyway - token will be obtained via retry mechanism
     }
-  } else {
-    debugPrint('⚠️ Skipping FCM initialization because Firebase is disabled.');
+  } catch (e) {
+    debugPrint('FCM initialization error: $e');
+    // Continue anyway - notifications are optional
   }
 
   // Test notification to verify system is working
@@ -111,8 +118,6 @@ void main() async {
       debugPrint('Test notification error: $e');
     }
   });
-
-  runApp(BagistoApp(prefs: prefs));
 }
 
 /// Handle notification when app is in foreground
@@ -636,6 +641,16 @@ class _AppWithAuthCartSyncState extends State<_AppWithAuthCartSync> {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: AppLocalizations.supportedLocales,
+                builder: (context, child) {
+                  // Force the app's own typography scale — ignore the device's
+                  // system font-size / Dynamic Type setting so layouts stay
+                  // consistent and don't overflow on large-font devices.
+                  return MediaQuery(
+                    data: MediaQuery.of(context)
+                        .copyWith(textScaler: TextScaler.noScaling),
+                    child: child ?? const SizedBox.shrink(),
+                  );
+                },
                 home: SplashScreen(
                   nextScreen: AppUpdateGate(
                     child: MainShell(key: MainShell.navigatorKey),

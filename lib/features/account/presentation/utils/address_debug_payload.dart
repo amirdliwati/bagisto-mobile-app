@@ -16,7 +16,6 @@ Map<String, dynamic> buildEditAddressDebugPayload(CustomerAddress address) {
     'postcode': address.zipCode,
     'phone': address.phone,
     'defaultAddress': address.isDefault,
-    'useForShipping': address.useForShipping,
     'addressType': address.addressType,
     'createdAt': address.createdAt,
   };

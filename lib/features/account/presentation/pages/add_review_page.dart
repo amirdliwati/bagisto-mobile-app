@@ -62,7 +62,8 @@ class AddReviewPage extends StatefulWidget {
         );
         return Future.value(null);
       }
-      final client = GraphQLClientProvider.authenticatedClient(authState.token);
+      final client =
+          GraphQLClientProvider.authenticatedClient(authState.token);
       repository = AccountRepository(client: client.value);
     }
 
@@ -107,9 +108,8 @@ class _AddReviewPageState extends State<AddReviewPage> {
     final l10n = AppLocalizations.of(context)!;
 
     final isFormValid = _formKey.currentState!.validate();
-    final ratingError = _selectedRating == 0
-        ? l10n.accountPleaseSelectRating
-        : null;
+    final ratingError =
+        _selectedRating == 0 ? l10n.accountPleaseSelectRating : null;
 
     setState(() {
       _ratingErrorText = ratingError;
@@ -119,15 +119,13 @@ class _AddReviewPageState extends State<AddReviewPage> {
       return;
     }
 
-    context.read<AddReviewBloc>().add(
-      SubmitReview(
-        productId: widget.productId,
-        title: _summaryController.text.trim(),
-        comment: _reviewController.text.trim(),
-        rating: _selectedRating,
-        name: _nickNameController.text.trim(),
-      ),
-    );
+    context.read<AddReviewBloc>().add(SubmitReview(
+          productId: widget.productId,
+          title: _summaryController.text.trim(),
+          comment: _reviewController.text.trim(),
+          rating: _selectedRating,
+          name: _nickNameController.text.trim(),
+        ));
   }
 
   @override
@@ -171,9 +169,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
               ..hideCurrentSnackBar()
               ..showSnackBar(
                 SnackBar(
-                  content: Text(
-                    state.successMessage ?? l10n.accountReviewSubmitted,
-                  ),
+                  content: Text(state.successMessage ?? l10n.accountReviewSubmitted),
                   backgroundColor: AppColors.successGreen,
                   behavior: SnackBarBehavior.floating,
                   duration: const Duration(seconds: 2),
@@ -194,11 +190,14 @@ class _AddReviewPageState extends State<AddReviewPage> {
                   duration: const Duration(seconds: 3),
                 ),
               );
-            context.read<AddReviewBloc>().add(const ClearAddReviewMessage());
+            context
+                .read<AddReviewBloc>()
+                .add(const ClearAddReviewMessage());
           }
         },
         builder: (context, state) {
-          final isSubmitting = state.status == AddReviewStatus.submitting;
+          final isSubmitting =
+              state.status == AddReviewStatus.submitting;
 
           return Form(
             key: _formKey,
@@ -315,8 +314,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
               color: isDark ? AppColors.neutral700 : const Color(0x1A0E1019),
             ),
             clipBehavior: Clip.antiAlias,
-            child:
-                widget.productImageUrl != null &&
+            child: widget.productImageUrl != null &&
                     widget.productImageUrl!.isNotEmpty
                 ? Image.network(
                     widget.productImageUrl!,
@@ -368,7 +366,12 @@ class _AddReviewPageState extends State<AddReviewPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildFieldLabel(context, label: l10n.accountRating, isRequired: true),
+        // "Rating" label
+        _buildFieldLabel(
+          context,
+          label: l10n.accountRating,
+          isRequired: true,
+        ),
         const SizedBox(height: 8),
 
         // 5 interactive stars
@@ -392,7 +395,9 @@ class _AddReviewPageState extends State<AddReviewPage> {
                   size: 36,
                   color: isFilled
                       ? const Color(0xFFFE9A00) // status-info/500
-                      : (isDark ? AppColors.neutral600 : AppColors.neutral300),
+                      : (isDark
+                          ? AppColors.neutral600
+                          : AppColors.neutral300),
                 ),
               ),
             );
@@ -402,7 +407,10 @@ class _AddReviewPageState extends State<AddReviewPage> {
           const SizedBox(height: 8),
           Text(
             _ratingErrorText!,
-            style: TextStyle(fontSize: 12, color: Colors.red.shade400),
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.red.shade400,
+            ),
           ),
         ],
       ],
@@ -427,7 +435,11 @@ class _AddReviewPageState extends State<AddReviewPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildFieldLabel(context, label: label, isRequired: isRequired),
+        _buildFieldLabel(
+          context,
+          label: label,
+          isRequired: isRequired,
+        ),
         const SizedBox(height: 8),
 
         // Text input — Figma: rounded-10, border #E5E5E5
@@ -463,15 +475,24 @@ class _AddReviewPageState extends State<AddReviewPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: AppColors.primary500, width: 1.5),
+              borderSide: BorderSide(
+                color: AppColors.primary500,
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+              borderSide: BorderSide(
+                color: Colors.red.shade400,
+                width: 1,
+              ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+              borderSide: BorderSide(
+                color: Colors.red.shade400,
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -527,9 +548,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary500,
             foregroundColor: AppColors.white,
-            disabledBackgroundColor: AppColors.primary500.withValues(
-              alpha: 0.6,
-            ),
+            disabledBackgroundColor: AppColors.primary500.withValues(alpha: 0.6),
             disabledForegroundColor: AppColors.white.withValues(alpha: 0.8),
             elevation: 0,
             shape: RoundedRectangleBorder(

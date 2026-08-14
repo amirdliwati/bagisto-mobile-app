@@ -43,10 +43,11 @@ class OrderDetailPage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => BlocProvider(
-          create: (_) => OrderDetailBloc(repository: repository)
-            ..add(LoadOrderDetail(orderId))
-            ..add(LoadOrderInvoices(orderId))
-            ..add(LoadOrderShipments(orderId)),
+          create: (_) =>
+              OrderDetailBloc(repository: repository)
+                ..add(LoadOrderDetail(orderId))
+                ..add(LoadOrderInvoices(orderId))
+                ..add(LoadOrderShipments(orderId)),
           child: OrderDetailPage(orderId: orderId, orderNumber: orderNumber),
         ),
       ),
@@ -71,9 +72,7 @@ class OrderDetailPage extends StatelessWidget {
           buildWhen: (prev, curr) => prev.order != curr.order,
           builder: (context, state) {
             final title =
-                state.order?.orderNumber ??
-                orderNumber ??
-                l10n.accountOrderSingular;
+                state.order?.orderNumber ?? orderNumber ?? l10n.accountOrderSingular;
             return Text(
               l10n.accountOrdersWithNumber(title),
               style: TextStyle(
@@ -117,10 +116,7 @@ class OrderDetailPage extends StatelessWidget {
                 title: Text(l10n.accountReorderSuccessful),
                 content: Text(
                   itemsCount > 0
-                      ? l10n.accountReorderItemsAdded(
-                          state.successMessage!,
-                          itemsCount,
-                        )
+                      ? l10n.accountReorderItemsAdded(state.successMessage!, itemsCount)
                       : state.successMessage!,
                 ),
                 actions: [
@@ -230,11 +226,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    final tabs = [
-      l10n.accountDetails,
-      l10n.accountInvoices,
-      l10n.accountShipments,
-    ];
+    final tabs = [l10n.accountDetails, l10n.accountInvoices, l10n.accountShipments];
 
     return Column(
       children: [
@@ -373,9 +365,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
                     size: 24,
                     color: isActive
                         ? AppColors.primary500
-                        : (isDark
-                              ? AppColors.neutral200
-                              : AppColors.neutral900),
+                        : (isDark ? AppColors.neutral200 : AppColors.neutral900),
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -386,9 +376,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
                       fontSize: 14,
                       color: isActive
                           ? AppColors.primary500
-                          : (isDark
-                                ? AppColors.neutral200
-                                : AppColors.neutral900),
+                          : (isDark ? AppColors.neutral200 : AppColors.neutral900),
                     ),
                   ),
                 ],
@@ -455,10 +443,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
         // Shipping Method
         _InfoCard(
           title: l10n.accountShippingMethod,
-          name:
-              order.shippingTitle ??
-              order.shippingMethod ??
-              l10n.accountNotAvailable,
+          name: order.shippingTitle ?? order.shippingMethod ?? l10n.accountNotAvailable,
           details: null,
         ),
         const SizedBox(height: 8),
@@ -466,10 +451,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
         // Payment Method
         _InfoCard(
           title: l10n.accountPaymentMethod,
-          name:
-              order.payment?.methodTitle ??
-              order.payment?.method ??
-              l10n.accountNotAvailable,
+          name: order.payment?.methodTitle ?? order.payment?.method ?? l10n.accountNotAvailable,
           details: null,
         ),
       ],
@@ -564,9 +546,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
     );
 
     final orderShipments = widget.order.shipments;
-    final displayShipments = apiShipments.isNotEmpty
-        ? apiShipments
-        : orderShipments;
+    final displayShipments = apiShipments.isNotEmpty ? apiShipments : orderShipments;
 
     if (isLoading && displayShipments.isEmpty) {
       return const Padding(
@@ -689,9 +669,7 @@ class _OrderDetailBodyState extends State<_OrderDetailBody> {
             onPressed: isReordering
                 ? null
                 : () {
-                    context.read<OrderDetailBloc>().add(
-                      ReorderOrder(widget.orderId),
-                    );
+                    context.read<OrderDetailBloc>().add(ReorderOrder(widget.orderId));
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary500,
@@ -802,8 +780,7 @@ class _ItemCard extends StatelessWidget {
       }
     }
 
-    final superAttribute =
-        additional['super_attribute'] ?? additional['superAttribute'];
+    final superAttribute = additional['super_attribute'] ?? additional['superAttribute'];
     final superAttributeLines = _extractSuperAttributeLines(superAttribute);
     if (superAttributeLines.isNotEmpty) {
       return superAttributeLines;
@@ -877,18 +854,16 @@ class _ItemCard extends StatelessWidget {
         return <String>['${label!} : $formattedValue'];
       }
 
-      final attrName =
-          (value['attributeName'] ??
-                  value['attribute_name'] ??
-                  value['attributename'])
-              ?.toString()
-              .trim();
-      final optLabel =
-          (value['optionLabel'] ??
-                  value['option_label'] ??
-                  value['optionlabel'])
-              ?.toString()
-              .trim();
+      final attrName = (value['attributeName'] ??
+              value['attribute_name'] ??
+              value['attributename'])
+          ?.toString()
+          .trim();
+      final optLabel = (value['optionLabel'] ??
+              value['option_label'] ??
+              value['optionlabel'])
+          ?.toString()
+          .trim();
 
       if ((attrName ?? '').isNotEmpty && (optLabel ?? '').isNotEmpty) {
         return <String>['$attrName : $optLabel'];
@@ -980,7 +955,9 @@ class _ItemCard extends StatelessWidget {
           final separatorIndex = line.indexOf(':');
           if (separatorIndex <= 0) {
             final text = line.trim();
-            return text.isEmpty ? null : MapEntry<String, String>('', text);
+            return text.isEmpty
+                ? null
+                : MapEntry<String, String>('', text);
           }
 
           final label = line.substring(0, separatorIndex).trim();
@@ -1010,7 +987,9 @@ class _ItemCard extends StatelessWidget {
         return Container(
           decoration: BoxDecoration(
             color: isDark ? AppColors.neutral900 : AppColors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(24),
+            ),
           ),
           child: ConstrainedBox(
             constraints: BoxConstraints(
@@ -1225,18 +1204,22 @@ class _ItemCard extends StatelessWidget {
                     ),
                     if (optionLines.isNotEmpty) ...[
                       const SizedBox(height: 4),
+                      // "More info" link — Roboto Regular 14, #155DFC
                       Material(
                         color: Colors.transparent,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(4),
                           onTap: () => _showMoreInfoSheet(context, optionLines),
-                          child: Text(
-                            l10n.accountMoreInfo,
-                            style: const TextStyle(
-                              fontFamily: 'Roboto',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              color: Color(0xFF155DFC),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            child: Text(
+                              l10n.accountMoreInfo,
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                color: const Color(0xFF155DFC),
+                              ),
                             ),
                           ),
                         ),
@@ -1418,12 +1401,7 @@ class _PriceBreakSection extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 8),
-        _priceRow(
-          l10n.cartGrandTotal,
-          order.formattedTotal,
-          isDark,
-          isBold: true,
-        ),
+        _priceRow(l10n.cartGrandTotal, order.formattedTotal, isDark, isBold: true),
         const SizedBox(height: 8),
         _priceRow(
           l10n.accountTotalPaid,
@@ -1572,7 +1550,10 @@ class _InvoiceListCard extends StatelessWidget {
   final OrderInvoice invoice;
   final VoidCallback onTap;
 
-  const _InvoiceListCard({required this.invoice, required this.onTap});
+  const _InvoiceListCard({
+    required this.invoice,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1633,7 +1614,10 @@ class _ShipmentListCard extends StatelessWidget {
   final OrderShipment shipment;
   final VoidCallback onTap;
 
-  const _ShipmentListCard({required this.shipment, required this.onTap});
+  const _ShipmentListCard({
+    required this.shipment,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,13 @@
 #### This changelog consists the bug & security fixes and new features being included in the releases listed below
 
+# CHANGELOG for v2.4.7
+
+## **v2.4.7 (14th of August, 2026)** - *Release*
+
+* [Fixed] Fixed the app getting stuck on the launch screen at startup by making Firebase Cloud Messaging setup non-blocking, so the first screen renders even when notifications are unavailable or a placeholder Firebase configuration is used.
+* [Improvement] Locked the app to its own typography scale and made it ignore the device system font-size setting, keeping layouts consistent and preventing text overflow.
+* [Improvement] Applied minor stability and UI refinements across account, address, checkout, home, search, and product screens.
+
 # CHANGELOG for v2.4.6
 
 ## **v2.4.6 (6th of July, 2026)** - *Release*

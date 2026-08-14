@@ -155,158 +155,6 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
     return cartState.isGuest;
   }
 
-  CheckoutAddress? _currentBillingAddress(CheckoutState state) {
-    return _selectedBillingAddress ?? state.selectedAddress;
-  }
-
-  CheckoutAddress? _currentShippingAddress(CheckoutState state) {
-    if (state.addresses.isEmpty) return null;
-
-    return _selectedShippingAddress ??
-        state.selectedShippingAddress ??
-        (state.addresses.length > 1
-            ? state.addresses[1]
-            : state.addresses.first);
-  }
-
-  Future<List<CheckoutAddress>> _refreshSavedAddresses(
-    CheckoutBloc bloc,
-  ) async {
-    final completer = Completer<List<CheckoutAddress>>();
-    bloc.add(RefreshSavedAddresses(completer: completer));
-    return completer.future;
-  }
-
-  AccountRepository? _buildCheckoutAccountRepository(BuildContext context) {
-    final token = context.read<CheckoutBloc>().getLatestAuthToken?.call();
-    if (token == null || token.isEmpty) {
-      debugPrint(
-        '[CheckoutPage] Unable to open add-address flow: missing auth token',
-      );
-      return null;
-    }
-
-    final client = GraphQLClientProvider.authenticatedClient(token).value;
-    return AccountRepository(client: client);
-  }
-
-  Future<Set<String>?> _loadCustomerAddressIds(
-    AccountRepository repository,
-  ) async {
-    try {
-      final addresses = await repository.getCustomerAddresses(first: 100);
-      return addresses
-          .map((address) => address.id)
-          .whereType<String>()
-          .where((id) => id.isNotEmpty)
-          .toSet();
-    } catch (_) {
-      return null;
-    }
-  }
-
-  void _applySavedAddressSelection(
-    CheckoutBloc bloc,
-    CheckoutState state, {
-    required CheckoutAddress address,
-    required bool isBilling,
-  }) {
-    setState(() {
-      if (isBilling) {
-        _selectedBillingAddress = address;
-      } else {
-        _selectedShippingAddress = address;
-      }
-    });
-
-    if (isBilling) {
-      final useForShipping = _usesBillingAsShipping(state);
-      final shippingAddress = useForShipping
-          ? null
-          : _currentShippingAddress(state);
-      bloc.add(
-        SelectSavedAddress(
-          address: address,
-          useForShipping: useForShipping,
-          shippingAddress: shippingAddress,
-        ),
-      );
-      return;
-    }
-
-    if (!state.addressConfirmed) {
-      return;
-    }
-
-    final billingAddress = _currentBillingAddress(state);
-    if (billingAddress == null) {
-      return;
-    }
-
-    bloc.add(
-      SelectSavedAddress(
-        address: billingAddress,
-        useForShipping: false,
-        shippingAddress: address,
-      ),
-    );
-  }
-
-  Future<void> _openAddAddressFromSheet({
-    required NavigatorState navigator,
-    required AccountRepository repository,
-    required CheckoutBloc checkoutBloc,
-    required bool isBilling,
-  }) async {
-    final existingCustomerIds = await _loadCustomerAddressIds(repository);
-    final created = await navigator.push<bool>(
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: repository,
-          child: BlocProvider(
-            create: (_) => AddressBookBloc(repository: repository),
-            child: const AddAddressPage(),
-          ),
-        ),
-      ),
-    );
-
-    if (!mounted || created != true) {
-      return;
-    }
-
-    try {
-      final refreshedAddresses = await _refreshSavedAddresses(checkoutBloc);
-      if (!mounted) return;
-
-      final refreshedCustomerIds = await _loadCustomerAddressIds(repository);
-      if (!mounted ||
-          existingCustomerIds == null ||
-          refreshedCustomerIds == null) {
-        return;
-      }
-
-      final newAddress = findNewlyAddedSelectableAddress(
-        previousCustomerIds: existingCustomerIds,
-        refreshedCustomerIds: refreshedCustomerIds,
-        refreshedAddresses: refreshedAddresses,
-      );
-
-      if (newAddress == null) {
-        return;
-      }
-
-      _applySavedAddressSelection(
-        checkoutBloc,
-        checkoutBloc.state,
-        address: newAddress,
-        isBilling: isBilling,
-      );
-    } catch (_) {
-      // CheckoutBloc emits the user-facing error state.
-    }
-  }
-
   @override
   void dispose() {
     _couponController.dispose();
@@ -387,8 +235,7 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
             _selectedBillingAddress = state.selectedAddress;
           }
           if (state.selectedShippingAddress != null &&
-              _selectedShippingAddress?.id !=
-                  state.selectedShippingAddress?.id) {
+              _selectedShippingAddress?.id != state.selectedShippingAddress?.id) {
             _selectedShippingAddress = state.selectedShippingAddress;
           }
           // Reset local selections when bloc resets downstream state
@@ -434,9 +281,7 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
                             const SizedBox(height: 16),
                             // Billing Address
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildBillingSection(context, state),
                             ),
                             const SizedBox(height: 16),
@@ -455,9 +300,7 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
                             ],
                             // Cart Items
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildCartItemsSection(context, cart),
                             ),
                             const SizedBox(height: 16),
@@ -476,25 +319,19 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
                             ],
                             // Payment Method
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildPaymentMethodSection(context, state),
                             ),
                             const SizedBox(height: 32),
                             // Coupon
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildCouponSection(context, state),
                             ),
                             const SizedBox(height: 32),
                             // Price Break
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildPriceBreakSection(context, cart),
                             ),
                             const SizedBox(height: 100),
@@ -571,13 +408,12 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
     }
 
     // Address confirmed → Figma-exact card
-    final billingAddress = _currentBillingAddress(state);
-    if (state.addressConfirmed && billingAddress != null) {
+    if (state.addressConfirmed && state.selectedAddress != null) {
       return _buildAddressCard(
         context: context,
         state: state,
         label: AppLocalizations.of(context)!.checkoutBillingTo,
-        address: billingAddress,
+        address: state.selectedAddress!,
         onChangePressed: () =>
             _showChangeAddressFlow(context, state, isBilling: true),
         showSameAddressCheckbox: !state.isVirtualOnly,
@@ -591,12 +427,13 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
 
     // Logged-in with saved addresses (not yet confirmed)
     if (state.addresses.isNotEmpty) {
-      if (billingAddress != null) {
+      final displayAddr = _selectedBillingAddress ?? state.selectedAddress;
+      if (displayAddr != null) {
         return _buildAddressCardWithConfirm(
           context: context,
           state: state,
           label: AppLocalizations.of(context)!.checkoutBillingTo,
-          address: billingAddress,
+          address: displayAddr,
           onChangePressed: () =>
               _showAddressSelectionSheet(context, state, isBilling: true),
           showSameAddressCheckbox: !state.isVirtualOnly,
@@ -626,14 +463,18 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
     if (state.isGuest) {
       return _buildGuestShippingForm(context, state);
     }
-    final shippingAddress = _currentShippingAddress(state);
-    if (shippingAddress != null) {
+    if (state.addresses.isNotEmpty) {
+      final displayAddr = _currentShippingAddress(state);
+      if (displayAddr == null) {
+        return _buildGuestShippingForm(context, state);
+      }
       return _buildAddressCard(
         context: context,
         state: state,
         label: AppLocalizations.of(context)!.checkoutDeliveredTo,
-        address: shippingAddress,
-        onChangePressed: () => _showShippingChangeAddressFlow(context, state),
+        address: displayAddr,
+        onChangePressed: () =>
+            _showShippingChangeAddressFlow(context, state),
         showSameAddressCheckbox: false,
       );
     }
@@ -845,6 +686,158 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
   // ADDRESS SELECTION BOTTOM SHEET (logged-in users)
   // =====================================================================
 
+  CheckoutAddress? _currentBillingAddress(CheckoutState state) {
+    return _selectedBillingAddress ?? state.selectedAddress;
+  }
+
+  CheckoutAddress? _currentShippingAddress(CheckoutState state) {
+    if (state.addresses.isEmpty) return null;
+
+    return _selectedShippingAddress ??
+        state.selectedShippingAddress ??
+        (state.addresses.length > 1
+            ? state.addresses[1]
+            : state.addresses.first);
+  }
+
+  Future<List<CheckoutAddress>> _refreshSavedAddresses(
+    CheckoutBloc bloc,
+  ) async {
+    final completer = Completer<List<CheckoutAddress>>();
+    bloc.add(RefreshSavedAddresses(completer: completer));
+    return completer.future;
+  }
+
+  AccountRepository? _buildCheckoutAccountRepository(BuildContext context) {
+    final token = context.read<CheckoutBloc>().getLatestAuthToken?.call();
+    if (token == null || token.isEmpty) {
+      debugPrint(
+        '[CheckoutPage] Unable to open add-address flow: missing auth token',
+      );
+      return null;
+    }
+
+    final client = GraphQLClientProvider.authenticatedClient(token).value;
+    return AccountRepository(client: client);
+  }
+
+  Future<Set<String>?> _loadCustomerAddressIds(
+    AccountRepository repository,
+  ) async {
+    try {
+      final addresses = await repository.getCustomerAddresses(first: 100);
+      return addresses
+          .map((address) => address.id)
+          .whereType<String>()
+          .where((id) => id.isNotEmpty)
+          .toSet();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void _applySavedAddressSelection(
+    CheckoutBloc bloc,
+    CheckoutState state, {
+    required CheckoutAddress address,
+    required bool isBilling,
+  }) {
+    setState(() {
+      if (isBilling) {
+        _selectedBillingAddress = address;
+      } else {
+        _selectedShippingAddress = address;
+      }
+    });
+
+    if (isBilling) {
+      final useForShipping = _usesBillingAsShipping(state);
+      final shippingAddress = useForShipping
+          ? null
+          : _currentShippingAddress(state);
+      bloc.add(
+        SelectSavedAddress(
+          address: address,
+          useForShipping: useForShipping,
+          shippingAddress: shippingAddress,
+        ),
+      );
+      return;
+    }
+
+    if (!state.addressConfirmed) {
+      return;
+    }
+
+    final billingAddress = _currentBillingAddress(state);
+    if (billingAddress == null) {
+      return;
+    }
+
+    bloc.add(
+      SelectSavedAddress(
+        address: billingAddress,
+        useForShipping: false,
+        shippingAddress: address,
+      ),
+    );
+  }
+
+  Future<void> _openAddAddressFromSheet({
+    required NavigatorState navigator,
+    required AccountRepository repository,
+    required CheckoutBloc checkoutBloc,
+    required bool isBilling,
+  }) async {
+    final existingCustomerIds = await _loadCustomerAddressIds(repository);
+    final created = await navigator.push<bool>(
+      MaterialPageRoute(
+        builder: (_) => RepositoryProvider.value(
+          value: repository,
+          child: BlocProvider(
+            create: (_) => AddressBookBloc(repository: repository),
+            child: const AddAddressPage(),
+          ),
+        ),
+      ),
+    );
+
+    if (!mounted || created != true) {
+      return;
+    }
+
+    try {
+      final refreshedAddresses = await _refreshSavedAddresses(checkoutBloc);
+      if (!mounted) return;
+
+      final refreshedCustomerIds = await _loadCustomerAddressIds(repository);
+      if (!mounted ||
+          existingCustomerIds == null ||
+          refreshedCustomerIds == null) {
+        return;
+      }
+
+      final newAddress = findNewlyAddedSelectableAddress(
+        previousCustomerIds: existingCustomerIds,
+        refreshedCustomerIds: refreshedCustomerIds,
+        refreshedAddresses: refreshedAddresses,
+      );
+
+      if (newAddress == null) {
+        return;
+      }
+
+      _applySavedAddressSelection(
+        checkoutBloc,
+        checkoutBloc.state,
+        address: newAddress,
+        isBilling: isBilling,
+      );
+    } catch (_) {
+      // CheckoutBloc emits the user-facing error state.
+    }
+  }
+
   void _showAddressSelectionSheet(
     BuildContext context,
     CheckoutState state, {
@@ -853,7 +846,6 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
   }) {
     final pageContext = context;
     final addresses = addressesOverride ?? state.addresses;
-    if (addresses.isEmpty) return;
 
     final isDark = Theme.of(pageContext).brightness == Brightness.dark;
     final checkoutBloc = pageContext.read<CheckoutBloc>();
@@ -875,23 +867,15 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
           builder: (sheetContext, scrollController) {
             return CheckoutAddressSelectionSheet(
               title: isBilling
-                  ? AppLocalizations.of(
-                      pageContext,
-                    )!.checkoutSelectBillingAddress
-                  : AppLocalizations.of(
-                      pageContext,
-                    )!.checkoutSelectShippingAddress,
-              addButtonLabel: AppLocalizations.of(
-                pageContext,
-              )!.accountAddNewAddress,
+                  ? AppLocalizations.of(pageContext)!.checkoutSelectBillingAddress
+                  : AppLocalizations.of(pageContext)!.checkoutSelectShippingAddress,
+              addButtonLabel: AppLocalizations.of(pageContext)!.accountAddNewAddress,
               addresses: addresses,
               selectedAddressId: isBilling
                   ? _currentBillingAddress(state)?.id
                   : _currentShippingAddress(state)?.id,
               scrollController: scrollController,
-              phoneLabelBuilder: AppLocalizations.of(
-                pageContext,
-              )!.checkoutPhoneValue,
+              phoneLabelBuilder: AppLocalizations.of(pageContext)!.checkoutPhoneValue,
               onAddressSelected: (address) {
                 Navigator.pop(ctx);
                 _applySavedAddressSelection(
@@ -1612,9 +1596,10 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
   /// Checkbox: "Use same address for shipping?"  (Figma node 204:6691)
   Widget _buildSameAddressCheckbox(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final useSameAddress = context.select(
-      (CheckoutBloc bloc) => bloc.state.useSameAddressForShipping,
-    );
+    final useSameAddress =
+        context.select(
+          (CheckoutBloc bloc) => bloc.state.useSameAddressForShipping,
+        );
     return GestureDetector(
       onTap: () {
         context.read<CheckoutBloc>().add(ToggleSameAddress());
@@ -1795,6 +1780,7 @@ class _CheckoutPageViewState extends State<_CheckoutPageView> {
           'shippingPhoneNumber': _shippingPhoneCtrl.text.trim(),
         });
       }
+
     } else {
       input = state.selectedAddress!.toBillingInput(
         useForShipping: useSameAddressForShipping,

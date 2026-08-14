@@ -17,10 +17,15 @@ class CheckoutInteractionBlocker extends StatelessWidget {
         AbsorbPointer(absorbing: isBlocking, child: child),
         if (isBlocking) ...[
           const Positioned.fill(
-            child: ModalBarrier(dismissible: false, color: Color(0x66000000)),
+            child: ModalBarrier(
+              dismissible: false,
+              color: Color(0x66000000),
+            ),
           ),
           const Positioned.fill(
-            child: Center(child: CircularProgressIndicator()),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
           ),
         ],
       ],
