@@ -97,9 +97,7 @@ class AccountRepository {
 
     final edges = result.data?['locales']?['edges'] as List<dynamic>? ?? [];
     final locales = edges
-        .map(
-          (edge) => ShopLocale.fromJson(edge['node'] as Map<String, dynamic>),
-        )
+        .map((edge) => ShopLocale.fromJson(edge['node'] as Map<String, dynamic>))
         .toList();
 
     _logAccountApiMessage(

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -54,7 +53,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
     _autoPlayTimer?.cancel();
     _currentPage = widget.images.isEmpty
         ? 0
-        : _currentPage.clamp(0, widget.images.length - 1);
+        : (_currentPage.clamp(0, widget.images.length - 1) as int);
     _startAutoPlay();
     _cacheBannerAspectRatios();
   }
@@ -126,7 +125,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
 
   double _currentAspectRatio() {
     if (widget.images.isEmpty) return _fallbackAspectRatio;
-    final safeIndex = _currentPage.clamp(0, widget.images.length - 1);
+    final safeIndex = _currentPage.clamp(0, widget.images.length - 1) as int;
     final currentBanner = widget.images[safeIndex];
     final aspectRatio = _aspectRatios[_bannerUrl(currentBanner)];
     if (aspectRatio == null || !aspectRatio.isFinite || aspectRatio <= 0) {

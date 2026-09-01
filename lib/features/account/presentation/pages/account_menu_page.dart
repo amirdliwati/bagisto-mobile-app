@@ -308,10 +308,7 @@ class _AccountMenuBody extends StatelessWidget {
             onTap: () => _onMenuItemTap(context, AccountMenuAction.preferences),
           ),
           const SizedBox(height: 2),
-          AccountMenuItem(
-            label: l10n.accountLogout,
-            onTap: () => _onLogout(context),
-          ),
+          AccountMenuItem(label: l10n.accountLogout, onTap: () => _onLogout(context)),
         ],
       ),
     );

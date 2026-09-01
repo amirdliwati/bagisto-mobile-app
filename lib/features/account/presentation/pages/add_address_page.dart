@@ -187,7 +187,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
             _countryDisplayCtrl.text = match.name;
           });
           // Load states for this country, then restore the saved state value
-          // when the country has no predefined state list.
+          // if the country has no predefined state list.
           await _loadStates(match, savedStateText: addr.state);
         }
       }
@@ -312,9 +312,14 @@ class _AddAddressPageState extends State<AddAddressPage> {
     final l10n = AppLocalizations.of(context)!;
 
     if (_loadingStates) return;
-    if (_states.isEmpty) return;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Countries without states use a normal text field instead of a dropdown.
+    if (_states.isEmpty) {
+      return;
+    }
+
     final selected = await SelectionSheet.show<CountryState>(
       context: context,
       title: l10n.checkoutSelectState,

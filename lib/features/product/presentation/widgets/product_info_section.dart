@@ -102,7 +102,10 @@ class ProductInfoSection extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         // Current price (Text-1: 24px bold)
-        Text(displayPriceLabel, style: AppTextStyles.text1(context)),
+        Text(
+          displayPriceLabel,
+          style: AppTextStyles.text1(context),
+        ),
 
         // Original price strikethrough
         if (originalPrice != null)

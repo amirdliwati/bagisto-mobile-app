@@ -24,8 +24,7 @@ class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
   /// GlobalKey for accessing MainShellState from anywhere in the app
-  static final GlobalKey<MainShellState> navigatorKey =
-      GlobalKey<MainShellState>();
+  static final GlobalKey<MainShellState> navigatorKey = GlobalKey<MainShellState>();
 
   @override
   State<MainShell> createState() => MainShellState();
@@ -172,8 +171,8 @@ class MainShellState extends State<MainShell> {
               color: isActive
                   ? AppColors.primary500
                   : isDark
-                  ? AppColors.neutral300
-                  : AppColors.neutral800,
+                      ? AppColors.neutral300
+                      : AppColors.neutral800,
             ),
             const SizedBox(height: 2),
             Text(
@@ -185,8 +184,8 @@ class MainShellState extends State<MainShell> {
                 color: isActive
                     ? AppColors.primary500
                     : isDark
-                    ? AppColors.neutral300
-                    : AppColors.neutral800,
+                        ? AppColors.neutral300
+                        : AppColors.neutral800,
               ),
             ),
           ],
@@ -222,8 +221,8 @@ class MainShellState extends State<MainShell> {
                   color: isActive
                       ? AppColors.primary500
                       : isDark
-                      ? AppColors.neutral300
-                      : AppColors.neutral800,
+                          ? AppColors.neutral300
+                          : AppColors.neutral800,
                 ),
                 if (badgeCount > 0)
                   Positioned(
@@ -261,8 +260,8 @@ class MainShellState extends State<MainShell> {
                 color: isActive
                     ? AppColors.primary500
                     : isDark
-                    ? AppColors.neutral300
-                    : AppColors.neutral800,
+                        ? AppColors.neutral300
+                        : AppColors.neutral800,
               ),
             ),
           ],
@@ -270,4 +269,5 @@ class MainShellState extends State<MainShell> {
       ),
     );
   }
+
 }

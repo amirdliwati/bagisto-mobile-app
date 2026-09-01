@@ -165,7 +165,10 @@ class CheckoutRepository {
       throw result.exception!;
     }
 
-    _logCheckoutApiDetails('getCountries', responseData: result.data);
+    _logCheckoutApiDetails(
+      'getCountries',
+      responseData: result.data,
+    );
 
     final edges = result.data?['countries']?['edges'] as List?;
     if (edges == null) return [];
@@ -181,34 +184,25 @@ class CheckoutRepository {
   /// Fetch states/provinces for a specific country by its numeric ID.
   /// API: https://api-docs.bagisto.com/api/graphql-api/shop/queries/get-country-state.html
   /// Tries with countryId first, then falls back to countryCode if available
-  Future<List<BagistoCountryState>> getCountryStates(
-    int countryId, {
-    String? countryCode,
-  }) async {
-    debugPrint(
-      '[CheckoutRepo] getCountryStates countryId=$countryId, countryCode=$countryCode',
-    );
-
+  Future<List<BagistoCountryState>> getCountryStates(int countryId, {String? countryCode}) async {
+    debugPrint('[CheckoutRepo] getCountryStates countryId=$countryId, countryCode=$countryCode');
+    
     // If no valid countryId, try fallback with countryCode
     if (countryId <= 0) {
       if (countryCode != null && countryCode.isNotEmpty) {
-        debugPrint(
-          '[CheckoutRepo] countryId invalid, falling back to countryCode=$countryCode',
-        );
+        debugPrint('[CheckoutRepo] countryId invalid, falling back to countryCode=$countryCode');
         return _getCountryStatesByCode(countryCode);
       }
-      debugPrint(
-        '[CheckoutRepo] getCountryStates: invalid countryId=$countryId and no countryCode, returning empty',
-      );
+      debugPrint('[CheckoutRepo] getCountryStates: invalid countryId=$countryId and no countryCode, returning empty');
       return [];
     }
-
+    
     // Query with countryId (Int! required) — do NOT pass countryCode here
     final Map<String, dynamic> variables = {
       'countryId': countryId,
       'first': 200,
     };
-
+    
     final result = await _authedClient.query(
       QueryOptions(
         document: gql(CheckoutQueries.getCountryStates),
@@ -218,7 +212,7 @@ class CheckoutRepository {
     );
 
     debugPrint('[CheckoutRepo] getCountryStates raw result: ${result.data}');
-
+    
     if (result.hasException) {
       debugPrint('[CheckoutRepo] getCountryStates error: ${result.exception}');
       // Fallback to countryCode query if available
@@ -240,9 +234,7 @@ class CheckoutRepository {
       debugPrint('[CheckoutRepo] getCountryStates: countryStates is null');
       // Try alternative query with countryCode if available
       if (countryCode != null && countryCode.isNotEmpty && countryId <= 0) {
-        debugPrint(
-          '[CheckoutRepo] Trying alternative query with countryCode: $countryCode',
-        );
+        debugPrint('[CheckoutRepo] Trying alternative query with countryCode: $countryCode');
         return _getCountryStatesByCode(countryCode);
       }
       return [];
@@ -253,9 +245,7 @@ class CheckoutRepository {
     if (statesData is List) {
       // Direct array format: countryStates: [{id, _id, ...}, ...]
       statesList = statesData;
-      debugPrint(
-        '[CheckoutRepo] getCountryStates: direct array format, ${statesList.length} items',
-      );
+      debugPrint('[CheckoutRepo] getCountryStates: direct array format, ${statesList.length} items');
     } else if (statesData is Map) {
       // Edge/node format: countryStates: {edges: [{node: {...}}, ...]}
       final edges = statesData['edges'] as List?;
@@ -264,36 +254,29 @@ class CheckoutRepository {
             .map((edge) => edge is Map ? edge['node'] : edge)
             .where((node) => node != null)
             .toList();
-        debugPrint(
-          '[CheckoutRepo] getCountryStates: edge/node format, ${statesList.length} items',
-        );
+        debugPrint('[CheckoutRepo] getCountryStates: edge/node format, ${statesList.length} items');
       } else {
         statesList = [];
         debugPrint('[CheckoutRepo] getCountryStates: edges is null');
       }
     } else {
-      debugPrint(
-        '[CheckoutRepo] getCountryStates: unexpected format: $statesData',
-      );
+      debugPrint('[CheckoutRepo] getCountryStates: unexpected format: $statesData');
       return [];
     }
 
     return statesList
         .map(
-          (e) =>
-              BagistoCountryState.fromJson((e ?? {}) as Map<String, dynamic>),
+          (e) => BagistoCountryState.fromJson(
+            (e ?? {}) as Map<String, dynamic>,
+          ),
         )
         .toList();
   }
 
   /// Alternative: Fetch states using country code
-  Future<List<BagistoCountryState>> _getCountryStatesByCode(
-    String countryCode,
-  ) async {
-    debugPrint(
-      '[CheckoutRepo] _getCountryStatesByCode countryCode=$countryCode',
-    );
-
+  Future<List<BagistoCountryState>> _getCountryStatesByCode(String countryCode) async {
+    debugPrint('[CheckoutRepo] _getCountryStatesByCode countryCode=$countryCode');
+    
     final result = await _authedClient.query(
       QueryOptions(
         document: gql(CheckoutQueries.getCountryStatesByCode),
@@ -302,14 +285,10 @@ class CheckoutRepository {
       ),
     );
 
-    debugPrint(
-      '[CheckoutRepo] _getCountryStatesByCode raw result: ${result.data}',
-    );
-
+    debugPrint('[CheckoutRepo] _getCountryStatesByCode raw result: ${result.data}');
+    
     if (result.hasException) {
-      debugPrint(
-        '[CheckoutRepo] _getCountryStatesByCode error: ${result.exception}',
-      );
+      debugPrint('[CheckoutRepo] _getCountryStatesByCode error: ${result.exception}');
       return [];
     }
 
@@ -321,9 +300,7 @@ class CheckoutRepository {
 
     final statesData = result.data?['countryStates'];
     if (statesData == null) {
-      debugPrint(
-        '[CheckoutRepo] _getCountryStatesByCode: countryStates is null',
-      );
+      debugPrint('[CheckoutRepo] _getCountryStatesByCode: countryStates is null');
       return [];
     }
 
@@ -346,8 +323,9 @@ class CheckoutRepository {
 
     return statesList
         .map(
-          (e) =>
-              BagistoCountryState.fromJson((e ?? {}) as Map<String, dynamic>),
+          (e) => BagistoCountryState.fromJson(
+            (e ?? {}) as Map<String, dynamic>,
+          ),
         )
         .toList();
   }
@@ -369,7 +347,10 @@ class CheckoutRepository {
       throw result.exception!;
     }
 
-    _logCheckoutApiDetails('getCheckoutAddresses', responseData: result.data);
+    _logCheckoutApiDetails(
+      'getCheckoutAddresses',
+      responseData: result.data,
+    );
 
     final edges =
         result.data?['collectionGetCheckoutAddresses']?['edges'] as List?;
@@ -409,7 +390,8 @@ class CheckoutRepository {
       responseData: result.data,
     );
 
-    final edges = result.data?['getCustomerAddresses']?['edges'] as List?;
+    final edges =
+        result.data?['getCustomerAddresses']?['edges'] as List?;
     if (edges == null) return [];
 
     return edges.map((e) {
@@ -607,9 +589,7 @@ class CheckoutRepository {
   Future<CheckoutShippingMethodResponse> saveShippingMethod(
     String shippingMethod,
   ) async {
-    debugPrint(
-      '[CheckoutRepo] saveShippingMethod: $shippingMethod (authToken present: ${_authToken != null})',
-    );
+    debugPrint('[CheckoutRepo] saveShippingMethod: $shippingMethod (authToken present: ${_authToken != null})');
     final result = await _authedClient.mutate(
       MutationOptions(
         document: gql(CheckoutMutations.createCheckoutShippingMethod),
@@ -693,7 +673,10 @@ class CheckoutRepository {
       throw result.exception!;
     }
 
-    _logCheckoutApiDetails('placeOrder', responseData: result.data);
+    _logCheckoutApiDetails(
+      'placeOrder',
+      responseData: result.data,
+    );
 
     final data =
         result.data?['createCheckoutOrder']?['checkoutOrder']

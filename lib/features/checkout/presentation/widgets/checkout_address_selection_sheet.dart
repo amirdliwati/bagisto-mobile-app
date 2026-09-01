@@ -117,8 +117,7 @@ class CheckoutAddressSelectionSheet extends StatelessWidget {
                                 : AppColors.neutral800,
                           ),
                         ),
-                        if (address.phone != null &&
-                            address.phone!.isNotEmpty) ...[
+                        if (address.phone != null && address.phone!.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
                             phoneLabelBuilder(address.phone!),

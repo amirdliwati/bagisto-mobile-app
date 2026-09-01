@@ -40,7 +40,10 @@ class DefaultAddressesSection extends StatelessWidget {
           else if (defaultAddress != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildAddressCard(context, address: defaultAddress),
+              child: _buildAddressCard(
+                context,
+                address: defaultAddress,
+              ),
             ),
         ],
       ),

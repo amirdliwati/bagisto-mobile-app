@@ -837,7 +837,7 @@ class AccountQueries {
   /// Bagisto API mutation: createReorderOrder(input: reorderOrderInput!)
   /// Required: orderId (Int)
   /// Returns: success, message, orderId, itemsAddedCount
-  static const String reorderOrder = r'''
+ static const String reorderOrder = r'''
 mutation createReorderOrder($input: createReorderOrderInput!) {
   createReorderOrder(input: $input) {
     reorderOrder {

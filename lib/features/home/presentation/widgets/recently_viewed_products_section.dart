@@ -32,13 +32,7 @@ class RecentlyViewedProductsSection extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SectionHeader(
-                  title: AppLocalizations.of(
-                    context,
-                  )!.homeRecentlyViewedProducts,
-                  horizontalPadding: horizontalPadding,
-                  titleStyle: titleStyle,
-                ),
+                SectionHeader(title: AppLocalizations.of(context)!.homeRecentlyViewedProducts, horizontalPadding: horizontalPadding, titleStyle: titleStyle),
                 const SizedBox(height: 16),
                 LayoutBuilder(
                   builder: (context, constraints) {
@@ -53,9 +47,7 @@ class RecentlyViewedProductsSection extends StatelessWidget {
                       height: listHeight,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: horizontalPadding,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                         itemCount: products.length,
                         separatorBuilder: (context, index) =>
                             const SizedBox(width: 12),

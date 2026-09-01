@@ -91,7 +91,9 @@ Map<String, dynamic> buildSavedCheckoutAddressInput({
   required bool useForShipping,
   CheckoutAddress? shippingAddress,
 }) {
-  final input = billingAddress.toBillingInput(useForShipping: useForShipping);
+  final input = billingAddress.toBillingInput(
+    useForShipping: useForShipping,
+  );
 
   if (!useForShipping && shippingAddress != null) {
     input.addAll({

@@ -550,7 +550,8 @@ class _SearchPageViewState extends State<_SearchPageView> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: state.topCategories.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 2),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(width: 2),
                 itemBuilder: (context, index) {
                   final cat = state.topCategories[index];
                   return _buildCategoryCircle(context, cat, isDark);
@@ -563,9 +564,7 @@ class _SearchPageViewState extends State<_SearchPageView> {
           RecentlyViewedProductsSection(
             onProductTap: (product) => _openRecentProduct(context, product),
             horizontalPadding: 0,
-            titleStyle: AppTextStyles.text5(
-              context,
-            ).copyWith(fontWeight: FontWeight.w600),
+            titleStyle: AppTextStyles.text5(context).copyWith(fontWeight: FontWeight.w600),
           ),
 
           const SizedBox(height: 16),
@@ -747,53 +746,49 @@ class _SearchPageViewState extends State<_SearchPageView> {
         const SizedBox(height: 12),
         Expanded(
           child: SingleChildScrollView(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                const crossAxisCount = 2;
-                const crossAxisSpacing = 12.0;
-                const horizontalPadding = 20.0 * 2;
-                final cardWidth =
-                    (constraints.maxWidth -
-                        horizontalPadding -
-                        crossAxisSpacing * (crossAxisCount - 1)) /
+            child: LayoutBuilder(builder: (context, constraints) {
+            const crossAxisCount = 2;
+            const crossAxisSpacing = 12.0;
+            const horizontalPadding = 20.0 * 2;
+            final cardWidth =
+                (constraints.maxWidth - horizontalPadding - crossAxisSpacing * (crossAxisCount - 1)) /
                     crossAxisCount;
-                // text: gap(10) + name 1 line + gap(7) + price + gap(7) + rating
-                // Keep a small safety buffer to avoid pixel overflows on iOS.
-                const textSectionHeight = 86.0;
-                final mainAxisExtent = cardWidth + textSectionHeight;
+            // text: gap(10) + name 1 line + gap(7) + price + gap(7) + rating
+            // Keep a small safety buffer to avoid pixel overflows on iOS.
+            const textSectionHeight = 86.0;
+            final mainAxisExtent = cardWidth + textSectionHeight;
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GridView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        crossAxisSpacing: crossAxisSpacing,
-                        mainAxisSpacing: 16,
-                        mainAxisExtent: mainAxisExtent,
-                      ),
-                      itemCount: state.searchResults.length,
-                      itemBuilder: (context, index) {
-                        return _buildProductCard(
-                          context,
-                          state.searchResults[index],
-                          isDark,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 32),
-                    RecentlyViewedProductsSection(
-                      onProductTap: (product) =>
-                          _openRecentProduct(context, product),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                );
-              },
-            ),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: crossAxisSpacing,
+                    mainAxisSpacing: 16,
+                    mainAxisExtent: mainAxisExtent,
+                  ),
+                  itemCount: state.searchResults.length,
+                  itemBuilder: (context, index) {
+                    return _buildProductCard(
+                      context,
+                      state.searchResults[index],
+                      isDark,
+                    );
+                  },
+                ),
+                const SizedBox(height: 32),
+                RecentlyViewedProductsSection(
+                  onProductTap: (product) =>
+                      _openRecentProduct(context, product),
+                ),
+                const SizedBox(height: 16),
+              ],
+            );
+          }),
           ),
         ),
       ],
@@ -1074,7 +1069,9 @@ class _SearchPageViewState extends State<_SearchPageView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppLocalizations.of(context)!.categoryFailedToUpdateWishlist(
+            AppLocalizations.of(
+              context,
+            )!.categoryFailedToUpdateWishlist(
               ErrorMapper.getUserMessage(e, context: 'updating wishlist'),
             ),
           ),
